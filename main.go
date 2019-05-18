@@ -3,21 +3,11 @@ package main
 import (
 	"fmt"
 
-	rejstry "github.com/g-harel/rejstry/internal"
+	"github.com/g-harel/rejstry/internal"
 )
 
 func main() {
-	registry := rejstry.Registry{
-		// URL: "https://registry.yarnpkg.com",
-		URL: "https://registry.npmjs.com",
-	}
-
-	pkg, err := registry.Fetch("react")
-	if err != nil {
-		panic(err)
-	}
-
-	dir, err := pkg.Download(pkg.Tags.Latest)
+	dir, err := internal.DownloadPackage("https://registry.npmjs.com", "react", "16.8.6")
 	if err != nil {
 		panic(err)
 	}

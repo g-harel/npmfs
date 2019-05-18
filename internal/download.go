@@ -1,4 +1,4 @@
-package rejstry
+package internal
 
 import (
 	"archive/tar"
@@ -13,44 +13,34 @@ import (
 	"time"
 )
 
-type Package struct {
-	Tags struct {
-		Latest string `json:"latest"`
-	} `json:"dist-tags"`
-	Versions map[string]struct {
-		Dist struct {
-			Tarball string `json:"tarball"`
-		} `json:"dist"`
-	} `json:"versions"`
-}
-
-// Download writes the package contents to a temporary directory and returns its path.
-// The tarball contents are expected to have been compressed using gzip.
-func (p *Package) Download(version string) (string, error) {
+// DownloadPackage writes the package contents to a temporary directory and returns its path.
+// The registry's tarball contents are expected to be compressed using gzip.
+func DownloadPackage(registry, name, version string) (string, error) {
 	client := &http.Client{Timeout: 10 * time.Second}
 
-	if _, ok := p.Versions[version]; !ok {
-		return "", fmt.Errorf("unrecognized version")
-	}
-	println(p.Versions[version].Dist.Tarball)
-	response, err := client.Get(p.Versions[version].Dist.Tarball)
+	url := fmt.Sprintf("%s/%s/-/%[2]s-%s.tgz", registry, name, version)
+	response, err := client.Get(url)
 	if err != nil {
-		return "", fmt.Errorf("fetch package contents: %v", err)
+		return "", fmt.Errorf("request contents: %v", err)
 	}
 	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		return "", fmt.Errorf(http.StatusText(response.StatusCode))
+	}
 
 	outputDir, err := ioutil.TempDir("", "")
 	if err != nil {
 		return "", fmt.Errorf("create output directory: %v", err)
 	}
 
-	contents, err := gzip.NewReader(response.Body)
+	extractedBody, err := gzip.NewReader(response.Body)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	tarball := tar.NewReader(contents)
+	tarball := tar.NewReader(extractedBody)
 	for {
 		header, err := tarball.Next()
 		if err == io.EOF {
