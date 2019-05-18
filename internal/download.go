@@ -18,7 +18,7 @@ import (
 func DownloadPackage(registry, name, version string) (string, error) {
 	client := &http.Client{Timeout: 10 * time.Second}
 
-	url := fmt.Sprintf("%s/%s/-/%[2]s-%s.tgz", registry, name, version)
+	url := fmt.Sprintf("https://%s/%s/-/%[2]s-%s.tgz", registry, name, version)
 	response, err := client.Get(url)
 	if err != nil {
 		return "", fmt.Errorf("request contents: %v", err)
