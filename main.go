@@ -8,8 +8,19 @@ import (
 
 func main() {
 	registry := rejstry.Registry{
-		URL: "https://registry.yarnpkg.com",
+		// URL: "https://registry.yarnpkg.com",
+		URL: "https://registry.npmjs.com",
 	}
 
-	fmt.Println(registry.Fetch("react"))
+	pkg, err := registry.Fetch("react")
+	if err != nil {
+		panic(err)
+	}
+
+	dir, err := pkg.Download(pkg.Tags.Latest)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(dir)
 }

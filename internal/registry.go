@@ -11,20 +11,10 @@ type Registry struct {
 	URL string
 }
 
-type Package struct {
-	Tags struct {
-		Latest string `json:"latest"`
-	} `json:"dist-tags"`
-	Versions map[string]struct {
-		Dist struct {
-			Tarball string `json:"tarball"`
-		} `json:"dist"`
-	} `json:"versions"`
-}
-
 func (r *Registry) Fetch(name string) (*Package, error) {
 	client := &http.Client{Timeout: 10 * time.Second}
 
+	// Request package info from registry.
 	url := fmt.Sprintf("%s/%s", r.URL, name)
 	response, err := client.Get(url)
 	if err != nil {
@@ -32,6 +22,7 @@ func (r *Registry) Fetch(name string) (*Package, error) {
 	}
 	defer response.Body.Close()
 
+	// Parse JSON response to usable data.
 	pkg := &Package{}
 	err = json.NewDecoder(response.Body).Decode(pkg)
 	if err != nil {
