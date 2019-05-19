@@ -15,9 +15,20 @@ import (
 func handler(w http.ResponseWriter, r *http.Request) {
 	parts := strings.Split(r.URL.Path, "/")
 
-	if len(parts) < 5 {
+	if len(parts) < 4 {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte(http.StatusText(http.StatusNotFound)))
+		return
+	}
+
+	if len(parts) == 4 {
+		versions, err := internal.PackageVersions(parts[1], parts[2])
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "%s", strings.Join(versions, "\n"))
 		return
 	}
 
@@ -26,10 +37,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	contents, err := internal.FetchPackage(parts[1], parts[2], parts[3])
+	contents, err := internal.PackageContents(parts[1], parts[2], parts[3])
 	if err != nil {
 		panic(err)
 	}
+	defer contents.Close()
 
 	err = internal.Extract(contents, internal.Downloader(dir))
 	if err != nil {
