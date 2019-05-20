@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"sort"
 	"time"
 )
 
@@ -58,6 +57,5 @@ func PackageVersions(registry, name string) ([]string, error) {
 		count++
 	}
 
-	sort.Sort(semverSort(versions))
 	return versions, nil
 }

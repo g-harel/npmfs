@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"sort"
 	"strings"
 
 	"github.com/g-harel/rejstry/internal"
@@ -26,6 +27,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println(err)
 		}
+
+		sort.Sort(internal.SemverSort(versions))
 
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "%s", strings.Join(versions, "\n"))
