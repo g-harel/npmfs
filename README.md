@@ -6,6 +6,7 @@ registries
 reference
     cloud run
         https://cloud.google.com/run/docs
+        delete files to prevent OOM
     diff
         https://github.blog/2016-12-06-how-we-made-diff-pages-3x-faster/
 features

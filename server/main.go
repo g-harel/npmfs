@@ -8,7 +8,8 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/api/v1/versions", versionsHandler)
+	http.HandleFunc("/api/v1/files", v1Files)
+	http.HandleFunc("/api/v1/versions", v1Versions)
 
 	port := os.Getenv("PORT")
 	if port == "" {
