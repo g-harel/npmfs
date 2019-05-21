@@ -1,9 +1,11 @@
-package internal
+package semver_test
 
 import (
 	"sort"
 	"strings"
 	"testing"
+
+	"github.com/g-harel/rejstry/internal/semver"
 )
 
 func TestSort(t *testing.T) {
@@ -18,7 +20,7 @@ func TestSort(t *testing.T) {
 	for _, input := range cases {
 		t.Run(strings.Join(input, ", "), func(t *testing.T) {
 			output := append([]string{}, input...)
-			sort.Sort(SemverSort(output))
+			sort.Sort(semver.Sort(output))
 
 			for i := range input {
 				if input[i] != output[i] {

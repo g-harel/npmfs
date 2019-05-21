@@ -1,4 +1,4 @@
-package internal
+package semver
 
 import (
 	"sort"
@@ -6,21 +6,21 @@ import (
 	"strings"
 )
 
-// SemverSort is a helper type to order semver version slices in decreasing order.
+// Sort is a helper type to order semver version slices in decreasing order.
 // All elements of the slice are assumed to be valid semver versions.
-type SemverSort []string
+type Sort []string
 
-var _ sort.Interface = SemverSort{}
+var _ sort.Interface = Sort{}
 
-func (s SemverSort) Len() int {
+func (s Sort) Len() int {
 	return len(s)
 }
 
-func (s SemverSort) Swap(i, j int) {
+func (s Sort) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
 
-func (s SemverSort) Less(i, j int) bool {
+func (s Sort) Less(i, j int) bool {
 	splitA := semverSplit(s[i])
 	splitB := semverSplit(s[j])
 

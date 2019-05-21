@@ -7,7 +7,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/g-harel/rejstry/internal"
+	"github.com/g-harel/rejstry/internal/registry"
+	"github.com/g-harel/rejstry/internal/tarball"
 )
 
 func v1Files(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +31,7 @@ func v1Files(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Fetch package contents.
-	pkg, err := internal.PackageContents(req.Registry, req.Package, req.Version)
+	pkg, err := registry.PackageContents(req.Registry, req.Package, req.Version)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		log.Printf("ERROR fetch package contents: %v", err)
@@ -40,7 +41,7 @@ func v1Files(w http.ResponseWriter, r *http.Request) {
 
 	// Extract files from package contents.
 	files := []string{}
-	err = internal.Extract(pkg, func(name string, contents io.Reader) error {
+	err = tarball.Extract(pkg, func(name string, contents io.Reader) error {
 		files = append(files, strings.TrimPrefix(name, "package/"))
 		return nil
 	})

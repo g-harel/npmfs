@@ -8,8 +8,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/g-harel/rejstry/internal"
+	"github.com/g-harel/rejstry/internal/tarball"
 	"github.com/g-harel/rejstry/internal/git"
+	"github.com/g-harel/rejstry/internal/registry"
 )
 
 func v1Diff(w http.ResponseWriter, r *http.Request) {
@@ -33,7 +34,7 @@ func v1Diff(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Fetch package contents.
-	pkg, err := internal.PackageContents(req.Registry, req.Package, req.Version)
+	pkg, err := registry.PackageContents(req.Registry, req.Package, req.Version)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		log.Printf("ERROR fetch package contents: %v", err)
@@ -42,7 +43,7 @@ func v1Diff(w http.ResponseWriter, r *http.Request) {
 	defer pkg.Close()
 
 	// Fetch compare contents.
-	cmp, err := internal.PackageContents(req.Registry, req.Package, req.Compare)
+	cmp, err := registry.PackageContents(req.Registry, req.Package, req.Compare)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		log.Printf("ERROR fetch compare contents: %v", err)
@@ -67,7 +68,7 @@ func v1Diff(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Write package contents to directory.
-	internal.Extract(pkg, internal.Downloader(dir))
+	tarball.Extract(pkg, tarball.Downloader(dir))
 
 	//
 	err = repo.Add(".")
@@ -86,7 +87,7 @@ func v1Diff(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Write package contents to directory.
-	internal.Extract(cmp, internal.Downloader(dir))
+	tarball.Extract(cmp, tarball.Downloader(dir))
 
 	//
 	err = repo.Add(".")

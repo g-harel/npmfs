@@ -6,7 +6,8 @@ import (
 	"net/http"
 	"sort"
 
-	"github.com/g-harel/rejstry/internal"
+	"github.com/g-harel/rejstry/internal/registry"
+	"github.com/g-harel/rejstry/internal/semver"
 )
 
 func v1Versions(w http.ResponseWriter, r *http.Request) {
@@ -28,13 +29,13 @@ func v1Versions(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Fetch version data.
-	versions, latest, err := internal.PackageVersions(req.Registry, req.Package)
+	versions, latest, err := registry.PackageVersions(req.Registry, req.Package)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		log.Printf("ERROR fetch package versions: %v", err)
 		return
 	}
-	sort.Sort(internal.SemverSort(versions))
+	sort.Sort(semver.Sort(versions))
 
 	// Write data to response.
 	res := &struct {
