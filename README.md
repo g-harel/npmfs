@@ -9,6 +9,7 @@ reference
         delete files to prevent OOM
     diff
         https://github.blog/2016-12-06-how-we-made-diff-pages-3x-faster/
+        https://prismjs.com/test.html#language=diff
 features
     show package contents
     show version diffs (file names)

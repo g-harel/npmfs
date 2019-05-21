@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+	http.HandleFunc("/api/v1/diff", v1Diff)
 	http.HandleFunc("/api/v1/file", v1File)
 	http.HandleFunc("/api/v1/files", v1Files)
 	http.HandleFunc("/api/v1/versions", v1Versions)
