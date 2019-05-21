@@ -10,6 +10,8 @@ reference
     diff
         https://github.blog/2016-12-06-how-we-made-diff-pages-3x-faster/
         https://prismjs.com/test.html#language=diff
+        https://en.wikipedia.org/wiki/Diff#Unified_format
+        https://git-scm.com/docs/diff-format
     prior
         https://github.com/juliangruber/npm-diff
         https://diff.intrinsic.com/
