@@ -10,7 +10,7 @@ import (
 	"github.com/g-harel/rejstry/internal"
 )
 
-func v1Files(w http.ResponseWriter, r *http.Request) {
+func v1File(w http.ResponseWriter, r *http.Request) {
 	// Only handle requests with POST method and correct content type.
 	if r.Method != http.MethodPost || r.Header.Get("Content-Type") != "application/json" {
 		http.NotFound(w, r)
@@ -22,9 +22,10 @@ func v1Files(w http.ResponseWriter, r *http.Request) {
 		Registry string `json:"registry"`
 		Package  string `json:"package"`
 		Version  string `json:"version"`
+		Path     string `json:"path"`
 	}{}
 	err := json.NewDecoder(r.Body).Decode(req)
-	if err != nil || req.Registry == "" || req.Package == "" || req.Version == "" {
+	if err != nil || req.Registry == "" || req.Package == "" || req.Version == "" || req.Path == "" {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
@@ -38,23 +39,23 @@ func v1Files(w http.ResponseWriter, r *http.Request) {
 	}
 	defer pkg.Close()
 
-	// Extract files from package contents.
-	files := []string{}
+	// Write file contents to response.
+	found := false
 	err = internal.Extract(pkg, func(name string, contents io.Reader) error {
-		files = append(files, strings.TrimPrefix(name, "package/"))
+		if strings.TrimPrefix(name, "package/") == req.Path {
+			found = true
+			_, err := io.Copy(w, contents)
+			if err != nil {
+				log.Printf("ERROR copy contents: %v", err)
+			}
+		}
 		return nil
 	})
 	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		log.Printf("ERROR extract files from package contents: %v", err)
 		return
 	}
-
-	// Write data to response.
-	w.Header().Add("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(files)
-	if err != nil {
-		log.Printf("ERROR encode response: %v", err)
-		return
+	if !found {
+		http.NotFound(w, r)
 	}
 }
