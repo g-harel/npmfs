@@ -2,16 +2,24 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"path"
 
-	"github.com/g-harel/rejstry/internal/tarball"
-	"github.com/g-harel/rejstry/internal/git"
+	"github.com/g-harel/rejstry/internal/diff"
 	"github.com/g-harel/rejstry/internal/registry"
+	"github.com/g-harel/rejstry/internal/tarball"
 )
+
+type v1DiffTarDir struct {
+	version string
+	dir     string
+	err     error
+}
 
 func v1Diff(w http.ResponseWriter, r *http.Request) {
 	// Only handle requests with POST method and correct content type.
@@ -32,96 +40,60 @@ func v1Diff(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
-
-	// Fetch package contents.
-	pkg, err := registry.PackageContents(req.Registry, req.Package, req.Version)
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		log.Printf("ERROR fetch package contents: %v", err)
-		return
-	}
-	defer pkg.Close()
-
-	// Fetch compare contents.
-	cmp, err := registry.PackageContents(req.Registry, req.Package, req.Compare)
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		log.Printf("ERROR fetch compare contents: %v", err)
-		return
-	}
-	defer cmp.Close()
-
-	// Create temporary working directory.
-	dir, err := ioutil.TempDir("", "")
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		log.Printf("ERROR fetch compare contents: %v", err)
+	if req.Version == req.Compare {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
-	// Initialize git repository.
-	repo, err := git.Init(dir)
+	dirChan := make(chan v1DiffTarDir)
+	for _, version := range []string{req.Version, req.Compare} {
+		go func(v string) {
+			// Create temporary working directory.
+			dir, err := ioutil.TempDir("", "")
+			if err != nil {
+				dirChan <- v1DiffTarDir{v, "", fmt.Errorf("create temp dir: %v", err)}
+				return
+			}
+
+			// Fetch package contents for given version.
+			pkg, err := registry.PackageContents(req.Registry, req.Package, v)
+			if err != nil {
+				dirChan <- v1DiffTarDir{v, "", fmt.Errorf("fetch package contents: %v", err)}
+				return
+			}
+			defer pkg.Close()
+
+			// Write package contents to directory.
+			tarball.Extract(pkg, tarball.Downloader(dir))
+
+			dirChan <- v1DiffTarDir{v, dir, nil}
+		}(version)
+	}
+
+	dirs := map[string]string{}
+	for i := 0; i < 2; i++ {
+		dir := <-dirChan
+		if dir.err != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			log.Printf("ERROR download package contents %v: %v", dir.version, err)
+			return
+		}
+		dirs[dir.version] = dir.dir
+	}
+
+	out, err := diff.Compare(path.Join(dirs[req.Version], "package"), path.Join(dirs[req.Compare], "package"))
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		log.Printf("ERROR git init %v", err)
+		log.Printf("ERROR compare package contents: %v", err)
 		return
 	}
 
-	// Write package contents to directory.
-	tarball.Extract(pkg, tarball.Downloader(dir))
-
-	//
-	err = repo.Add(".")
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		log.Printf("ERROR git add %v: %v", req.Version, err)
-		return
-	}
-
-	//
-	err = repo.Commit(req.Version)
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		log.Printf("ERROR git commit %v: %v", req.Version, err)
-		return
-	}
-
-	// Write package contents to directory.
-	tarball.Extract(cmp, tarball.Downloader(dir))
-
-	//
-	err = repo.Add(".")
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		log.Printf("ERROR git add %v: %v", req.Compare, err)
-		return
-	}
-
-	//
-	err = repo.Commit(req.Compare)
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		log.Printf("ERROR git commit %v: %v", req.Compare, err)
-		return
-	}
-
-	//
-	out, err := repo.DiffTree("HEAD", "HEAD~")
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		log.Printf("ERROR git diff-tree: %v", err)
-		return
-	}
-
-	//
 	_, err = io.Copy(w, out)
 	if err != nil {
 		log.Printf("ERROR copy output: %v", err)
 	}
 
-	//
-	err = os.RemoveAll(dir)
-	if err != nil {
-		log.Printf("ERROR cleanup: %v", err)
+	for _, dir := range dirs {
+		_ = os.RemoveAll(dir)
 	}
 }
