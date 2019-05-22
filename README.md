@@ -9,6 +9,7 @@ reference
         delete files to prevent OOM
     diff
         https://github.blog/2016-12-06-how-we-made-diff-pages-3x-faster/
+        https://github.blog/2016-06-13-git-2-9-has-been-released
         https://prismjs.com/test.html#language=diff
         https://en.wikipedia.org/wiki/Diff#Unified_format
         https://git-scm.com/docs/diff-format
@@ -29,4 +30,4 @@ features
 
  -->
 
-# rejstry
+![](./logo/rejstry.svg)
