@@ -4,7 +4,7 @@ WORKDIR /rejstry
 
 COPY . .
 
-RUN go build -o app ./server
+RUN go build -o app .
 
 #
 
@@ -17,5 +17,7 @@ RUN git config --global user.email "server@rejstry.com"
 RUN git config --global user.name "rejstry"
 
 COPY --from=server /rejstry/app .
+COPY --from=server /rejstry/templates templates
+COPY --from=server /rejstry/static static
 
 CMD ./app

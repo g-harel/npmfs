@@ -18,6 +18,9 @@ reference
         https://diff.intrinsic.com/
         https://twitter.com/mikeal/status/1090802510497861633
         https://news.ycombinator.com/item?id=18534964
+    styling
+        https://highlightjs.org/
+        https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details
 features
     show package contents
     show version diffs (file names)
@@ -30,4 +33,4 @@ features
 
  -->
 
-![](./logo/rejstry.svg)
+![](./static/logo.svg)

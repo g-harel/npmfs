@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"encoding/json"
@@ -11,7 +11,7 @@ import (
 	"github.com/g-harel/rejstry/internal/tarball"
 )
 
-func v1File(w http.ResponseWriter, r *http.Request) {
+func V1Files(w http.ResponseWriter, r *http.Request) {
 	// Only handle requests with POST method and correct content type.
 	if r.Method != http.MethodPost || r.Header.Get("Content-Type") != "application/json" {
 		http.NotFound(w, r)
@@ -23,10 +23,9 @@ func v1File(w http.ResponseWriter, r *http.Request) {
 		Registry string `json:"registry"`
 		Package  string `json:"package"`
 		Version  string `json:"version"`
-		Path     string `json:"path"`
 	}{}
 	err := json.NewDecoder(r.Body).Decode(req)
-	if err != nil || req.Registry == "" || req.Package == "" || req.Version == "" || req.Path == "" {
+	if err != nil || req.Registry == "" || req.Package == "" || req.Version == "" {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
@@ -40,23 +39,23 @@ func v1File(w http.ResponseWriter, r *http.Request) {
 	}
 	defer pkg.Close()
 
-	// Write file contents to response.
-	found := false
+	// Extract files from package contents.
+	files := []string{}
 	err = tarball.Extract(pkg, func(name string, contents io.Reader) error {
-		if strings.TrimPrefix(name, "package/") == req.Path {
-			found = true
-			_, err := io.Copy(w, contents)
-			if err != nil {
-				log.Printf("ERROR copy contents: %v", err)
-			}
-		}
+		files = append(files, strings.TrimPrefix(name, "package/"))
 		return nil
 	})
 	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		log.Printf("ERROR extract files from package contents: %v", err)
 		return
 	}
-	if !found {
-		http.NotFound(w, r)
+
+	// Write data to response.
+	w.Header().Add("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(files)
+	if err != nil {
+		log.Printf("ERROR encode response: %v", err)
+		return
 	}
 }

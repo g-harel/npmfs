@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"encoding/json"
@@ -21,7 +21,7 @@ type v1DiffTarDir struct {
 	err     error
 }
 
-func v1Diff(w http.ResponseWriter, r *http.Request) {
+func V1Diff(w http.ResponseWriter, r *http.Request) {
 	// Only handle requests with POST method and correct content type.
 	if r.Method != http.MethodPost || r.Header.Get("Content-Type") != "application/json" {
 		http.NotFound(w, r)
@@ -58,7 +58,7 @@ func v1Diff(w http.ResponseWriter, r *http.Request) {
 			// Fetch package contents for given version.
 			pkg, err := registry.PackageContents(req.Registry, req.Package, v)
 			if err != nil {
-				dirChan <- v1DiffTarDir{v, "", fmt.Errorf("fetch package contents: %v", err)}
+				dirChan <- v1DiffTarDir{v, "", fmt.Errorf("fetch package: %v", err)}
 				return
 			}
 			defer pkg.Close()
@@ -75,7 +75,7 @@ func v1Diff(w http.ResponseWriter, r *http.Request) {
 		dir := <-dirChan
 		if dir.err != nil {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-			log.Printf("ERROR download package contents %v: %v", dir.version, err)
+			log.Printf("ERROR download package '%v': %v", dir.version, err)
 			return
 		}
 		dirs[dir.version] = dir.dir

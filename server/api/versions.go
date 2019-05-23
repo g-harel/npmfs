@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"encoding/json"
@@ -10,7 +10,8 @@ import (
 	"github.com/g-harel/rejstry/internal/semver"
 )
 
-func v1Versions(w http.ResponseWriter, r *http.Request) {
+// V1Versions is.
+func V1Versions(w http.ResponseWriter, r *http.Request) {
 	// Only handle requests with POST method and correct content type.
 	if r.Method != http.MethodPost || r.Header.Get("Content-Type") != "application/json" {
 		http.NotFound(w, r)
