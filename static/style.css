@@ -2,7 +2,6 @@ html {
     background-color: #fafafa;
     color: #222;
     font-family: 'Fira Sans', 'sans-serif';
-    font-size: 14px;
 }
 
 body {
@@ -23,11 +22,10 @@ a {
 
 pre {
     font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', 'Courier', 'monospace';
-    font-size: 12px;
 }
 
 header {
-    padding: 2.5rem 0 2rem;
+    padding: 2.5rem 0 2.5rem;
     text-align: center;
     user-select: none;
     -moz-user-select: -moz-none;

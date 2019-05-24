@@ -1,0 +1,18 @@
+{{define "title"}}
+    {{.Package}} - {{.Version}}
+{{end}}
+
+{{define "style"}}
+    <style>
+    </style>
+{{end}}
+
+{{define "body"}}
+    <h1 class="title">
+        <a class="package" href="/package/{{.Package}}">{{.Package}}</a>
+        {{.Version}}
+    </h1>
+    {{range $file := .Files}}
+        <pre>{{$file}}</pre>
+    {{end}}
+{{end}}

@@ -22,14 +22,7 @@ reference
         https://highlightjs.org/
         https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details
 features
-    show package contents
-    show version diffs (file names)
-    show version diffs (file contents)
-    api
-        files.rejstry.com/<registry>/<package>/[<version>/[<path>...]]
-            no version lists all package versions
-            http://localhost:8080/registry.npmjs.com/react/16.8.0/
-
+    http://localhost:8080/package/node-sass
 
  -->
 
