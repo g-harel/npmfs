@@ -1,9 +1,48 @@
 {{define "title"}}
-    versions
+    {{.Package}} - versions
+{{end}}
+
+{{define "style"}}
+    <style>
+        .items {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 2rem 0;
+            justify-content: center;
+        }
+
+        .item {
+            background-color: #ececec;
+            border-radius: 3px;
+            border: 1px solid transparent;
+            box-sizing: border-box;
+            font-weight: 500;
+            margin: 1rem;
+            padding: 1rem 1.5rem;
+            transition: border-color 0.1s ease;
+        }
+
+        .item.latest {
+            background-color: #fd4;
+        }
+
+        .item:hover {
+            border-color: #888;
+        }
+    </style>
 {{end}}
 
 {{define "body"}}
-<pre>
-    versions
-</pre>
+    <h1 class="title">
+        <a class="package" href="/package/{{.Package}}">{{.Package}}</a>
+        versions
+    </h1>
+    <div class="items">
+        {{$latest := .Latest}}
+        {{range $version := .Versions}}
+            <a class="item {{if eq $latest $version}}latest{{end}}" href="./{{$version}}/">
+                {{$version}}
+            </a>
+        {{end}}
+    </div>
 {{end}}
