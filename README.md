@@ -1,5 +1,7 @@
 <!--
 
+http://localhost:8080/package/node-sass
+
 registries
     https://registry.npmjs.com/
     https://registry.yarnpkg.com/
@@ -21,8 +23,10 @@ reference
     styling
         https://highlightjs.org/
         https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details
-features
-    http://localhost:8080/package/node-sass
+    investigate
+        https://github.com/tdewolff/minify#templates
+        https://github.com/gobuffalo/packr
+        track popularity
 
  -->
 

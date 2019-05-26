@@ -34,7 +34,7 @@ func Package() http.Handler {
 
 		// Enforce trailing slash after package name (for relative links).
 		if len(parts) < 2 {
-			http.Redirect(w, r, r.URL.Path+"/", http.StatusFound)
+			http.Redirect(w, r, r.URL.Path+"/", http.StatusMovedPermanently)
 			return
 		}
 
@@ -48,7 +48,7 @@ func Package() http.Handler {
 
 		// Enforce trailing slash after package version (for relative links).
 		if len(parts) < 3 {
-			http.Redirect(w, r, r.URL.Path+"/", http.StatusFound)
+			http.Redirect(w, r, r.URL.Path+"/", http.StatusMovedPermanently)
 			return
 		}
 

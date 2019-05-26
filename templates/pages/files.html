@@ -1,9 +1,31 @@
 {{define "title"}}
-    {{.Package}} - {{.Version}}
+    {{.Package}}@{{.Version}}
 {{end}}
 
 {{define "style"}}
     <style>
+        .files {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem 0;
+        }
+
+        .file {
+            background-color: #ececec;
+            border-radius: 3px;
+            border: 1px solid transparent;
+            box-sizing: border-box;
+            flex-grow: 1;
+            font-weight: 500;
+            margin: 1rem;
+            padding: 1rem 1.5rem;
+            transition: border-color 0.1s ease;
+        }
+
+        .file:hover {
+            border-color: #888;
+        }
     </style>
 {{end}}
 
@@ -12,7 +34,11 @@
         <a class="package" href="/package/{{.Package}}">{{.Package}}</a>
         {{.Version}}
     </h1>
-    {{range $file := .Files}}
-        <pre>{{$file}}</pre>
-    {{end}}
+    <div class="files">
+        {{range $file := .Files}}
+            <a class="file" href="./{{$file}}">
+                {{$file}}
+            </a>
+        {{end}}
+    </div>
 {{end}}
