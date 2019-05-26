@@ -5,26 +5,19 @@
 {{define "style"}}
     <style>
         .files {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 2rem 0;
+            margin: 4.5rem 0;
+            border-radius: 3px;
+            background-color: #ececec;
+            padding: 1rem 0;
         }
 
         .file {
-            background-color: #ececec;
-            border-radius: 3px;
-            border: 1px solid transparent;
-            box-sizing: border-box;
-            flex-grow: 1;
             font-weight: 500;
-            margin: 1rem;
-            padding: 1rem 1.5rem;
-            transition: border-color 0.1s ease;
+            padding: 0 1rem;
         }
 
-        .file:hover {
-            border-color: #888;
+        .file summary {
+            padding: 1rem;
         }
     </style>
 {{end}}
@@ -36,9 +29,14 @@
     </h1>
     <div class="files">
         {{range $file := .Files}}
-            <a class="file" href="./{{$file}}">
-                {{$file}}
-            </a>
+            <details class="file" open>
+                <summary>
+                    <a href="./{{$file}}">
+                        {{$file}}
+                    </a>
+                </summary>
+                test
+            </details>
         {{end}}
     </div>
 {{end}}
