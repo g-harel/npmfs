@@ -5,15 +5,14 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"time"
 )
 
 // PackageContents fetches the data for a package's contents.
 func PackageContents(registry, name, version string) (io.ReadCloser, error) {
 	// TODO
-	return os.Open("test.tgz")
-	return os.Open("react0.0.0.tgz")
+	// return os.Open("test.tgz")
+	// return os.Open("react0.0.0.tgz")
 	// TODO
 
 	client := &http.Client{Timeout: 10 * time.Second}
@@ -36,18 +35,18 @@ func PackageContents(registry, name, version string) (io.ReadCloser, error) {
 // Latest version is also returned in the second position.
 func PackageVersions(registry, name string) ([]string, string, error) {
 	// TODO
-	return []string{
-		"1.1.0-beta",
-		"1.1.0-alpha",
-		"1.0.0",
-		"0.0.0",
-		"0.0.0",
-		"0.0.0",
-		"0.0.0",
-		"0.0.0",
-		"0.0.0",
-		"0.0.0",
-	}, "1.0.0", nil
+	// return []string{
+	// 	"1.1.0-beta",
+	// 	"1.1.0-alpha",
+	// 	"1.0.0",
+	// 	"0.0.0",
+	// 	"0.0.0",
+	// 	"0.0.0",
+	// 	"0.0.0",
+	// 	"0.0.0",
+	// 	"0.0.0",
+	// 	"0.0.0",
+	// }, "1.0.0", nil
 	// TODO
 
 	client := &http.Client{Timeout: 10 * time.Second}

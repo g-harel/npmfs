@@ -1,5 +1,7 @@
 FROM golang:1.12-alpine AS server
 
+RUN apk add git
+
 WORKDIR /rejstry
 
 COPY . .

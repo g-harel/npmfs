@@ -40,21 +40,12 @@
     </style>
 {{end}}
 
-{{define "indent"}}
-    {{range $_ := .}}
-        &nbsp;
-        &nbsp;
-        &nbsp;
-        &nbsp;
-    {{end}}
-{{end}}
-
 {{define "file"}}
     {{range $name, $info := .}}
         {{if ne (len $info.Children) 0}}
             <details class="dir">
                 <summary class="file">
-                    {{template "indent" $info.Depth}}
+                    <span style="padding: 0 {{$info.Depth}}em;"></span>
                     {{$name}}
                 </summary>
                 {{template "file" $info.Children}}
@@ -62,7 +53,7 @@
         {{end}}
         {{if eq (len $info.Children) 0}}
             <a class="file" href="./{{$name}}">
-                {{template "indent" $info.Depth}}
+                <span style="padding: 0 {{$info.Depth}}em;"></span>
                 {{$name}}
             </a>
         {{end}}
