@@ -5,21 +5,68 @@
 {{define "style"}}
     <style>
         .files {
+            font-weight: 500;
             margin: 4.5rem 0;
             border-radius: 3px;
             background-color: #ececec;
-            padding: 1rem 0;
         }
 
         .file {
-            font-weight: 500;
-            padding: 0 1rem;
+            border-radius: 3px;
+            display: block;
+            padding: 1rem 1.5rem;
+            transition: background-color 0.1s ease;
         }
 
-        .file summary {
-            padding: 1rem;
+        .file:hover {
+            background-color: #ddd;
+        }
+
+        summary.file {
+            color: #888;
+            user-select: none;
+            -moz-user-select: -moz-none;
+        }
+
+        summary.file::after {
+            content: "+";
+            float: right;
+            opacity: 0.5;
+        }
+
+        details.dir[open] > summary.file::after {
+            content: "-";
         }
     </style>
+{{end}}
+
+{{define "indent"}}
+    {{range $_ := .}}
+        &nbsp;
+        &nbsp;
+        &nbsp;
+        &nbsp;
+    {{end}}
+{{end}}
+
+{{define "file"}}
+    {{range $name, $info := .}}
+        {{if ne (len $info.Children) 0}}
+            <details class="dir">
+                <summary class="file">
+                    {{template "indent" $info.Depth}}
+                    {{$name}}
+                </summary>
+                {{template "file" $info.Children}}
+            </details>
+        {{end}}
+        {{if eq (len $info.Children) 0}}
+            <a class="file" href="./{{$name}}">
+                {{template "indent" $info.Depth}}
+                {{$name}}
+            </a>
+        {{end}}
+    {{end}}
 {{end}}
 
 {{define "body"}}
@@ -28,15 +75,6 @@
         {{.Version}}
     </h1>
     <div class="files">
-        {{range $file := .Files}}
-            <details class="file" open>
-                <summary>
-                    <a href="./{{$file}}">
-                        {{$file}}
-                    </a>
-                </summary>
-                test
-            </details>
-        {{end}}
+        {{template "file" .Files}}
     </div>
 {{end}}

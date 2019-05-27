@@ -12,6 +12,7 @@ import (
 // PackageContents fetches the data for a package's contents.
 func PackageContents(registry, name, version string) (io.ReadCloser, error) {
 	// TODO
+	return os.Open("test.tgz")
 	return os.Open("react0.0.0.tgz")
 	// TODO
 

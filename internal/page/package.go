@@ -105,6 +105,12 @@ func packageVersions(name string) http.HandlerFunc {
 	})
 }
 
+type pkgFile struct {
+	// Depth is expressed as a slice of the desired length to facilitate ranging in the template.
+	Depth    []int
+	Children map[string]pkgFile
+}
+
 func packageFiles(name, version string) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tmpl, err := template.ParseFiles(
@@ -127,9 +133,9 @@ func packageFiles(name, version string) http.HandlerFunc {
 		defer pkg.Close()
 
 		// Extract files from package contents.
-		files := []string{}
+		fileList := []string{}
 		err = tarball.Extract(pkg, func(name string, contents io.Reader) error {
-			files = append(files, strings.TrimPrefix(name, "package/"))
+			fileList = append(fileList, strings.TrimPrefix(name, "package/"))
 			return nil
 		})
 		if err != nil {
@@ -137,11 +143,30 @@ func packageFiles(name, version string) http.HandlerFunc {
 			log.Printf("ERROR extract files from package contents: %v", err)
 			return
 		}
+		sort.Strings(fileList)
+
+		// Create tree structure from full file paths.
+		files := map[string]pkgFile{}
+		for _, filePath := range fileList {
+			temp := files
+			for i, part := range strings.Split(filePath, "/") {
+				if part == "" {
+					continue
+				}
+				if _, ok := temp[part]; !ok {
+					temp[part] = pkgFile{
+						Depth:    make([]int, i),
+						Children: map[string]pkgFile{},
+					}
+				}
+				temp = temp[part].Children
+			}
+		}
 
 		context := &struct {
 			Package string
 			Version string
-			Files   []string
+			Files   map[string]pkgFile
 		}{
 			Package: name,
 			Version: version,
