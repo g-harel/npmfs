@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/g-harel/rejstry/internal/page"
@@ -45,7 +46,7 @@ func main() {
 		vars := mux.Vars(r)
 		name := vars["name"]
 
-		page.PackageVersions(w, r, name)
+		page.Versions(w, r, name)
 	}))
 
 	r.Handle("/package/{name}/{version}", redirect("/"))
@@ -54,7 +55,16 @@ func main() {
 		name := vars["name"]
 		version := vars["version"]
 
-		page.PackageFiles(w, r, name, version)
+		page.Files(w, r, name, version)
+	}))
+
+	r.PathPrefix("/package/{name}/{version}/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		name := vars["name"]
+		version := vars["version"]
+		path := strings.Join(strings.Split(r.URL.Path, "/")[4:], "/")
+
+		page.File(w, r, name, version, path)
 	}))
 
 	// Static files.

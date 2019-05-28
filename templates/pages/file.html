@@ -1,0 +1,94 @@
+{{define "title"}}
+    {{.Package}}@{{.Version}}{{.Path}}
+{{end}}
+
+{{define "style"}}
+    <style>
+        .info {
+            background-color: #f6f6f6;
+            border-bottom: 0;
+            border-radius: 3px 3px 0 0;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+            font-weight: 500;
+            margin: 2rem 0 0;
+            padding: 1rem;
+        }
+
+        .info .back {
+            color: #666;
+            padding: 0.3rem;
+        }
+
+        .info .sep::after {
+            color: #666;
+            content: ">";
+            font-weight: 500;
+            padding: 0.3rem;
+        }
+
+        .file {
+            background-color: #f8f8f8;
+            border-radius: 0 0 3px 3px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+            display: table;
+            font-size: 0.9em;
+            overflow-y: scroll;
+            padding: 0.5rem 0;
+            width: 100%;
+        }
+
+        .line {
+            display: table-row;
+            line-height: 1.5;
+        }
+
+        .number {
+            color: #bbb;
+            display: table-cell;
+            text-align: right;
+            padding: 0 2rem 0 1rem;
+        }
+
+        .number pre {
+            user-select: none;
+            -moz-user-select: -moz-none;
+        }
+
+        .content {
+            display: table-cell;
+            overflow-wrap: break-word;
+            padding-right: 0.5rem;
+            width: 100%;
+            word-break: break-word;
+            word-wrap: break-word;
+        }
+    </style>
+{{end}}
+
+{{define "body"}}
+    <div class="info">
+        <a class="back" href="/package/{{.Package}}">{{.Package}}</a>
+        <span class="sep"></span>
+        <a class="back" href="/package/{{.Package}}/{{.Version}}">{{.Version}}</a>
+        <span class="sep"></span>
+        &nbsp;{{.Path}}
+    </div>
+    <div class="file">
+        {{range $i, $line := .Lines}}
+            {{if ne $i 0}}
+                <div class="line" id="L{{$i}}">
+                    <a class="number" href="#L{{$i}}">
+                        <pre>
+                            {{- $i -}}
+                        </pre>
+                    </a>
+                    <pre class="content">
+                        {{- $line -}}
+                    </pre>
+                </div>
+            {{end}}
+        {{end}}
+    </div>
+{{end}}

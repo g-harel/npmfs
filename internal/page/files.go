@@ -9,53 +9,10 @@ import (
 	"strings"
 
 	"github.com/g-harel/rejstry/internal/registry"
-	"github.com/g-harel/rejstry/internal/semver"
 	"github.com/g-harel/rejstry/internal/tarball"
 )
 
-func PackageVersions(w http.ResponseWriter, r *http.Request, name string) {
-	tmpl, err := template.ParseFiles(
-		"templates/layout.html",
-		"templates/pages/versions.html",
-	)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf("ERROR parse template: %v", err)
-		return
-	}
-
-	versions, latest, err := registry.PackageVersions("registry.npmjs.com", name)
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		log.Printf("ERROR fetch package versions: %v", err)
-		return
-	}
-	sort.Sort(semver.Sort(versions))
-
-	context := &struct {
-		Package  string
-		Versions []string
-		Latest   string
-	}{
-		Package:  name,
-		Versions: versions,
-		Latest:   latest,
-	}
-
-	err = tmpl.Execute(w, context)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf("ERROR execute template: %v", err)
-		return
-	}
-}
-
-type pkgFile struct {
-	Depth    int
-	Children map[string]pkgFile
-}
-
-func PackageFiles(w http.ResponseWriter, r *http.Request, name, version string) {
+func Files(w http.ResponseWriter, r *http.Request, name, version string) {
 	tmpl, err := template.ParseFiles(
 		"templates/layout.html",
 		"templates/pages/files.html",
@@ -88,17 +45,24 @@ func PackageFiles(w http.ResponseWriter, r *http.Request, name, version string) 
 	}
 	sort.Strings(fileList)
 
+	type pkgFile struct {
+		Depth    int
+		Path     string
+		Children map[string]pkgFile
+	}
+
 	// Create tree structure from full file paths.
 	files := map[string]pkgFile{}
 	for _, filePath := range fileList {
 		temp := files
 		for i, part := range strings.Split(filePath, "/") {
 			if part == "" {
-				continue
+				break
 			}
 			if _, ok := temp[part]; !ok {
 				temp[part] = pkgFile{
 					Depth:    i,
+					Path:     filePath,
 					Children: map[string]pkgFile{},
 				}
 			}

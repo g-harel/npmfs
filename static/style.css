@@ -11,7 +11,7 @@ body {
     min-height: 100vh;
     overflow-x: hidden;
     transition: opacity 0.1s ease-in;
-    width: 700px;
+    width: 888px;
 }
 
 a {
@@ -22,6 +22,7 @@ a {
 
 pre {
     font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', 'Courier', 'monospace';
+    margin: 0;
 }
 
 header {
