@@ -4,14 +4,93 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>rejstry - {{template "title" .}}</title>
+    <style>
+        html {
+            background-color: #fafafa;
+            color: #222;
+            font-family: 'Fira Sans', 'sans-serif';
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            margin: 0 auto;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: opacity 0.1s ease-in;
+            width: 888px;
+        }
+
+        a {
+            color: inherit;
+            outline: none;
+            text-decoration: none;
+        }
+
+        pre {
+            font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', 'Courier', 'monospace';
+            margin: 0;
+        }
+
+        header {
+            padding: 2.5rem 0 2.5rem;
+            text-align: center;
+            user-select: none;
+            -moz-user-select: -moz-none;
+        }
+
+        header .logo {
+            height: 80px;
+            width: 180px;
+        }
+
+        main {
+            flex-grow: 1;
+        }
+
+        main > h1.title {
+            padding: 1rem 0 0;
+            text-align: center;
+            margin-top: 0;
+        }
+
+        main > h1.title > a.package {
+            border-radius: 4px;
+            border: 2px solid #fd4;
+            display: inline;
+            font-size: inherit;
+            margin: 0 0.5rem;
+            padding: 0.6rem 1rem;
+        }
+
+        footer {
+            color: #666;
+            font-weight: 500;
+            padding: 2rem 0 0.5rem;
+            text-align: center;
+            user-select: none;
+            -moz-user-select: -moz-none;
+        }
+
+        footer a {
+            margin: 0 0.5rem;
+            padding: 0.5rem;
+        }
+
+        footer .logo-name {
+            display: inline-block;
+            opacity: 0.2;
+            padding: 1.5rem;
+            width: 80px;
+        }
+    </style>
     {{template "style" .}}
-    <link href="/static/style.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Fira+Sans:400,500,600,700,800,900&display=swap" rel="stylesheet">
 </head>
 <body style="opacity: 0;" onload="document.body.style.opacity = 1;">
     <header>
         <a href="/">
-            <img class="logo" src="/static/logo.svg" alt="logo">
+            <img class="logo" src="/assets/logo.svg" alt="logo">
         </a>
     </header>
     <main>
@@ -22,7 +101,7 @@
         <a href="https://github.com/g-harel/rejstry">source</a>
         <a href="mailto:gabrielj.harel@gmail.com">contact</a>
         <br>
-        <img class="logo-name" src="/static/logo-name.svg" alt="logo-name">
+        <img class="logo-name" src="/assets/logo-name.svg" alt="logo-name">
     </footer>
 </body>
 </html>

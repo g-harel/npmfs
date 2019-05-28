@@ -13,7 +13,6 @@
 
         .file {
             border-radius: 3px;
-            display: block;
             padding: 1rem 1.5rem;
             transition: background-color 0.1s ease;
         }
@@ -22,20 +21,13 @@
             background-color: #ddd;
         }
 
+        a.file {
+            display: block;
+        }
+
         summary.file {
-            color: #888;
             user-select: none;
             -moz-user-select: -moz-none;
-        }
-
-        summary.file::after {
-            content: "+";
-            float: right;
-            opacity: 0.5;
-        }
-
-        details.dir[open] > summary.file::after {
-            content: "-";
         }
     </style>
 {{end}}

@@ -30,4 +30,4 @@ reference
 
  -->
 
-![](./static/logo.svg)
+![](./assets/logo.svg)

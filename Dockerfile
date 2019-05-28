@@ -20,6 +20,6 @@ RUN git config --global user.name "rejstry"
 
 COPY --from=server /rejstry/app .
 COPY --from=server /rejstry/templates templates
-COPY --from=server /rejstry/static static
+COPY --from=server /rejstry/assets assets
 
 CMD ./app

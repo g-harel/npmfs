@@ -67,9 +67,9 @@ func main() {
 		page.File(w, r, name, version, path)
 	}))
 
-	// Static files.
-	static := http.FileServer(http.Dir("static"))
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", static))
+	// Static assets.
+	assets := http.FileServer(http.Dir("assets"))
+	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", assets))
 
 	// Take port number from environment if provided.
 	port := os.Getenv("PORT")
