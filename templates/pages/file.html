@@ -8,10 +8,11 @@
             background-color: #f6f6f6;
             border-radius: 3px 3px 0 0;
             border: 1px solid #ddd;
-            border-bottom: 0;
             font-weight: 500;
             margin: 2rem 0 0;
             padding: 1rem;
+            position: sticky;
+            top: -2px;
         }
 
         .info .back {
@@ -30,6 +31,7 @@
             background-color: #f8f8f8;
             border-radius: 0 0 3px 3px;
             border: 1px solid #ddd;
+            border-top: 0;
             box-sizing: border-box;
             display: table;
             font-size: 0.9em;
@@ -37,24 +39,31 @@
             padding: 0.5rem 0;
         }
 
-        .line {
+        .file .line {
             display: table-row;
             line-height: 1.3;
         }
 
-        .number {
+        .file .line .hidden-id-target {
+            display: block;
+            position: relative;
+            top: -63px;
+            visibility: hidden
+        }
+
+        .file .line .number {
             color: #bbb;
             display: table-cell;
             text-align: right;
             padding: 0 2rem 0 1rem;
         }
 
-        .number pre {
+        .file .line .number pre {
             user-select: none;
             -moz-user-select: -moz-none;
         }
 
-        .content {
+        .file .line .content {
             display: table-cell;
             padding-right: 0.5rem;
             white-space: pre-wrap;
@@ -75,7 +84,8 @@
     <div class="file">
         {{range $i, $line := .Lines}}
             {{if ne $i 0}}
-                <div class="line" id="L{{$i}}">
+                <div class="line">
+                    <div class="hidden-id-target" id="L{{$i}}"></div>
                     <a class="number" href="#L{{$i}}">
                         <pre>
                             {{- $i -}}
