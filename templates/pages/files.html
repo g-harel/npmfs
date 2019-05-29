@@ -11,21 +11,21 @@
             background-color: #ececec;
         }
 
-        .file {
+        .files .name {
             border-radius: 3px;
             padding: 1rem 1.5rem;
             transition: background-color 0.1s ease;
         }
 
-        .file:hover {
+        .files .name:hover {
             background-color: #ddd;
         }
 
-        a.file {
+        .files a.name {
             display: block;
         }
 
-        summary.file {
+        .files summary.name {
             user-select: none;
             -moz-user-select: -moz-none;
         }
@@ -35,13 +35,13 @@
 {{define "file"}}
     {{range $name, $info := .}}
         {{if eq (len $info.Children) 0}}
-            <a class="file" href="./{{$info.Path}}">
+            <a class="name" href="./{{$info.Path}}">
                 <span style="padding: 0 {{$info.Depth}}em;"></span>
                 {{$name}}
             </a>
         {{else}}
             <details class="dir">
-                <summary class="file">
+                <summary class="name">
                     <span style="padding: 0 {{$info.Depth}}em;"></span>
                     {{$name}}
                 </summary>
