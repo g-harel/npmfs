@@ -4,26 +4,16 @@
 
 {{define "style"}}
     <style>
-        .file-info a {
-            color: #888;
-            padding: 0.3rem;
-        }
-
-        .file-info .sep::after {
-            color: #888;
-            content: ">";
-            padding: 0.3rem;
-        }
     </style>
 {{end}}
 
 {{define "body"}}
-    <div class="file-info">
+    <div class="info">
         <a href="/package/{{.Package}}">{{.Package}}</a>
-        <span class="sep"></span>
+        &nbsp;/&nbsp;
         <a href="/package/{{.Package}}/{{.Version}}">{{.Version}}</a>
-        <span class="sep"></span>
-        &nbsp;{{.Path}}
+        &nbsp;/&nbsp;
+        {{.Path}}
     </div>
     <div class="file">
         {{range $i, $line := .Lines}}

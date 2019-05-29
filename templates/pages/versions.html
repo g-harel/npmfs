@@ -4,44 +4,36 @@
 
 {{define "style"}}
     <style>
-        .items {
-            display: flex;
-            flex-wrap: wrap;
-            padding: 2rem 0;
-            justify-content: center;
+        .file .line {
+            display: block;
+            padding: 0 1rem;
         }
 
-        .item {
-            background-color: #ececec;
-            border-radius: 3px;
-            border: 1px solid transparent;
-            box-sizing: border-box;
-            font-weight: 500;
-            margin: 1rem;
-            padding: 1rem 1.5rem;
-            transition: border-color 0.1s ease;
-        }
-
-        .item.latest {
+        .file .line .latest {
             background-color: #fd4;
-        }
+            border-radius: 3px;
+            content: "latest";
+            margin: 0 0 0 0.5rem;
+            padding: 0.1rem 0.2rem 0 0.2rem;
 
-        .item:hover {
-            border-color: #888;
+            /* to remove text decoration from parent */
+            display: inline-block;
         }
     </style>
 {{end}}
 
 {{define "body"}}
-    <h1 class="title">
-        <a class="package" href="/package/{{.Package}}">{{.Package}}</a>
-        versions
-    </h1>
-    <div class="items">
+    <div class="info">
+        {{.Package}}
+    </div>
+    <div class="file">
         {{$latest := .Latest}}
         {{range $version := .Versions}}
-            <a class="item {{if eq $latest $version}}latest{{end}}" href="./{{$version}}/">
-                {{$version}}
+            <a class="line" href="./{{$version}}/">
+                {{- $version -}}
+                {{- if eq $latest $version -}}
+                    <span class="latest">latest</span>
+                {{end}}
             </a>
         {{end}}
     </div>
