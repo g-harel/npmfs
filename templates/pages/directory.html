@@ -1,0 +1,59 @@
+<!--
+
+type Context struct {
+    Package     string
+    Version     string
+    Path        []string
+    Directories []string
+    Files       []string
+}
+
+-->
+
+{{define "title"}}
+    {{.Package}}@{{.Version}} - {{.Path}}
+{{end}}
+
+{{define "style"}}
+    <style>
+        .file .line {
+            padding: 0 1rem;
+            display: block;
+        }
+
+        .file.dirs {
+            margin-bottom: 0;
+            border-radius: 0;
+            border-bottom: 0;
+        }
+    </style>
+{{end}}
+
+{{define "body"}}
+    <div class="info">
+        <a href="/package/{{.Package}}">{{.Package}}</a>
+        &nbsp;/&nbsp;
+        <a href="/package/{{.Package}}/{{.Version}}">{{.Version}}</a>
+        {{range $i, $part := .Path}}
+            &nbsp;/&nbsp;
+            <!-- TODO link -->
+            {{$part}}
+        {{end}}
+    </div>
+    <div class="file dirs">
+        <!-- TODO empty -->
+        {{range $i, $name := .Directories}}
+            <a class="line" href="./{{$name}}/">
+                {{$name}}
+            </a>
+        {{end}}
+    </div>
+    <div class="file files">
+        <!-- TODO empty -->
+        {{range $i, $name := .Files}}
+            <a class="line" href="./{{$name}}">
+                {{$name}}
+            </a>
+        {{end}}
+    </div>
+{{end}}

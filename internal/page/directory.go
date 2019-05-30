@@ -12,10 +12,24 @@ import (
 	"github.com/g-harel/rejstry/internal/tarball"
 )
 
-func Files(w http.ResponseWriter, r *http.Request, name, version string) {
+// Sort and de-duplication input slice.
+func cleanup(s []string) []string {
+	m := map[string]interface{}{}
+	for _, item := range s {
+		m[item] = true
+	}
+	out := []string{}
+	for key := range m {
+		out = append(out, key)
+	}
+	sort.Strings(out)
+	return out
+}
+
+func Directory(w http.ResponseWriter, r *http.Request, name, version, path string) {
 	tmpl, err := template.ParseFiles(
 		"templates/layout.html",
-		"templates/pages/files.html",
+		"templates/pages/directory.html",
 	)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -32,10 +46,20 @@ func Files(w http.ResponseWriter, r *http.Request, name, version string) {
 	}
 	defer pkg.Close()
 
-	// Extract files from package contents.
-	fileList := []string{}
+	// Extract files and directories at the given path.
+	dirs := []string{}
+	files := []string{}
 	err = tarball.Extract(pkg, func(name string, contents io.Reader) error {
-		fileList = append(fileList, strings.TrimPrefix(name, "package/"))
+		filePath := strings.TrimPrefix(name, "package/")
+		if strings.HasPrefix(filePath, path) {
+			filePath := strings.TrimPrefix(filePath, path)
+			pathParts := strings.Split(filePath, "/")
+			if len(pathParts) == 1 {
+				files = append(files, pathParts[0])
+			} else {
+				dirs = append(dirs, pathParts[0])
+			}
+		}
 		return nil
 	})
 	if err != nil {
@@ -43,41 +67,19 @@ func Files(w http.ResponseWriter, r *http.Request, name, version string) {
 		log.Printf("ERROR extract files from package contents: %v", err)
 		return
 	}
-	sort.Strings(fileList)
-
-	type pkgFile struct {
-		Depth    int
-		Path     string
-		Children map[string]pkgFile
-	}
-
-	// Create tree structure from full file paths.
-	files := map[string]pkgFile{}
-	for _, filePath := range fileList {
-		temp := files
-		for i, part := range strings.Split(filePath, "/") {
-			if part == "" {
-				break
-			}
-			if _, ok := temp[part]; !ok {
-				temp[part] = pkgFile{
-					Depth:    i,
-					Path:     filePath,
-					Children: map[string]pkgFile{},
-				}
-			}
-			temp = temp[part].Children
-		}
-	}
 
 	context := &struct {
-		Package string
-		Version string
-		Files   map[string]pkgFile
+		Package     string
+		Version     string
+		Path        []string
+		Directories []string
+		Files       []string
 	}{
-		Package: name,
-		Version: version,
-		Files:   files,
+		Package:     name,
+		Version:     version,
+		Path:        strings.Split(path, "/"),
+		Directories: cleanup(dirs),
+		Files:       cleanup(files),
 	}
 
 	err = tmpl.Execute(w, context)

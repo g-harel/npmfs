@@ -1,10 +1,23 @@
+<!--
+
+// First line must be empty and will not be displayed.
+// Line index is used as line number.
+type Context struct {
+    Package string
+    Version string
+    Path    string
+    Lines   []string
+}
+
+-->
+
 {{define "title"}}
+    <!-- TODO -->
     {{.Package}}@{{.Version}} - {{.Path}}
 {{end}}
 
 {{define "style"}}
-    <style>
-    </style>
+    <style></style>
 {{end}}
 
 {{define "body"}}

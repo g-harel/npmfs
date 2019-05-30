@@ -101,11 +101,6 @@
             top: -2px;
         }
 
-        .info + .file {
-            border-top: 0;
-            border-radius: 0 0 3px 3px;
-        }
-
         .file {
             background-color: #f8f8f8;
             border: 1px solid #ddd;
@@ -116,6 +111,11 @@
             margin: 0 0 2rem;
             padding: 0.5rem 0;
             width: 100%;
+        }
+
+        .info + .file {
+            border-top: 0;
+            border-radius: 0 0 3px 3px;
         }
 
         .file .line {
@@ -135,14 +135,14 @@
             color: #bbb;
             display: table-cell;
             text-align: right;
-            padding: 0 2rem 0 1rem;
+            padding: 0 1rem;
             user-select: none;
             -moz-user-select: -moz-none;
         }
 
         .file .line .content {
             display: table-cell;
-            padding-right: 0.5rem;
+            padding: 0 0.5rem;
             white-space: pre-wrap;
             width: 100%;
             word-break: break-word;

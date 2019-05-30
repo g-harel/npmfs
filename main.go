@@ -41,6 +41,7 @@ func main() {
 		})
 	})
 
+	// Show package versions.
 	r.Handle("/package/{name}", redirect("/"))
 	r.Handle("/package/{name}/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -49,22 +50,20 @@ func main() {
 		page.Versions(w, r, name)
 	}))
 
+	// Show package contents.
 	r.Handle("/package/{name}/{version}", redirect("/"))
-	r.Handle("/package/{name}/{version}/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		name := vars["name"]
-		version := vars["version"]
-
-		page.Files(w, r, name, version)
-	}))
-
 	r.PathPrefix("/package/{name}/{version}/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		name := vars["name"]
 		version := vars["version"]
 		path := strings.Join(strings.Split(r.URL.Path, "/")[4:], "/")
 
-		page.File(w, r, name, version, path)
+		// Show a directory if the path ends with a path delimiter.
+		if path[len(path)-1] == '/' {
+			page.Directory(w, r, name, version, path)
+		} else {
+			page.File(w, r, name, version, path)
+		}
 	}))
 
 	// Static assets.
