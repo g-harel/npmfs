@@ -11,20 +11,36 @@ type Context struct {
 -->
 
 {{define "title"}}
-    {{.Package}}@{{.Version}} - {{.Path}}
+    {{.Package}}
 {{end}}
 
 {{define "style"}}
     <style>
-        .file .line {
-            padding: 0 1rem;
-            display: block;
+        .file .line img.number {
+            height: 1em;
+            opacity: 0.3;
+            transform: translate(1px, 2px);
+        }
+
+        .file .line .content {
+            padding-left: 0;
         }
 
         .file.dirs {
-            margin-bottom: 0;
             border-radius: 0;
-            border-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        /* Round bottom corners if there are no files in the directory. */
+        .file.dirs:last-of-type {
+            border-bottom-left-radius: 3px;
+            border-bottom-right-radius: 3px;
+        }
+
+        .file.files {
+            border-top: 0;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
         }
     </style>
 {{end}}
@@ -32,28 +48,42 @@ type Context struct {
 {{define "body"}}
     <div class="info">
         <a href="/package/{{.Package}}">{{.Package}}</a>
-        &nbsp;/&nbsp;
-        <a href="/package/{{.Package}}/{{.Version}}">{{.Version}}</a>
+        &nbsp;>&nbsp;
+        {{if gt (len .Path) 1}}
+            <a href="/package/{{.Package}}/{{.Version}}">{{.Version}}</a>
+        {{else}}
+            {{.Version}}
+        {{end}}
         {{range $i, $part := .Path}}
-            &nbsp;/&nbsp;
-            <!-- TODO link -->
-            {{$part}}
+            {{if ne $part ""}}
+                &nbsp;>&nbsp;
+                <!-- TODO link -->
+                {{$part}}
+            {{end}}
         {{end}}
     </div>
-    <div class="file dirs">
-        <!-- TODO empty -->
-        {{range $i, $name := .Directories}}
-            <a class="line" href="./{{$name}}/">
-                {{$name}}
-            </a>
-        {{end}}
-    </div>
-    <div class="file files">
-        <!-- TODO empty -->
-        {{range $i, $name := .Files}}
-            <a class="line" href="./{{$name}}">
-                {{$name}}
-            </a>
-        {{end}}
-    </div>
+    {{if ne (len .Directories) 0}}
+        <div class="file dirs">
+            {{range $i, $name := .Directories}}
+                <div class="line">
+                    <img src="/assets/icon-folder.svg" class="number">
+                    <a class="content" href="./{{$name}}/">
+                        {{- $name -}}
+                    </a>
+                </div>
+            {{end}}
+        </div>
+    {{end}}
+    {{if ne (len .Files) 0}}
+        <div class="file files">
+            {{range $i, $name := .Files}}
+                <div class="line">
+                    <img src="/assets/icon-file.svg" class="number">
+                    <a class="content" href="./{{$name}}">
+                        {{- $name -}}
+                    </a>
+                </div>
+            {{end}}
+        </div>
+    {{end}}
 {{end}}

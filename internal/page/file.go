@@ -57,12 +57,12 @@ func File(w http.ResponseWriter, r *http.Request, name, version, path string) {
 	context := &struct {
 		Package string
 		Version string
-		Path    string
+		Path    []string
 		Lines   []string
 	}{
 		Package: name,
 		Version: version,
-		Path:    path,
+		Path:    strings.Split(path, "/"),
 		Lines:   strings.Split("\n"+file.String(), "\n"),
 	}
 

@@ -5,15 +5,14 @@
 type Context struct {
     Package string
     Version string
-    Path    string
+    Path    []string
     Lines   []string
 }
 
 -->
 
 {{define "title"}}
-    <!-- TODO -->
-    {{.Package}}@{{.Version}} - {{.Path}}
+    {{.Package}}
 {{end}}
 
 {{define "style"}}
@@ -23,10 +22,15 @@ type Context struct {
 {{define "body"}}
     <div class="info">
         <a href="/package/{{.Package}}">{{.Package}}</a>
-        &nbsp;/&nbsp;
+        &nbsp;>&nbsp;
         <a href="/package/{{.Package}}/{{.Version}}">{{.Version}}</a>
-        &nbsp;/&nbsp;
-        {{.Path}}
+        {{range $i, $part := .Path}}
+            {{if ne $part ""}}
+                &nbsp;>&nbsp;
+                <!-- TODO link -->
+                {{$part}}
+            {{end}}
+        {{end}}
     </div>
     <div class="file">
         {{range $i, $line := .Lines}}
