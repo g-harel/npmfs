@@ -22,9 +22,9 @@ func (s *statusRecorder) WriteHeader(statusCode int) {
 	s.ResponseWriter.WriteHeader(statusCode)
 }
 
-func redirect(append string) http.Handler {
+func redirect(pre, post string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, r.URL.Path+"/", http.StatusMovedPermanently)
+		http.Redirect(w, r, pre+r.URL.Path+post, http.StatusFound)
 	})
 }
 
@@ -42,7 +42,7 @@ func main() {
 	})
 
 	// Show package versions.
-	r.Handle("/package/{name}", redirect("/"))
+	r.Handle("/package/{name}", redirect("", "/"))
 	r.Handle("/package/{name}/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		name := vars["name"]
@@ -51,7 +51,7 @@ func main() {
 	}))
 
 	// Show package contents.
-	r.Handle("/package/{name}/{version}", redirect("/"))
+	r.Handle("/package/{name}/{version}", redirect("", "/"))
 	r.PathPrefix("/package/{name}/{version}/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		name := vars["name"]
@@ -69,6 +69,7 @@ func main() {
 	// Static assets.
 	assets := http.FileServer(http.Dir("assets"))
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", assets))
+	r.Handle("/favicon.ico", redirect("/assets", ""))
 
 	// Take port number from environment if provided.
 	port := os.Getenv("PORT")
