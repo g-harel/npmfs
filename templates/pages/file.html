@@ -3,10 +3,11 @@
 // First line must be empty and will not be displayed.
 // Line index is used as line number.
 type Context struct {
-    Package string
-    Version string
-    Path    []string
-    Lines   []string
+    Package   string
+    Version   string
+    Path      []string
+    PathLinks []string
+    Lines     []string
 }
 
 -->
@@ -24,12 +25,19 @@ type Context struct {
         <a href="/package/{{.Package}}">{{.Package}}</a>
         &nbsp;>&nbsp;
         <a href="/package/{{.Package}}/{{.Version}}">{{.Version}}</a>
+
+        {{$links := .PathLinks}}
         {{range $i, $part := .Path}}
-            {{if ne $part ""}}
                 &nbsp;>&nbsp;
-                <!-- TODO link -->
+
+            <!-- Only make part clickable if a link is provided. -->
+            {{$link := (index $links $i)}}
+            {{if ne $link ""}}
+                <a href="{{$link}}">{{$part}}</a>
+            {{else}}
                 {{$part}}
             {{end}}
+
         {{end}}
     </div>
     <div class="file">

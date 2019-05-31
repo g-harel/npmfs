@@ -4,6 +4,7 @@ type Context struct {
     Package     string
     Version     string
     Path        []string
+    PathLinks   []string
     Directories []string
     Files       []string
 }
@@ -42,17 +43,29 @@ type Context struct {
 {{define "body"}}
     <div class="info">
         <a href="/package/{{.Package}}">{{.Package}}</a>
+
         &nbsp;>&nbsp;
+
+        <!-- Version is only clickable when not in the package root. -->
         {{if gt (len .Path) 1}}
             <a href="/package/{{.Package}}/{{.Version}}">{{.Version}}</a>
         {{else}}
             {{.Version}}
         {{end}}
+
+        {{$links := .PathLinks}}
         {{range $i, $part := .Path}}
             {{if ne $part ""}}
                 &nbsp;>&nbsp;
-                <!-- TODO link -->
-                {{$part}}
+
+                <!-- Only make part clickable if a link is provided. -->
+                {{$link := (index $links $i)}}
+                {{if ne $link ""}}
+                    <a href="{{$link}}">{{$part}}</a>
+                {{else}}
+                    {{$part}}
+                {{end}}
+
             {{end}}
         {{end}}
     </div>

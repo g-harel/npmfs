@@ -54,16 +54,19 @@ func File(w http.ResponseWriter, r *http.Request, name, version, path string) {
 		return
 	}
 
+	parts, links := breakPath(path)
 	context := &struct {
-		Package string
-		Version string
-		Path    []string
-		Lines   []string
+		Package   string
+		Version   string
+		Path      []string
+		PathLinks []string
+		Lines     []string
 	}{
-		Package: name,
-		Version: version,
-		Path:    strings.Split(path, "/"),
-		Lines:   strings.Split("\n"+file.String(), "\n"),
+		Package:   name,
+		Version:   version,
+		Path:      parts,
+		PathLinks: links,
+		Lines:     strings.Split("\n"+file.String(), "\n"),
 	}
 
 	err = tmpl.Execute(w, context)

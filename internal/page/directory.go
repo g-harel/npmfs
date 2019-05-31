@@ -5,26 +5,11 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"sort"
 	"strings"
 
 	"github.com/g-harel/rejstry/internal/registry"
 	"github.com/g-harel/rejstry/internal/tarball"
 )
-
-// Sort and de-duplication input slice.
-func cleanup(s []string) []string {
-	m := map[string]interface{}{}
-	for _, item := range s {
-		m[item] = true
-	}
-	out := []string{}
-	for key := range m {
-		out = append(out, key)
-	}
-	sort.Strings(out)
-	return out
-}
 
 func Directory(w http.ResponseWriter, r *http.Request, name, version, path string) {
 	tmpl, err := template.ParseFiles(
@@ -68,16 +53,19 @@ func Directory(w http.ResponseWriter, r *http.Request, name, version, path strin
 		return
 	}
 
+	parts, links := breakPath(path)
 	context := &struct {
 		Package     string
 		Version     string
 		Path        []string
+		PathLinks   []string
 		Directories []string
 		Files       []string
 	}{
 		Package:     name,
 		Version:     version,
-		Path:        strings.Split(path, "/"),
+		Path:        parts,
+		PathLinks:   links,
 		Directories: cleanup(dirs),
 		Files:       cleanup(files),
 	}
