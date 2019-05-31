@@ -2,14 +2,13 @@ package diff
 
 import (
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
 	"path"
 )
 
 // Compare diffs the contents of two directories.
-func Compare(a, b string) (io.Reader, error) {
+func Compare(a, b string) ([]*Patch, error) {
 	// Create temporary working directory.
 	dir, err := ioutil.TempDir("", "")
 	if err != nil {
@@ -76,5 +75,11 @@ func Compare(a, b string) (io.Reader, error) {
 	// Clean up temporary directory.
 	_ = os.RemoveAll(dir)
 
-	return out, nil
+	// Parse output text.
+	patches, err := parse(out)
+	if err != nil {
+		return nil, fmt.Errorf("parse output: %v", err)
+	}
+
+	return patches, nil
 }

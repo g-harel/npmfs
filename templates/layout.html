@@ -19,6 +19,7 @@
             margin: 0 auto;
             min-height: 100vh;
             overflow-x: hidden;
+            overflow-y: scroll;
             transition: opacity 0.1s ease-in;
             width: 888px;
         }
@@ -141,7 +142,7 @@
         }
 
         .file .line .number {
-            color: rgb(34, 34, 34, 0.3);
+            color: rgba(34, 34, 34, 0.3);
             display: table-cell;
             text-align: right;
             padding: 0 1rem;
@@ -161,35 +162,6 @@
             white-space: pre-wrap;
             width: 100%;
             word-break: break-word;
-        }
-
-        .file .line.blue {
-            background-color: #f1f8ff;
-        }
-
-        .file .line.blue .number {
-            background-color: #dbedff;
-        }
-
-        .file .line.blue .content {
-            padding-bottom: 0.5rem;
-            padding-top: 0.5rem;
-        }
-
-        .file .line.red {
-            background-color: #ffeef0;
-        }
-
-        .file .line.red .number {
-            background-color: #ffdce0;
-        }
-
-        .file .line.green {
-            background-color: #e6ffed;
-        }
-
-        .file .line.green .number {
-            background-color: #cdffd8;
         }
     </style>
 

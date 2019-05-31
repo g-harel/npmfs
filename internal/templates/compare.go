@@ -1,22 +1,17 @@
 package templates
 
 import (
+	"fmt"
 	"html/template"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"path"
+
+	"github.com/g-harel/rejstry/internal/diff"
+	"github.com/g-harel/rejstry/internal/registry"
+	"github.com/g-harel/rejstry/internal/tarball"
 )
-
-type compareLine struct {
-	NumberA int
-	NumberB int
-	Content string
-}
-
-type compareDiff struct {
-	PathA string
-	PathB string
-	Lines []compareLine
-}
 
 func Compare(w http.ResponseWriter, r *http.Request, name, versionA, versionB string) {
 	tmpl, err := template.ParseFiles(
@@ -29,35 +24,65 @@ func Compare(w http.ResponseWriter, r *http.Request, name, versionA, versionB st
 		return
 	}
 
-	println(name, versionA, versionB)
+	type downloadedDir struct {
+		version string
+		dir     string
+		err     error
+	}
+
+	dirChan := make(chan downloadedDir)
+	for _, version := range []string{versionA, versionB} {
+		go func(v string) {
+			// Create temporary working directory.
+			dir, err := ioutil.TempDir("", "")
+			if err != nil {
+				dirChan <- downloadedDir{v, "", fmt.Errorf("create temp dir: %v", err)}
+				return
+			}
+
+			// Fetch package contents for given version.
+			pkg, err := registry.PackageContents("registry.npmjs.com", name, v)
+			if err != nil {
+				dirChan <- downloadedDir{v, "", fmt.Errorf("fetch package: %v", err)}
+				return
+			}
+			defer pkg.Close()
+
+			// Write package contents to directory.
+			tarball.Extract(pkg, tarball.Downloader(dir))
+
+			dirChan <- downloadedDir{v, dir, nil}
+		}(version)
+	}
+
+	dirs := map[string]string{}
+	for i := 0; i < 2; i++ {
+		dir := <-dirChan
+		if dir.err != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			log.Printf("ERROR download package '%v': %v", dir.version, err)
+			return
+		}
+		dirs[dir.version] = dir.dir
+	}
+
+	patches, err := diff.Compare(path.Join(dirs[versionA], "package"), path.Join(dirs[versionB], "package"))
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		log.Printf("ERROR compare package contents: %v", err)
+		return
+	}
 
 	context := &struct {
 		Package  string
 		VersionA string
 		VersionB string
-		Diffs    []compareDiff
+		Patches  []*diff.Patch
 	}{
-		Package:  "react",
-		VersionA: "0.0.0",
-		VersionB: "1.0.0",
-		Diffs: []compareDiff{
-			{"/test/path", "/test/path/renamed", []compareLine{
-				{1, 1, "test"},
-				{2, 0, "testA"},
-				{0, 2, "testB"},
-				{3, 3, "test"},
-			}},
-			{"/file", "/file", []compareLine{
-				{1, 1, "a"},
-				{2, 0, "a"},
-				{3, 0, "a"},
-				{4, 2, "shared"},
-				{0, 0, "..."},
-				{0, 3, "b"},
-				{0, 4, "b"},
-				{0, 5, "b"},
-			}},
-		},
+		Package:  name,
+		VersionA: versionA,
+		VersionB: versionB,
+		Patches:  patches,
 	}
 
 	err = tmpl.Execute(w, context)
