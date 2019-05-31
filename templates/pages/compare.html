@@ -23,33 +23,45 @@ type Context struct {
 
 {{define "style"}}
     <style>
-        .file .line.blue {
+        .content .line.blue {
             background-color: #f1f8ff;
             color: rgba(34, 34, 34, 0.5);
         }
 
-        .file .line.blue .number {
+        .content .line.blue:hover {
             background-color: #dbedff;
         }
 
-        .file .line.blue .content {
+        .content .line.blue .decoration {
+            background-color: #dbedff;
+        }
+
+        .content .line.blue .data {
             padding-bottom: 0.5rem;
             padding-top: 0.5rem;
         }
 
-        .file .line.red {
+        .content .line.red {
             background-color: #ffeef0;
         }
 
-        .file .line.red .number {
+        .content .line.red:hover {
             background-color: #ffdce0;
         }
 
-        .file .line.green {
+        .content .line.red .decoration {
+            background-color: #ffdce0;
+        }
+
+        .content .line.green {
             background-color: #e6ffed;
         }
 
-        .file .line.green .number {
+        .content .line.green:hover {
+            background-color: #cdffd8;
+        }
+
+        .content .line.green .decoration {
             background-color: #cdffd8;
         }
     </style>
@@ -60,54 +72,58 @@ type Context struct {
     {{$versionA := .VersionA}}
     {{$versionB := .VersionB}}
     {{range $i, $patch := .Patches}}
+        <!-- Wrapper div to hide sticky info bar after scrolling past content. -->
         <div>
+            {{$linkA := print "/package/" $package "/" $versionA "/" $patch.PathA}}
+            {{$linkB := print "/package/" $package "/" $versionB "/" $patch.PathB}}
+
             <div class="info">
                 {{if eq $patch.PathA $patch.PathB}}
-                    <a href="/package/{{$package}}/{{$versionA}}/{{$patch.PathA}}">{{$patch.PathA}}</a>
+                    <a href="{{$linkA}}">{{$patch.PathA}}</a>
                 {{else}}
-                    <a href="/package/{{$package}}/{{$versionA}}/{{$patch.PathA}}">{{$patch.PathA}}</a>
+                    <a href="{{$linkA}}">{{$patch.PathA}}</a>
                     &nbsp;renamed&nbsp;
-                    <a href="/package/{{$package}}/{{$versionB}}/{{$patch.PathB}}">{{$patch.PathB}}</a>
+                    <a href="{{$linkB}}">{{$patch.PathB}}</a>
                 {{end}}
             </div>
-            <div class="file">
-                {{range $line := $patch.Lines}}
+            <div class="content">
+                {{range $j, $line := $patch.Lines}}
 
                     <!-- Separation between groups. -->
                     {{if and (eq $line.NumberA 0) (eq $line.NumberB 0)}}
                         <div class="line blue">
-                            <div class="hidden-id-target"></div>
-                            <div class="hidden-id-target"></div>
-                            <div class="number"></div>
-                            <div class="number"></div>
-                            <div class="content">{{$line.Content}}</div>
+                            <div class="decoration"></div>
+                            <div class="decoration"></div>
+                            <div class="data">{{$line.Content}}</div>
+                            <div class="target"></div>
+                            <div class="_link"></div>
                         </div>
                     {{else if and (ne $line.NumberA 0) (ne $line.NumberB 0)}}
                         <!-- Unchanged line. -->
                         <div class="line">
-                            <div class="hidden-id-target" id="#D{{$i}}A{{$line.NumberA}}"></div>
-                            <div class="hidden-id-target" id="#D{{$i}}B{{$line.NumberB}}"></div>
-                            <a class="number" href="#D{{$i}}A{{$line.NumberA}}">{{$line.NumberA}}</a>
-                            <a class="number" href="#D{{$i}}B{{$line.NumberB}}">{{$line.NumberB}}</a>
-                            <div class="content">{{$line.Content}}</div>
+                            <a class="decoration" href="{{$linkA}}#L{{$line.NumberA}}">{{$line.NumberA}}</a>
+                            <a class="decoration" href="{{$linkB}}#L{{$line.NumberB}}">{{$line.NumberB}}</a>
+                            <div class="data">{{$line.Content}}</div>
+                            <div class="target" id="D{{$i}}L{{$j}}"></div>
+                            <a class="link" href="#D{{$i}}L{{$j}}"></a>
                         </div>
                     {{else if and (ne $line.NumberA 0) (eq $line.NumberB 0)}}
-                        <!-- Removed line. -->
-                        <div class="line red">
-                            <div class="hidden-id-target" id="#D{{$i}}A{{$line.NumberA}}"></div>
-                            <div class="hidden-id-target"></div>
-                            <a class="number" href="#D{{$i}}A{{$line.NumberA}}">{{$line.NumberA}}</a>
-                            <div class="number"></div>
-                            <div class="content">{{$line.Content}}</div>
-                        </div>
-                    {{else if and (eq $line.NumberA 0) (ne $line.NumberB 0)}}
                         <!-- Created line. -->
                         <div class="line green">
-                            <div class="hidden-id-target" id="#D{{$i}}B{{$line.NumberB}}"></div>
-                            <div class="hidden-id-target"></div>
-                            <div class="number"></div>
-                            <a class="number" href="#D{{$i}}B{{$line.NumberB}}">{{$line.NumberB}}</a>
-                            <div class="content">{{$line.Content}}</div>
+                            <a class="decoration" href="{{$linkA}}#L{{$line.NumberA}}">{{$line.NumberA}}</a>
+                            <div class="decoration">+</div>
+                            <div class="data">{{$line.Content}}</div>
+                            <div class="target" id="D{{$i}}L{{$j}}"></div>
+                            <a class="link" href="#D{{$i}}L{{$j}}"></a>
+                        </div>
+                    {{else if and (eq $line.NumberA 0) (ne $line.NumberB 0)}}
+                        <!-- Removed line. -->
+                        <div class="line red">
+                            <div class="decoration">-</div>
+                            <a class="decoration" href="{{$linkB}}#L{{$line.NumberB}}">{{$line.NumberB}}</a>
+                            <div class="data">{{$line.Content}}</div>
+                            <div class="target" id="D{{$i}}L{{$j}}"></div>
+                            <a class="link" href="#D{{$i}}L{{$j}}"></a>
                         </div>
                     {{end}}
 

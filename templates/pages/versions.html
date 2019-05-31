@@ -14,11 +14,11 @@ type Context struct {
 
 {{define "style"}}
     <style>
-        .file .line .content {
+        .content .line .data {
             padding-left: 0;
         }
 
-        .file .line .content .latest {
+        .content .line .data .latest {
             background-color: #fd4;
             border-radius: 3px;
             content: "latest";
@@ -35,12 +35,12 @@ type Context struct {
     <div class="info">
         {{.Package}}
     </div>
-    <div class="file">
+    <div class="content">
         {{$latest := .Latest}}
         {{range $version := .Versions}}
             <div class="line">
-                <img src="/assets/icon-package.svg" class="number">
-                <a class="content" href="./{{$version}}/">
+                <img class="decoration" src="/assets/icon-package.svg">
+                <a class="data" href="./{{$version}}/">
                     {{- $version -}}
                     {{- if eq $latest $version -}}
                         <span class="latest">latest</span>

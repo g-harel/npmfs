@@ -40,13 +40,14 @@ type Context struct {
 
         {{end}}
     </div>
-    <div class="file">
+    <div class="content">
         {{range $i, $line := .Lines}}
             {{if ne $i 0}}
                 <div class="line">
-                    <div class="hidden-id-target" id="L{{$i}}"></div>
-                    <a class="number" href="#L{{$i}}">{{- $i -}}</a>
-                    <div class="content">{{- $line -}}</div>
+                    <div class="decoration">{{$i}}</div>
+                    <div class="data">{{$line}}</div>
+                    <div class="target" id="L{{$i}}"></div>
+                    <a class="link" href="#L{{$i}}"></a>
                 </div>
             {{end}}
         {{end}}

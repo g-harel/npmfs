@@ -54,7 +54,7 @@ func parse(out string) ([]*Patch, error) {
 			lineB, _ = strconv.Atoi(match[2])
 
 			if len(patch.Lines) != 0 {
-				patch.Lines = append(patch.Lines, PatchLine{0, 0, "..."})
+				patch.Lines = append(patch.Lines, PatchLine{0, 0, "@@"})
 			}
 			continue
 		}

@@ -73,8 +73,8 @@ func main() {
 	}))
 
 	// Compare package versions.
-	r.Handle("/compare/{name}/{a}/vs/{b}", redirect("", "/"))
-	r.Handle("/compare/{name}/{a}/vs/{b}/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	r.Handle("/compare/{name}/{a}/{b}", redirect("", "/"))
+	r.Handle("/compare/{name}/{a}/{b}/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		name := vars["name"]
 		versionA := vars["a"]

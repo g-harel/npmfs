@@ -52,6 +52,10 @@ func Directory(w http.ResponseWriter, r *http.Request, name, version, path strin
 		log.Printf("ERROR extract files from package contents: %v", err)
 		return
 	}
+	if len(dirs) == 0 && len(files) == 0 {
+		http.NotFound(w, r)
+		return
+	}
 
 	parts, links := breakPath(path)
 	context := &struct {

@@ -17,22 +17,22 @@ type Context struct {
 
 {{define "style"}}
     <style>
-        .file .line .content {
+        .content .line .data {
             padding-left: 0;
         }
 
-        .file.dirs {
+        .content.dirs {
             border-radius: 0;
             margin-bottom: 0;
         }
 
         /* Round bottom corners if there are no files in the directory. */
-        .file.dirs:last-of-type {
+        .content.dirs:last-of-type {
             border-bottom-left-radius: 3px;
             border-bottom-right-radius: 3px;
         }
 
-        .file.files {
+        .content.files {
             border-top: 0;
             border-top-left-radius: 0;
             border-top-right-radius: 0;
@@ -70,11 +70,11 @@ type Context struct {
         {{end}}
     </div>
     {{if ne (len .Directories) 0}}
-        <div class="file dirs">
+        <div class="content dirs">
             {{range $i, $name := .Directories}}
                 <div class="line">
-                    <img src="/assets/icon-folder.svg" class="number">
-                    <a class="content" href="./{{$name}}/">
+                    <img class="decoration" src="/assets/icon-folder.svg">
+                    <a class="data" href="./{{$name}}/">
                         {{- $name -}}
                     </a>
                 </div>
@@ -82,11 +82,11 @@ type Context struct {
         </div>
     {{end}}
     {{if ne (len .Files) 0}}
-        <div class="file files">
+        <div class="content files">
             {{range $i, $name := .Files}}
                 <div class="line">
-                    <img src="/assets/icon-file.svg" class="number">
-                    <a class="content" href="./{{$name}}">
+                    <img class="decoration" src="/assets/icon-file.svg">
+                    <a class="data" href="./{{$name}}">
                         {{- $name -}}
                     </a>
                 </div>

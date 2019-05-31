@@ -25,8 +25,10 @@ reference
         https://github.com/tdewolff/minify#templates
         https://github.com/gobuffalo/packr
     todo
-        track popularity
+        inline svg
+        registry sub-domains
         expose 404s from registry
+        track popularity
         license
 
  -->
