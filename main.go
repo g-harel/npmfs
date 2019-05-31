@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/g-harel/rejstry/internal/page"
+	"github.com/g-harel/rejstry/internal/templates"
 	"github.com/gorilla/mux"
 )
 
@@ -53,7 +53,7 @@ func main() {
 		vars := mux.Vars(r)
 		name := vars["name"]
 
-		page.Versions(w, r, name)
+		templates.Versions(w, r, name)
 	}))
 
 	// Show package contents.
@@ -66,16 +66,31 @@ func main() {
 
 		// Show a directory if the path ends with a path delimiter.
 		if path == "" || path[len(path)-1] == '/' {
-			page.Directory(w, r, name, version, path)
+			templates.Directory(w, r, name, version, path)
 		} else {
-			page.File(w, r, name, version, path)
+			templates.File(w, r, name, version, path)
 		}
+	}))
+
+	// Compare package versions.
+	r.Handle("/compare/{name}/{a}/vs/{b}", redirect("", "/"))
+	r.Handle("/compare/{name}/{a}/vs/{b}/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		name := vars["name"]
+		versionA := vars["a"]
+		versionB := vars["b"]
+
+		templates.Compare(w, r, name, versionA, versionB)
 	}))
 
 	// Static assets.
 	assets := http.FileServer(http.Dir("assets"))
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", assets))
 	r.Handle("/favicon.ico", redirect("/assets", ""))
+
+	// Attempt to match single path as package name.
+	// Handlers registered before this point have a higher matching priority.
+	r.Handle("/{package}", redirect("/package", "/"))
 
 	// Take port number from environment if provided.
 	port := os.Getenv("PORT")
