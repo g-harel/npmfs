@@ -22,4 +22,6 @@ COPY --from=server /rejstry/app .
 COPY --from=server /rejstry/templates templates
 COPY --from=server /rejstry/assets assets
 
+ENV ENV production
+
 CMD ./app

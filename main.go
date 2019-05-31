@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -41,6 +42,11 @@ func main() {
 		})
 	})
 
+	// Logs are handled by the runtime in production.
+	if os.Getenv("ENV") == "production" {
+		log.SetOutput(ioutil.Discard)
+	}
+
 	// Show package versions.
 	r.Handle("/package/{name}", redirect("", "/"))
 	r.Handle("/package/{name}/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +65,7 @@ func main() {
 		path := strings.Join(strings.Split(r.URL.Path, "/")[4:], "/")
 
 		// Show a directory if the path ends with a path delimiter.
-		if path[len(path)-1] == '/' {
+		if path == "" || path[len(path)-1] == '/' {
 			page.Directory(w, r, name, version, path)
 		} else {
 			page.File(w, r, name, version, path)
