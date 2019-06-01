@@ -2,12 +2,10 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/g-harel/rejstry/templates"
 	"github.com/gorilla/mux"
@@ -31,21 +29,6 @@ func redirect(pre, post string) http.Handler {
 
 func main() {
 	r := mux.NewRouter()
-
-	// Add logging middleware.
-	r.Use(func(h http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			start := time.Now()
-			rec := &statusRecorder{w, http.StatusOK}
-			h.ServeHTTP(rec, r)
-			log.Printf("%v %v %v - %vms", r.Method, r.RequestURI, rec.status, int64(time.Since(start)/time.Millisecond))
-		})
-	})
-
-	// Logs are handled by the runtime in production.
-	if os.Getenv("ENV") == "production" {
-		log.SetOutput(ioutil.Discard)
-	}
 
 	// Show package versions.
 	r.Handle("/package/{name}", redirect("", "/"))

@@ -28,7 +28,7 @@ reference
     todo
         remove http code from templates
         inline svg
-        registry sub-domains
+        registry sub-domains (redirect www)
         expose 404s from registry
         track popularity
         license
