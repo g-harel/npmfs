@@ -5,85 +5,45 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 
-	"github.com/g-harel/rejstry/templates"
+	"github.com/g-harel/rejstry/handlers"
 	"github.com/gorilla/mux"
 )
 
-type statusRecorder struct {
-	http.ResponseWriter
-	status int
-}
-
-func (s *statusRecorder) WriteHeader(statusCode int) {
-	s.status = statusCode
-	s.ResponseWriter.WriteHeader(statusCode)
-}
-
-func redirect(pre, post string) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func redirect(pre, post string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, pre+r.URL.Path+post, http.StatusFound)
-	})
+	}
 }
 
 func main() {
 	r := mux.NewRouter()
 
 	// Show package versions.
-	r.Handle("/package/{name}", redirect("", "/"))
-	r.Handle("/package/{name}/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		name := vars["name"]
-
-		templates.Versions(w, r, name, "")
-	}))
+	r.HandleFunc("/package/{name}", redirect("", "/"))
+	r.HandleFunc("/package/{name}/", handlers.Versions)
 
 	// Show package contents.
-	r.Handle("/package/{name}/{version}", redirect("", "/"))
-	r.PathPrefix("/package/{name}/{version}/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		name := vars["name"]
-		version := vars["version"]
-		path := strings.Join(strings.Split(r.URL.Path, "/")[4:], "/")
-
-		// Show a directory if the path ends with a path delimiter.
-		if path == "" || path[len(path)-1] == '/' {
-			templates.Directory(w, r, name, version, path)
-		} else {
-			templates.File(w, r, name, version, path)
-		}
-	}))
+	r.HandleFunc("/package/{name}/{version}", redirect("", "/"))
+	r.PathPrefix("/package/{name}/{version}/{path:(?:.+/)?$}").HandlerFunc(handlers.Directory)
+	r.PathPrefix("/package/{name}/{version}/{path:.*}").HandlerFunc(handlers.File)
 
 	// Pick second version to compare to.
-	r.Handle("/compare/{name}/{a}", redirect("", "/"))
-	r.Handle("/compare/{name}/{a}/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		name := vars["name"]
-		versionA := vars["a"]
-
-		templates.Versions(w, r, name, versionA)
-	}))
+	r.HandleFunc("/compare/{name}/{disabled}", redirect("", "/"))
+	r.HandleFunc("/compare/{name}/{disabled}/", handlers.Versions)
 
 	// Compare package versions.
-	r.Handle("/compare/{name}/{a}/{b}", redirect("", "/"))
-	r.Handle("/compare/{name}/{a}/{b}/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		name := vars["name"]
-		versionA := vars["a"]
-		versionB := vars["b"]
-
-		templates.Compare(w, r, name, versionA, versionB)
-	}))
+	r.HandleFunc("/compare/{name}/{a}/{b}", redirect("", "/"))
+	r.HandleFunc("/compare/{name}/{a}/{b}/", handlers.Compare)
 
 	// Static assets.
 	assets := http.FileServer(http.Dir("assets"))
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", assets))
-	r.Handle("/favicon.ico", redirect("/assets", ""))
+	r.HandleFunc("/favicon.ico", redirect("/assets", ""))
 
 	// Attempt to match single path as package name.
 	// Handlers registered before this point have a higher matching priority.
-	r.Handle("/{package}", redirect("/package", "/"))
+	r.HandleFunc("/{package}", redirect("/package", "/"))
 
 	// Take port number from environment if provided.
 	port := os.Getenv("PORT")
@@ -92,5 +52,5 @@ func main() {
 	}
 
 	log.Printf("accepting connections at :%v", port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), r))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), r))
 }

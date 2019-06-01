@@ -1,8 +1,7 @@
-package templates
+package handlers
 
 import (
 	"bytes"
-	"html/template"
 	"io"
 	"log"
 	"net/http"
@@ -11,18 +10,15 @@ import (
 	"github.com/g-harel/rejstry/internal/paths"
 	"github.com/g-harel/rejstry/internal/registry"
 	"github.com/g-harel/rejstry/internal/tarball"
+	"github.com/g-harel/rejstry/templates"
+	"github.com/gorilla/mux"
 )
 
-func File(w http.ResponseWriter, r *http.Request, name, version, path string) {
-	tmpl, err := template.ParseFiles(
-		"templates/_layout.html",
-		"templates/pages/file.html",
-	)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf("ERROR parse template: %v", err)
-		return
-	}
+func File(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	name := vars["name"]
+	version := vars["version"]
+	path := vars["path"]
 
 	// Fetch package contents.
 	pkg, err := registry.PackageContents("registry.npmjs.com", name, version)
@@ -56,24 +52,7 @@ func File(w http.ResponseWriter, r *http.Request, name, version, path string) {
 	}
 
 	parts, links := paths.BreakRelative(path)
-	context := &struct {
-		Package   string
-		Version   string
-		Path      []string
-		PathLinks []string
-		Lines     []string
-	}{
-		Package:   name,
-		Version:   version,
-		Path:      parts,
-		PathLinks: links,
-		Lines:     strings.Split("\n"+file.String(), "\n"),
-	}
+	lines := strings.Split(file.String(), "\n")
 
-	err = tmpl.Execute(w, context)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf("ERROR execute template: %v", err)
-		return
-	}
+	templates.PageFile(name, version, parts, links, lines).Render(w)
 }

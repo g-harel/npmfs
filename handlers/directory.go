@@ -1,7 +1,6 @@
-package templates
+package handlers
 
 import (
-	"html/template"
 	"io"
 	"log"
 	"net/http"
@@ -11,18 +10,15 @@ import (
 	"github.com/g-harel/rejstry/internal/paths"
 	"github.com/g-harel/rejstry/internal/registry"
 	"github.com/g-harel/rejstry/internal/tarball"
+	"github.com/g-harel/rejstry/templates"
+	"github.com/gorilla/mux"
 )
 
-func Directory(w http.ResponseWriter, r *http.Request, name, version, path string) {
-	tmpl, err := template.ParseFiles(
-		"templates/_layout.html",
-		"templates/pages/directory.html",
-	)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf("ERROR parse template: %v", err)
-		return
-	}
+func Directory(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	name := vars["name"]
+	version := vars["version"]
+	path := vars["path"]
 
 	// Fetch package contents.
 	pkg, err := registry.PackageContents("registry.npmjs.com", name, version)
@@ -73,27 +69,9 @@ func Directory(w http.ResponseWriter, r *http.Request, name, version, path strin
 		return out
 	}
 
+	dirs = cleanup(dirs)
+	files = cleanup(files)
 	parts, links := paths.BreakRelative(path)
-	context := &struct {
-		Package     string
-		Version     string
-		Path        []string
-		PathLinks   []string
-		Directories []string
-		Files       []string
-	}{
-		Package:     name,
-		Version:     version,
-		Path:        parts,
-		PathLinks:   links,
-		Directories: cleanup(dirs),
-		Files:       cleanup(files),
-	}
 
-	err = tmpl.Execute(w, context)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf("ERROR execute template: %v", err)
-		return
-	}
+	templates.PageDirectory(name, version, parts, links, dirs, files).Render(w)
 }

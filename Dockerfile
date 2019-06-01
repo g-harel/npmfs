@@ -30,6 +30,4 @@ COPY assets assets
 COPY templates templates
 RUN rm templates/*.go
 
-ENV ENV production
-
 CMD ./app

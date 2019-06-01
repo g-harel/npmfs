@@ -1,5 +1,5 @@
-workflow "ci/cd" {
-  resolves = ["cloud run deploy", "go test"]
+workflow "deploy" {
+  resolves = ["cloud run deploy"]
   on = "push"
 }
 
@@ -25,7 +25,7 @@ action "build container image" {
 action "cloud run deploy" {
   uses = "actions/gcloud/cli@master"
   needs = ["build container image"]
-  args = "beta run deploy --image gcr.io/rejstry/server --allow-unauthenticated --region=us-central1 --timeout=8s"
+  args = "beta run deploy --quiet --image gcr.io/rejstry/server --allow-unauthenticated --region=us-central1 --timeout=8s"
   env = {
     CLOUDSDK_CORE_PROJECT = "rejstry"
   }

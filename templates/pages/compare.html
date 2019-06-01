@@ -23,6 +23,10 @@ type Context struct {
 
 {{- define "style" -}}
     <style>
+        .wrapper + .wrapper {
+            margin-top: 2rem;
+        }
+
         .content .line.blue {
             background-color: #f1f8ff;
             color: rgba(34, 34, 34, 0.5);
@@ -73,8 +77,7 @@ type Context struct {
     {{- $versionB := .VersionB -}}
     {{- range $i, $patch := .Patches -}}
         <!-- Wrapper div to hide sticky info bar after scrolling past content. -->
-        <div>
-
+        <div class="wrapper">
             <div class="info">
                 {{- $packageA := print "/package/" $package "/" $versionA "/" -}}
                 {{- $packageB := print "/package/" $package "/" $versionB "/" -}}
@@ -90,15 +93,15 @@ type Context struct {
                 {{- $linkB := print $packageB $patch.PathB -}}
 
                 {{- if and (eq $patch.PathA "") (ne $patch.PathB "") -}}
-                    <b>created</b>
+                    <b>create</b>
                     <a href="{{- $linkB -}}">{{- $patch.PathB -}}</a>
                 {{- else if and (ne $patch.PathA "") (eq $patch.PathB "") -}}
-                    <b>deleted</b>
+                    <b>delete</b>
                     <a href="{{- $linkA -}}">{{- $patch.PathA -}}</a>
                 {{- else if eq $patch.PathA $patch.PathB -}}
                     <a href="{{- $linkB -}}">{{- $patch.PathB -}}</a>
                 {{- else -}}
-                    <b>renamed</b>
+                    <b>rename</b>
                     <a href="{{- $linkB -}}">{{- $patch.PathB -}}</a>
                     🡒
                     <a href="{{- $linkA -}}">{{- $patch.PathA -}}</a>

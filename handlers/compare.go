@@ -1,8 +1,7 @@
-package templates
+package handlers
 
 import (
 	"fmt"
-	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -11,18 +10,15 @@ import (
 	"github.com/g-harel/rejstry/internal/diff"
 	"github.com/g-harel/rejstry/internal/registry"
 	"github.com/g-harel/rejstry/internal/tarball"
+	"github.com/g-harel/rejstry/templates"
+	"github.com/gorilla/mux"
 )
 
-func Compare(w http.ResponseWriter, r *http.Request, name, versionA, versionB string) {
-	tmpl, err := template.ParseFiles(
-		"templates/_layout.html",
-		"templates/pages/compare.html",
-	)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf("ERROR parse template: %v", err)
-		return
-	}
+func Compare(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	name := vars["name"]
+	versionA := vars["a"]
+	versionB := vars["b"]
 
 	type downloadedDir struct {
 		version string
@@ -60,7 +56,7 @@ func Compare(w http.ResponseWriter, r *http.Request, name, versionA, versionB st
 		dir := <-dirChan
 		if dir.err != nil {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-			log.Printf("ERROR download package '%v': %v", dir.version, err)
+			log.Printf("ERROR download package '%v': %v", dir.version, dir.err)
 			return
 		}
 		dirs[dir.version] = dir.dir
@@ -73,22 +69,5 @@ func Compare(w http.ResponseWriter, r *http.Request, name, versionA, versionB st
 		return
 	}
 
-	context := &struct {
-		Package  string
-		VersionA string
-		VersionB string
-		Patches  []*diff.Patch
-	}{
-		Package:  name,
-		VersionA: versionA,
-		VersionB: versionB,
-		Patches:  patches,
-	}
-
-	err = tmpl.Execute(w, context)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf("ERROR execute template: %v", err)
-		return
-	}
+	templates.PageCompare(name, versionA, versionB, patches).Render(w)
 }
