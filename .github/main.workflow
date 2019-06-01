@@ -25,7 +25,7 @@ action "build container image" {
 action "cloud run deploy" {
   uses = "actions/gcloud/cli@master"
   needs = ["build container image"]
-  args = "--quiet beta run deploy --image gcr.io/rejstry/server --allow-unauthenticated --region=us-central1 --timeout=8s"
+  args = "--quiet beta run deploy --image gcr.io/rejstry/server --allow-unauthenticated --region=us-central1 --timeout=8s server"
   env = {
     CLOUDSDK_CORE_PROJECT = "rejstry"
   }

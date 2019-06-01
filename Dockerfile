@@ -7,7 +7,7 @@ WORKDIR /rejstry
 
 COPY . .
 
-RUN go build -o app .
+RUN go build -o server .
 
 #
 
@@ -16,18 +16,14 @@ FROM alpine:3.9
 RUN apk add ca-certificates
 RUN apk add git
 
-# Configure git to be able to create commmits.
-RUN git config --global user.email "server@rejstry.com"
-RUN git config --global user.name "rejstry"
-
 WORKDIR /rejstry
 
 # Copy server binary from first stage.
-COPY --from=server /rejstry/app .
+COPY --from=server /rejstry/server .
 
 # Copy static files from project source.
 COPY assets assets
 COPY templates templates
 RUN rm templates/*.go
 
-CMD ./app
+CMD ./server

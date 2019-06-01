@@ -21,6 +21,20 @@ func Compare(a, b string) ([]*Patch, error) {
 	if err != nil {
 		return nil, err
 	}
+	_, err = execGit(dir, "config", "--global", "user.email", "server@rejstry.com")
+	if err != nil {
+		return nil, err
+	}
+	_, err = execGit(dir, "config", "--global", "user.name", "server")
+	if err != nil {
+		return nil, err
+	}
+
+	// Initialize git repository.
+	_, err = execGit(dir, "init")
+	if err != nil {
+		return nil, err
+	}
 
 	// Move contents from "a" into repository.
 	err = os.Rename(a, contentPath)
