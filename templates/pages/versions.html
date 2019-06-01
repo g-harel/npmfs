@@ -9,11 +9,11 @@ type Context struct {
 
 -->
 
-{{define "title"}}
-    {{.Package}}
-{{end}}
+{{- define "title" -}}
+    {{- .Package -}}
+{{- end -}}
 
-{{define "style"}}
+{{- define "style" -}}
     <style>
         .content .line .data {
             padding-left: 0;
@@ -41,32 +41,32 @@ type Context struct {
             opacity: 0.5;
         }
     </style>
-{{end}}
+{{- end -}}
 
-{{define "body"}}
+{{- define "body" -}}
     <div class="info">
-        {{if eq .Disabled ""}}
-            {{.Package}}
-        {{else}}
-            <a href="/package/{{.Package}}/">{{.Package}}</a>
+        {{- if eq .Disabled "" -}}
+            {{- .Package -}}
+        {{- else -}}
+            <a href="/package/{{- .Package -}}/">{{- .Package -}}</a>
             @
-            <a href="/package/{{.Package}}/{{.Disabled}}/">{{.Disabled}}</a>
+            <a href="/package/{{- .Package -}}/{{- .Disabled -}}/">{{- .Disabled -}}</a>
             ..
-        {{end}}
+        {{- end -}}
     </div>
     <div class="content">
-        {{$latest := .Latest}}
-        {{$disabled := .Disabled}}
-        {{range $version := .Versions}}
-            <div class="line {{if eq $disabled $version}}disabled{{end}}">
+        {{- $latest := .Latest -}}
+        {{- $disabled := .Disabled -}}
+        {{- range $version := .Versions -}}
+            <div class="line {{- if eq $disabled $version}} disabled{{- end -}}">
                 <img class="decoration" src="/assets/icon-package.svg">
-                <a class="data" href="./{{$version}}/">
+                <a class="data" href="./{{- $version -}}/">
                     {{- $version -}}
                     {{- if eq $latest $version -}}
                         <span class="latest">latest</span>
                     {{- end -}}
                 </a>
             </div>
-        {{end}}
+        {{- end -}}
     </div>
-{{end}}
+{{- end -}}

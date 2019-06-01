@@ -12,44 +12,42 @@ type Context struct {
 
 -->
 
-{{define "title"}}
-    {{.Package}}
-{{end}}
+{{- define "title" -}}
+    {{- .Package -}}
+{{- end -}}
 
-{{define "style"}}
+{{- define "style" -}}
     <style></style>
-{{end}}
+{{- end -}}
 
-{{define "body"}}
+{{- define "body" -}}
     <div class="info">
-        <a href="/package/{{.Package}}">{{.Package}}</a>
-        &nbsp;>&nbsp;
-        <a href="/package/{{.Package}}/{{.Version}}">{{.Version}}</a>
+        <a href="/package/{{- .Package -}}">{{- .Package -}}</a>
+        @
+        <a href="/package/{{- .Package -}}/{{- .Version -}}">{{- .Version -}}</a>
+        -&nbsp;
 
-        {{$links := .PathLinks}}
-        {{range $i, $part := .Path}}
-                &nbsp;>&nbsp;
-
+        {{- $links := .PathLinks -}}
+        {{- range $i, $part := .Path -}}
             <!-- Only make part clickable if a link is provided. -->
-            {{$link := (index $links $i)}}
-            {{if ne $link ""}}
-                <a href="{{$link}}">{{$part}}</a>
-            {{else}}
-                {{$part}}
-            {{end}}
-
-        {{end}}
+            {{- $link := (index $links $i) -}}
+            {{- if ne $link "" -}}
+                {{- if ne $i 0 -}}/{{- end -}}<a href="{{- $link -}}">{{- $part -}}</a>
+            {{- else -}}
+                {{- if ne $i 0 -}}/{{- end -}}{{- $part -}}
+            {{- end -}}
+        {{- end -}}
     </div>
     <div class="content">
-        {{range $i, $line := .Lines}}
-            {{if ne $i 0}}
+        {{- range $i, $line := .Lines -}}
+            {{- if ne $i 0 -}}
                 <div class="line">
-                    <div class="decoration">{{$i}}</div>
-                    <div class="data">{{$line}}</div>
-                    <div class="target" id="L{{$i}}"></div>
-                    <a class="link" href="#L{{$i}}"></a>
+                    <div class="decoration">{{- $i -}}</div>
+                    <div class="data">{{- $line -}}</div>
+                    <div class="target" id="L{{- $i -}}"></div>
+                    <a class="link" href="#L{{- $i -}}"></a>
                 </div>
-            {{end}}
-        {{end}}
+            {{- end -}}
+        {{- end -}}
     </div>
-{{end}}
+{{- end -}}

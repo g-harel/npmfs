@@ -11,11 +11,11 @@ type Context struct {
 
 -->
 
-{{define "title"}}
-    {{.Package}}
-{{end}}
+{{- define "title" -}}
+    {{- .Package -}}
+{{- end -}}
 
-{{define "style"}}
+{{- define "style" -}}
     <style>
         .info .compare {
             float: right;
@@ -48,65 +48,62 @@ type Context struct {
             border-top-right-radius: 0;
         }
     </style>
-{{end}}
+{{- end -}}
 
-{{define "body"}}
+{{- define "body" -}}
     <div class="info">
-        <a href="/package/{{.Package}}/">{{.Package}}</a>
-
-        &nbsp;>&nbsp;
+        <a href="/package/{{- .Package -}}/">{{- .Package -}}</a>
+        @
 
         <!-- Version is only clickable when not in the package root. -->
-        {{if gt (len .Path) 0}}
-            <a href="/package/{{.Package}}/{{.Version}}/">{{.Version}}</a>
-        {{else}}
-            {{.Version}}
+        {{- if gt (len .Path) 0 -}}
+            <a href="/package/{{- .Package -}}/{{- .Version -}}/">{{- .Version -}}</a>
+            -&nbsp;
+        {{- else -}}
+            {{- .Version -}}
             <div class="compare">
                 <img src="/assets/icon-diff.svg">
-                <a href="/compare/{{.Package}}/{{.Version}}/">
+                <a href="/compare/{{- .Package -}}/{{- .Version -}}/">
                     diff
                 </a>
             </div>
-        {{end}}
+        {{- end -}}
 
-        {{$links := .PathLinks}}
-        {{range $i, $part := .Path}}
-            {{if ne $part ""}}
-                &nbsp;>&nbsp;
-
+        {{- $links := .PathLinks -}}
+        {{- range $i, $part := .Path -}}
+            {{- if ne $part "" -}}
                 <!-- Only make part clickable if a link is provided. -->
-                {{$link := (index $links $i)}}
-                {{if ne $link ""}}
-                    <a href="{{$link}}">{{$part}}</a>
-                {{else}}
-                    {{$part}}
-                {{end}}
-
-            {{end}}
-        {{end}}
+                {{- $link := (index $links $i) -}}
+                {{- if ne $link "" -}}
+                    {{- if ne $i 0 -}}/{{- end -}}<a href="{{- $link -}}">{{- $part -}}</a>
+                {{- else -}}
+                    {{- if ne $i 0 -}}/{{- end -}}{{- $part -}}
+                {{- end -}}
+            {{- end -}}
+        {{- end -}}
     </div>
-    {{if ne (len .Directories) 0}}
+    {{- if ne (len .Directories) 0 -}}
         <div class="content dirs">
-            {{range $i, $name := .Directories}}
+            {{- range $i, $name := .Directories -}}
                 <div class="line">
                     <img class="decoration" src="/assets/icon-folder.svg">
-                    <a class="data" href="./{{$name}}/">
+                    <a class="data" href="./{{- $name -}}/">
                         {{- $name -}}
                     </a>
                 </div>
-            {{end}}
+            {{- end -}}
         </div>
-    {{end}}
-    {{if ne (len .Files) 0}}
+    {{- end -}}
+    {{- if ne (len .Files) 0 -}}
         <div class="content files">
-            {{range $i, $name := .Files}}
+            {{- range $i, $name := .Files -}}
                 <div class="line">
                     <img class="decoration" src="/assets/icon-file.svg">
-                    <a class="data" href="./{{$name}}">
+                    <a class="data" href="./{{- $name -}}">
                         {{- $name -}}
                     </a>
                 </div>
-            {{end}}
+            {{- end -}}
         </div>
-    {{end}}
-{{end}}
+    {{- end -}}
+{{- end -}}
