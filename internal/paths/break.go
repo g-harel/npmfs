@@ -34,26 +34,3 @@ func BreakRelative(path string) (parts []string, links []string) {
 	links = append(links[:len(links)-1], "./", links[len(links)-1])
 	return parts, links[2:]
 }
-
-/*
-
-TODO test
-fmt.Println(breakPath("/"))
-fmt.Println([]string{""}, []string{""})
-println()
-fmt.Println(breakPath("/test/"))
-fmt.Println([]string{""}, []string{"test"})
-println()
-fmt.Println(breakPath("/test/path/"))
-fmt.Println([]string{"../", ""}, []string{"test", "path"})
-println()
-fmt.Println(breakPath("/img.jpg"))
-fmt.Println([]string{""}, []string{"img.jpg"})
-println()
-fmt.Println(breakPath("/test/img.jpg"))
-fmt.Println([]string{"./", ""}, []string{"test", "img.jpg"})
-println()
-fmt.Println(breakPath("/test/path/img.jpg"))
-fmt.Println([]string{"../", "./", ""}, []string{"test", "path", "img.jpg"})
-
-*/
