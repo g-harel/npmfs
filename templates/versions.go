@@ -12,7 +12,7 @@ import (
 
 func Versions(w http.ResponseWriter, r *http.Request, name, disabled string) {
 	tmpl, err := template.ParseFiles(
-		"templates/layout.html",
+		"templates/_layout.html",
 		"templates/pages/versions.html",
 	)
 	if err != nil {

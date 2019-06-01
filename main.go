@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/g-harel/rejstry/internal/templates"
+	"github.com/g-harel/rejstry/templates"
 	"github.com/gorilla/mux"
 )
 

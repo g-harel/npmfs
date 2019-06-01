@@ -1,26 +1,11 @@
-package templates
+package paths
 
 import (
-	"sort"
 	"strings"
 )
 
-// Sort and de-duplicate input slice.
-func cleanup(s []string) []string {
-	m := map[string]interface{}{}
-	for _, item := range s {
-		m[item] = true
-	}
-	out := []string{}
-	for key := range m {
-		out = append(out, key)
-	}
-	sort.Strings(out)
-	return out
-}
-
-// Splits up the given path and calculates a relative link for each part.
-func breakPath(path string) (parts []string, links []string) {
+// BreakRelative splits up the given path and calculates a relative link for each part.
+func BreakRelative(path string) (parts []string, links []string) {
 	// Remove leading slash.
 	if len(path) > 0 && path[0] == '/' {
 		path = path[1:]

@@ -1,20 +1,22 @@
 package templates
 
 import (
+	"bytes"
 	"html/template"
 	"io"
 	"log"
 	"net/http"
 	"strings"
 
+	"github.com/g-harel/rejstry/internal/paths"
 	"github.com/g-harel/rejstry/internal/registry"
 	"github.com/g-harel/rejstry/internal/tarball"
 )
 
-func Directory(w http.ResponseWriter, r *http.Request, name, version, path string) {
+func File(w http.ResponseWriter, r *http.Request, name, version, path string) {
 	tmpl, err := template.ParseFiles(
-		"templates/layout.html",
-		"templates/pages/directory.html",
+		"templates/_layout.html",
+		"templates/pages/file.html",
 	)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -31,18 +33,14 @@ func Directory(w http.ResponseWriter, r *http.Request, name, version, path strin
 	}
 	defer pkg.Close()
 
-	// Extract files and directories at the given path.
-	dirs := []string{}
-	files := []string{}
+	// Find file contents to use in response.
+	var file *bytes.Buffer
 	err = tarball.Extract(pkg, func(name string, contents io.Reader) error {
-		filePath := strings.TrimPrefix(name, "package/")
-		if strings.HasPrefix(filePath, path) {
-			filePath := strings.TrimPrefix(filePath, path)
-			pathParts := strings.Split(filePath, "/")
-			if len(pathParts) == 1 {
-				files = append(files, pathParts[0])
-			} else {
-				dirs = append(dirs, pathParts[0])
+		if strings.TrimPrefix(name, "package/") == path {
+			file = new(bytes.Buffer)
+			_, err := file.ReadFrom(contents)
+			if err != nil {
+				log.Printf("ERROR copy contents: %v", err)
 			}
 		}
 		return nil
@@ -52,26 +50,24 @@ func Directory(w http.ResponseWriter, r *http.Request, name, version, path strin
 		log.Printf("ERROR extract files from package contents: %v", err)
 		return
 	}
-	if len(dirs) == 0 && len(files) == 0 {
+	if file == nil {
 		http.NotFound(w, r)
 		return
 	}
 
-	parts, links := breakPath(path)
+	parts, links := paths.BreakRelative(path)
 	context := &struct {
-		Package     string
-		Version     string
-		Path        []string
-		PathLinks   []string
-		Directories []string
-		Files       []string
+		Package   string
+		Version   string
+		Path      []string
+		PathLinks []string
+		Lines     []string
 	}{
-		Package:     name,
-		Version:     version,
-		Path:        parts,
-		PathLinks:   links,
-		Directories: cleanup(dirs),
-		Files:       cleanup(files),
+		Package:   name,
+		Version:   version,
+		Path:      parts,
+		PathLinks: links,
+		Lines:     strings.Split("\n"+file.String(), "\n"),
 	}
 
 	err = tmpl.Execute(w, context)

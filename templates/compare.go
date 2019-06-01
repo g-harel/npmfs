@@ -15,7 +15,7 @@ import (
 
 func Compare(w http.ResponseWriter, r *http.Request, name, versionA, versionB string) {
 	tmpl, err := template.ParseFiles(
-		"templates/layout.html",
+		"templates/_layout.html",
 		"templates/pages/compare.html",
 	)
 	if err != nil {

@@ -26,7 +26,7 @@ reference
         https://github.com/tdewolff/minify#templates
         https://github.com/gobuffalo/packr
     todo
-        ci/cd
+        remove http code from templates
         inline svg
         registry sub-domains
         expose 404s from registry
