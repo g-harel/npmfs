@@ -17,6 +17,10 @@ func Versions(w http.ResponseWriter, r *http.Request) {
 	disabled := vars["disabled"]
 
 	versions, latest, err := registry.PackageVersions("registry.npmjs.com", name)
+	if err == registry.ErrNotFound {
+		http.NotFound(w, r)
+		return
+	}
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		log.Printf("ERROR fetch package versions: %v", err)

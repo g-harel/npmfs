@@ -39,7 +39,8 @@ func Compare(w http.ResponseWriter, r *http.Request) {
 			// Fetch package contents for given version.
 			pkg, err := registry.PackageContents("registry.npmjs.com", name, v)
 			if err != nil {
-				dirChan <- downloadedDir{v, "", fmt.Errorf("fetch package: %v", err)}
+				// Error not wrapped so it can be checked against "registry.ErrNotFound".
+				dirChan <- downloadedDir{v, "", err}
 				return
 			}
 			defer pkg.Close()
@@ -54,6 +55,10 @@ func Compare(w http.ResponseWriter, r *http.Request) {
 	dirs := map[string]string{}
 	for i := 0; i < 2; i++ {
 		dir := <-dirChan
+		if dir.err == registry.ErrNotFound {
+			http.NotFound(w, r)
+			return
+		}
 		if dir.err != nil {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			log.Printf("ERROR download package '%v': %v", dir.version, dir.err)

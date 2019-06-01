@@ -22,6 +22,10 @@ func Directory(w http.ResponseWriter, r *http.Request) {
 
 	// Fetch package contents.
 	pkg, err := registry.PackageContents("registry.npmjs.com", name, version)
+	if err == registry.ErrNotFound {
+		http.NotFound(w, r)
+		return
+	}
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		log.Printf("ERROR fetch package contents: %v", err)

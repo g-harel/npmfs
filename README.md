@@ -26,10 +26,7 @@ reference
         https://github.com/tdewolff/minify#templates
         https://github.com/gobuffalo/packr
     todo
-        remove http code from templates
-        inline svg
         registry sub-domains (redirect www)
-        expose 404s from registry
         track popularity
         license
 

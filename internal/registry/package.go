@@ -2,11 +2,14 @@ package registry
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"time"
 )
+
+var ErrNotFound = errors.New(http.StatusText(http.StatusNotFound))
 
 // PackageContents fetches the data for a package's contents.
 func PackageContents(registry, name, version string) (io.ReadCloser, error) {
@@ -18,6 +21,9 @@ func PackageContents(registry, name, version string) (io.ReadCloser, error) {
 		return nil, fmt.Errorf("request contents: %v", err)
 	}
 
+	if response.StatusCode == http.StatusNotFound {
+		return nil, ErrNotFound
+	}
 	if response.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf(http.StatusText(response.StatusCode))
 	}
@@ -38,6 +44,9 @@ func PackageVersions(registry, name string) ([]string, string, error) {
 	}
 	defer response.Body.Close()
 
+	if response.StatusCode == http.StatusNotFound {
+		return nil, "", ErrNotFound
+	}
 	if response.StatusCode != http.StatusOK {
 		return nil, "", fmt.Errorf(http.StatusText(response.StatusCode))
 	}
