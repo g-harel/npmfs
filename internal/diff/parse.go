@@ -19,7 +19,7 @@ type PatchLine struct {
 }
 
 func parse(out string) ([]*Patch, error) {
-	hunkPattern := regexp.MustCompile(`@@ -(\d+),\d+ \+(\d+),\d+ @@.*`)
+	hunkPattern := regexp.MustCompile(`@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@.*`)
 
 	patches := []*Patch{}
 	lines := strings.Split(out, "\n")
@@ -36,25 +36,37 @@ func parse(out string) ([]*Patch, error) {
 		}
 
 		// Detect file name in "a".
-		if strings.HasPrefix(line, "--- a/") {
-			patch.PathA = strings.TrimPrefix(line, "--- a/content/")
+		if strings.HasPrefix(line, "---") {
+			if strings.HasPrefix(line, "--- a/content/") {
+				patch.PathA = strings.TrimPrefix(line, "--- a/content/")
+			} else {
+				patch.PathA = ""
+			}
 			continue
 		}
 
 		// Detect file name in "b".
-		if strings.HasPrefix(line, "+++ b/") {
-			patch.PathB = strings.TrimPrefix(line, "+++ b/content/")
+		if strings.HasPrefix(line, "+++") {
+			if strings.HasPrefix(line, "+++ b/content/") {
+				patch.PathB = strings.TrimPrefix(line, "+++ b/content/")
+			} else {
+				patch.PathB = ""
+			}
 			continue
 		}
 
 		// Detect start of hunk.
 		if strings.HasPrefix(line, "@@ ") {
 			match := hunkPattern.FindStringSubmatch(line)
+			if len(match) < 3 {
+				continue
+			}
+
 			lineA, _ = strconv.Atoi(match[1])
 			lineB, _ = strconv.Atoi(match[2])
 
 			if len(patch.Lines) != 0 {
-				patch.Lines = append(patch.Lines, PatchLine{0, 0, "@@"})
+				patch.Lines = append(patch.Lines, PatchLine{0, 0, line})
 			}
 			continue
 		}

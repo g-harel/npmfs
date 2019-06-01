@@ -3,6 +3,7 @@
 type Context struct {
     Package  string
     Latest   string
+    Disable  string
     Versions []string
 }
 
@@ -21,12 +22,23 @@ type Context struct {
         .content .line .data .latest {
             background-color: #fd4;
             border-radius: 3px;
+            color: #222;
             content: "latest";
             margin: 0 0 0 0.5rem;
             padding: 0.1rem 0.2rem 0 0.2rem;
 
             /* to remove text decoration from parent */
             display: inline-block;
+        }
+
+        .content .line.disabled {
+            color: #888;
+            pointer-events: none;
+            background-color: #f0f0f0;
+        }
+
+        .content .line.disabled .data .latest {
+            opacity: 0.5;
         }
     </style>
 {{end}}
@@ -37,8 +49,9 @@ type Context struct {
     </div>
     <div class="content">
         {{$latest := .Latest}}
+        {{$disabled := .Disabled}}
         {{range $version := .Versions}}
-            <div class="line">
+            <div class="line {{if eq $disabled $version}}disabled{{end}}">
                 <img class="decoration" src="/assets/icon-package.svg">
                 <a class="data" href="./{{$version}}/">
                     {{- $version -}}

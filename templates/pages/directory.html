@@ -17,6 +17,16 @@ type Context struct {
 
 {{define "style"}}
     <style>
+        .info .compare {
+            float: right;
+        }
+
+        .info .compare img {
+            height: 1em;
+            opacity: 0.6;
+            transform: translateY(2px);
+        }
+
         .content .line .data {
             padding-left: 0;
         }
@@ -42,15 +52,21 @@ type Context struct {
 
 {{define "body"}}
     <div class="info">
-        <a href="/package/{{.Package}}">{{.Package}}</a>
+        <a href="/package/{{.Package}}/">{{.Package}}</a>
 
         &nbsp;>&nbsp;
 
         <!-- Version is only clickable when not in the package root. -->
-        {{if gt (len .Path) 1}}
-            <a href="/package/{{.Package}}/{{.Version}}">{{.Version}}</a>
+        {{if gt (len .Path) 0}}
+            <a href="/package/{{.Package}}/{{.Version}}/">{{.Version}}</a>
         {{else}}
             {{.Version}}
+            <div class="compare">
+                <img src="/assets/icon-diff.svg">
+                <a href="/compare/{{.Package}}/{{.Version}}/">
+                    diff
+                </a>
+            </div>
         {{end}}
 
         {{$links := .PathLinks}}

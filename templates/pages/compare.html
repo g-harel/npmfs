@@ -78,12 +78,19 @@ type Context struct {
             {{$linkB := print "/package/" $package "/" $versionB "/" $patch.PathB}}
 
             <div class="info">
-                {{if eq $patch.PathA $patch.PathB}}
+                {{if and (eq $patch.PathA "") (ne $patch.PathB "")}}
+                    <b>deleted</b>
+                    <a href="{{$linkB}}">{{$patch.PathB}}</a>
+                {{else if and (ne $patch.PathA "") (eq $patch.PathB "")}}
+                    <b>created</b>
+                    <a href="{{$linkA}}">{{$patch.PathA}}</a>
+                {{else if eq $patch.PathA $patch.PathB}}
                     <a href="{{$linkA}}">{{$patch.PathA}}</a>
                 {{else}}
-                    <a href="{{$linkA}}">{{$patch.PathA}}</a>
-                    &nbsp;renamed&nbsp;
+                    <b>renamed</b>
                     <a href="{{$linkB}}">{{$patch.PathB}}</a>
+                    🡒
+                    <a href="{{$linkA}}">{{$patch.PathA}}</a>
                 {{end}}
             </div>
             <div class="content">

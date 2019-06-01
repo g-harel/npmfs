@@ -53,7 +53,7 @@ func main() {
 		vars := mux.Vars(r)
 		name := vars["name"]
 
-		templates.Versions(w, r, name)
+		templates.Versions(w, r, name, "")
 	}))
 
 	// Show package contents.
@@ -70,6 +70,16 @@ func main() {
 		} else {
 			templates.File(w, r, name, version, path)
 		}
+	}))
+
+	// Pick second version to compare to.
+	r.Handle("/compare/{name}/{a}", redirect("", "/"))
+	r.Handle("/compare/{name}/{a}/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		name := vars["name"]
+		versionA := vars["a"]
+
+		templates.Versions(w, r, name, versionA)
 	}))
 
 	// Compare package versions.

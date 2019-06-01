@@ -61,7 +61,7 @@ func Compare(a, b string) ([]*Patch, error) {
 	}
 
 	// Compute diff between contents.
-	out, err := execGit(dir, "diff-tree", "--patch", "-r", "--find-renames", "HEAD~", "HEAD")
+	out, err := execGit(dir, "diff-tree", "--patch", "-r", "--find-renames", "--ignore-all-space", "HEAD~", "HEAD")
 	if err != nil {
 		return nil, fmt.Errorf("compute diff: %v", err)
 	}

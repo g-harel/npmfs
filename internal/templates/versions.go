@@ -10,7 +10,7 @@ import (
 	"github.com/g-harel/rejstry/internal/semver"
 )
 
-func Versions(w http.ResponseWriter, r *http.Request, name string) {
+func Versions(w http.ResponseWriter, r *http.Request, name, disabled string) {
 	tmpl, err := template.ParseFiles(
 		"templates/layout.html",
 		"templates/pages/versions.html",
@@ -31,12 +31,14 @@ func Versions(w http.ResponseWriter, r *http.Request, name string) {
 
 	context := &struct {
 		Package  string
-		Versions []string
 		Latest   string
+		Disabled string
+		Versions []string
 	}{
 		Package:  name,
-		Versions: versions,
 		Latest:   latest,
+		Disabled: disabled,
+		Versions: versions,
 	}
 
 	err = tmpl.Execute(w, context)

@@ -8,6 +8,7 @@ registries
 reference
     cloud run
         https://cloud.google.com/run/docs
+        https://cloud.google.com/run/docs/configuring/request-timeout
         delete files to prevent OOM
     diff
         https://github.blog/2016-12-06-how-we-made-diff-pages-3x-faster/
@@ -25,6 +26,9 @@ reference
         https://github.com/tdewolff/minify#templates
         https://github.com/gobuffalo/packr
     todo
+        reorder in diff so that a -> b
+        add more context on windows on compare page
+        ci/cd
         inline svg
         registry sub-domains
         expose 404s from registry
