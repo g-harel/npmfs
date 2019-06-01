@@ -45,7 +45,14 @@ type Context struct {
 
 {{define "body"}}
     <div class="info">
-        {{.Package}}
+        {{if eq .Disabled ""}}
+            {{.Package}}
+        {{else}}
+            <a href="/package/{{.Package}}/">{{.Package}}</a>
+            @
+            <a href="/package/{{.Package}}/{{.Disabled}}/">{{.Disabled}}</a>
+            ..
+        {{end}}
     </div>
     <div class="content">
         {{$latest := .Latest}}

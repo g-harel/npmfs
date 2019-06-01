@@ -26,8 +26,6 @@ reference
         https://github.com/tdewolff/minify#templates
         https://github.com/gobuffalo/packr
     todo
-        reorder in diff so that a -> b
-        add more context on windows on compare page
         ci/cd
         inline svg
         registry sub-domains
