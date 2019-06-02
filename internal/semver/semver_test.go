@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/g-harel/rejstry/internal/semver"
+	"github.com/g-harel/npmfs/internal/semver"
 )
 
 func TestSort(t *testing.T) {

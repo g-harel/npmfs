@@ -21,7 +21,7 @@ func Compare(a, b string) ([]*Patch, error) {
 	if err != nil {
 		return nil, err
 	}
-	_, err = execGit(dir, "config", "--global", "user.email", "server@rejstry.com")
+	_, err = execGit(dir, "config", "--global", "user.email", "server@npmfs.com")
 	if err != nil {
 		return nil, err
 	}

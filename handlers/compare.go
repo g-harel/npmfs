@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"path"
 
-	"github.com/g-harel/rejstry/internal/diff"
-	"github.com/g-harel/rejstry/internal/registry"
-	"github.com/g-harel/rejstry/internal/tarball"
-	"github.com/g-harel/rejstry/templates"
+	"github.com/g-harel/npmfs/internal/diff"
+	"github.com/g-harel/npmfs/internal/registry"
+	"github.com/g-harel/npmfs/internal/tarball"
+	"github.com/g-harel/npmfs/templates"
 	"github.com/gorilla/mux"
 )
 

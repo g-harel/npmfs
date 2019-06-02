@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"sort"
 
-	"github.com/g-harel/rejstry/internal/registry"
-	"github.com/g-harel/rejstry/internal/semver"
-	"github.com/g-harel/rejstry/templates"
+	"github.com/g-harel/npmfs/internal/registry"
+	"github.com/g-harel/npmfs/internal/semver"
+	"github.com/g-harel/npmfs/templates"
 	"github.com/gorilla/mux"
 )
 

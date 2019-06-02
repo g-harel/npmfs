@@ -1,13 +1,13 @@
-FROM golang:1.12-alpine AS server
+FROM golang:1.12-alpine AS build
 
 # Required to fetch go modules at build time.
 RUN apk add git
 
-WORKDIR /rejstry
+WORKDIR /npmfs
 
 COPY . .
 
-RUN go build -o server .
+RUN go build -o website .
 
 #
 
@@ -16,14 +16,13 @@ FROM alpine:3.9
 RUN apk add ca-certificates
 RUN apk add git
 
-WORKDIR /rejstry
+WORKDIR /npmfs
 
 # Copy server binary from first stage.
-COPY --from=server /rejstry/server .
+COPY --from=build /npmfs/website .
 
 # Copy static files from project source.
 COPY assets assets
 COPY templates templates
-RUN rm templates/*.go
 
-CMD ./server
+CMD ./website

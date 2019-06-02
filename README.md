@@ -31,5 +31,3 @@ reference
         license
 
  -->
-
-![](./assets/logo.svg)

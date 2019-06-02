@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/g-harel/rejstry/handlers"
+	"github.com/g-harel/npmfs/handlers"
 	"github.com/gorilla/mux"
 )
 

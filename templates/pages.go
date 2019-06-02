@@ -1,7 +1,7 @@
 package templates
 
 import (
-	"github.com/g-harel/rejstry/internal/diff"
+	"github.com/g-harel/npmfs/internal/diff"
 )
 
 func PageCompare(name, versionA, versionB string, patches []*diff.Patch) *Renderer {

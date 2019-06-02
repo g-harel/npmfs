@@ -3,7 +3,7 @@ package paths_test
 import (
 	"testing"
 
-	"github.com/g-harel/rejstry/internal/paths"
+	"github.com/g-harel/npmfs/internal/paths"
 )
 
 func TestBreakRelative(t *testing.T) {
