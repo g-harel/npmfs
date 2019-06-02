@@ -28,7 +28,6 @@
 
         a {
             color: inherit;
-            outline: none;
             text-decoration: none;
         }
 
@@ -47,8 +46,11 @@
         }
 
         header .logo {
-            height: 80px;
-            width: 180px;
+            opacity: 0.8;
+        }
+
+        header a:hover {
+            text-decoration: none;
         }
 
         main {
@@ -56,23 +58,22 @@
         }
 
         footer {
-            color: #666;
-            margin: 2.5rem 0 2rem;
+            margin: 2.5rem 0;
             text-align: center;
+        }
+
+        footer .link {
+            color: #666;
+            margin: 0 0.5rem;
+            padding: 0.5rem;
             user-select: none;
             -moz-user-select: -moz-none;
         }
 
-        footer a {
-            margin: 0 0.5rem;
-            padding: 0.5rem;
-        }
-
-        footer .logo-name {
-            display: inline-block;
-            opacity: 0.2;
-            padding: 1.5rem 0 0;
-            width: 80px;
+        footer p {
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 1.5rem;
         }
     </style>
 
@@ -196,19 +197,18 @@
 </head>
 <body style="opacity: 0;" onload="document.body.style.opacity = 1;">
     <header>
-        <a href="/">
-            <img class="logo" src="/assets/logo.svg" alt="logo">
-        </a>
+        <a href="/">{{- template "logo" -}}</a>
     </header>
     <main>
         {{- template "body" . -}}
     </main>
     <footer>
-        <a href="/">home</a>
-        <a href="https://github.com/g-harel/npmfs">source</a>
-        <a href="mailto:gabrielj.harel@gmail.com">contact</a>
-        <br>
-        <img class="logo-name" src="/assets/logo-name.svg" alt="logo-name">
+        <a class="link" href="/">home</a>
+        <a class="link" href="https://github.com/g-harel/npmfs">source</a>
+        <a class="link" href="mailto:gabrielj.harel@gmail.com">contact</a>
+        <p>
+            not affiliated with <a href="https://www.npmjs.com">npm, Inc</a>
+        </p>
     </footer>
 
     <script>
