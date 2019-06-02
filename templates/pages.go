@@ -7,7 +7,7 @@ import (
 func PageCompare(name, versionA, versionB string, patches []*diff.Patch) *Renderer {
 	return &Renderer{
 		filenames: []string{
-			"templates/_layout.html",
+			"templates/layout.html",
 			"templates/pages/compare.html",
 		},
 		context: struct {
@@ -27,7 +27,7 @@ func PageCompare(name, versionA, versionB string, patches []*diff.Patch) *Render
 func PageDirectory(name, version string, path, links, dirs, files []string) *Renderer {
 	return &Renderer{
 		filenames: []string{
-			"templates/_layout.html",
+			"templates/layout.html",
 			"templates/pages/directory.html",
 		},
 		context: struct {
@@ -51,7 +51,7 @@ func PageDirectory(name, version string, path, links, dirs, files []string) *Ren
 func PageFile(name, version string, path, links, lines []string) *Renderer {
 	return &Renderer{
 		filenames: []string{
-			"templates/_layout.html",
+			"templates/layout.html",
 			"templates/pages/file.html",
 		},
 		context: struct {
@@ -73,7 +73,7 @@ func PageFile(name, version string, path, links, lines []string) *Renderer {
 func PageVersions(name, latest, disabled string, versions []string) *Renderer {
 	return &Renderer{
 		filenames: []string{
-			"templates/_layout.html",
+			"templates/layout.html",
 			"templates/pages/versions.html",
 		},
 		context: struct {

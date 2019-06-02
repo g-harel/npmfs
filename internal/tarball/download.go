@@ -5,13 +5,13 @@ import (
 	"io"
 	"os"
 	"path"
-	"path/filepath"
 )
 
 // Downloader generates a ExtractHandler which writes contents to a directory.
-func Downloader(dir string) ExtractHandler {
+// It accepts a function to pick the output path from the name.
+func Downloader(picker func(string) string) ExtractHandler {
 	return func(name string, contents io.Reader) error {
-		outPath := filepath.Join(dir, name)
+		outPath := picker(name)
 
 		err := os.MkdirAll(path.Dir(outPath), os.ModePerm)
 		if err != nil {

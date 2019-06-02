@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"path"
+	"strings"
 
 	"github.com/g-harel/npmfs/internal/diff"
 	"github.com/g-harel/npmfs/internal/registry"
@@ -46,7 +47,9 @@ func Compare(w http.ResponseWriter, r *http.Request) {
 			defer pkg.Close()
 
 			// Write package contents to directory.
-			tarball.Extract(pkg, tarball.Downloader(dir))
+			tarball.Extract(pkg, tarball.Downloader(func(name string) string {
+				return path.Join(dir, strings.TrimPrefix(name, "package"))
+			}))
 
 			dirChan <- downloadedDir{v, dir, nil}
 		}(version)
@@ -67,7 +70,7 @@ func Compare(w http.ResponseWriter, r *http.Request) {
 		dirs[dir.version] = dir.dir
 	}
 
-	patches, err := diff.Compare(path.Join(dirs[versionA], "package"), path.Join(dirs[versionB], "package"))
+	patches, err := diff.Compare(dirs[versionA], dirs[versionB])
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		log.Printf("ERROR compare package contents: %v", err)

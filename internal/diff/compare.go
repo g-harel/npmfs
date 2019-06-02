@@ -21,11 +21,11 @@ func Compare(a, b string) ([]*Patch, error) {
 	if err != nil {
 		return nil, err
 	}
-	_, err = execGit(dir, "config", "--global", "user.email", "server@npmfs.com")
+	_, err = execGit(dir, "config", "user.email", "server@npmfs.com")
 	if err != nil {
 		return nil, err
 	}
-	_, err = execGit(dir, "config", "--global", "user.name", "server")
+	_, err = execGit(dir, "config", "user.name", "server")
 	if err != nil {
 		return nil, err
 	}

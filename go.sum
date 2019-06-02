@@ -1,4 +1,2 @@
-github.com/g-harel/npmfs v0.0.0-20190601210713-fa958c202688 h1:iL+7awUfNMvCZPNFFVeJbLDibOcE1Lq44MNCxOu3OeM=
-github.com/g-harel/npmfs v0.0.0-20190601210713-fa958c202688/go.mod h1:2EABVQKt+Skl8eeWgs1Yi0Iq8OiF7OZP6ZgQHO+FZlM=
 github.com/gorilla/mux v1.7.2 h1:zoNxOV7WjqXptQOVngLmcSQgXmgk4NMz1HibBchjl/I=
 github.com/gorilla/mux v1.7.2/go.mod h1:1lud6UwP+6orDFRuTfBEV8e9/aOM/c4fVVCaMa2zaAs=

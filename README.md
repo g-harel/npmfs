@@ -26,7 +26,6 @@ reference
         https://github.com/tdewolff/minify#templates
         https://github.com/gobuffalo/packr
     todo
-        registry sub-domains (redirect www)
         track popularity
         license
 

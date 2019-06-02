@@ -19,22 +19,32 @@ func redirect(pre, post string) http.HandlerFunc {
 func main() {
 	r := mux.NewRouter()
 
+	// Name pattern matches with simple and org-scoped names.
+	// (ex. "lodash", "react", "@types/express")
+	name := "{name:(?:@[^/]+\\/)?[^/]+}"
+
+	// Directory path pattern matches everything that ends with a path separator.
+	dirpath := "{path:(?:.+/)?$}"
+
+	// File path pattern matches everything that does not end in a path separator.
+	filepath := "{path:.*[^/]$}"
+
 	// Show package versions.
-	r.HandleFunc("/package/{name}", redirect("", "/"))
-	r.HandleFunc("/package/{name}/", handlers.Versions)
+	r.HandleFunc("/package/"+name+"", redirect("", "/"))
+	r.HandleFunc("/package/"+name+"/", handlers.Versions)
 
 	// Show package contents.
-	r.HandleFunc("/package/{name}/{version}", redirect("", "/"))
-	r.PathPrefix("/package/{name}/{version}/{path:(?:.+/)?$}").HandlerFunc(handlers.Directory)
-	r.PathPrefix("/package/{name}/{version}/{path:.*}").HandlerFunc(handlers.File)
+	r.HandleFunc("/package/"+name+"/{version}", redirect("", "/"))
+	r.PathPrefix("/package/" + name + "/{version}/" + dirpath).HandlerFunc(handlers.Directory)
+	r.PathPrefix("/package/" + name + "/{version}/" + filepath).HandlerFunc(handlers.File)
 
 	// Pick second version to compare to.
-	r.HandleFunc("/compare/{name}/{disabled}", redirect("", "/"))
-	r.HandleFunc("/compare/{name}/{disabled}/", handlers.Versions)
+	r.HandleFunc("/compare/"+name+"/{disabled}", redirect("", "/"))
+	r.HandleFunc("/compare/"+name+"/{disabled}/", handlers.Versions)
 
 	// Compare package versions.
-	r.HandleFunc("/compare/{name}/{a}/{b}", redirect("", "/"))
-	r.HandleFunc("/compare/{name}/{a}/{b}/", handlers.Compare)
+	r.HandleFunc("/compare/"+name+"/{a}/{b}", redirect("", "/"))
+	r.HandleFunc("/compare/"+name+"/{a}/{b}/", handlers.Compare)
 
 	// Static assets.
 	assets := http.FileServer(http.Dir("assets"))
@@ -43,7 +53,8 @@ func main() {
 
 	// Attempt to match single path as package name.
 	// Handlers registered before this point have a higher matching priority.
-	r.HandleFunc("/{package}", redirect("/package", "/"))
+	r.HandleFunc("/"+name, redirect("/package", "/"))
+	r.HandleFunc("/"+name+"/", redirect("/package", ""))
 
 	// Take port number from environment if provided.
 	port := os.Getenv("PORT")
