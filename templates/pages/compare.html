@@ -87,9 +87,9 @@ type Context struct {
                 <a href="{{- $packageA -}}">{{- $versionA -}}</a>
                 ..
                 <a href="{{- $packageB -}}">{{- $versionB -}}</a>
-                -&nbsp;
+                -
 
-                {{- $linkA := print $packageA $patch.PathA -}}
+                {{  $linkA := print $packageA $patch.PathA -}}
                 {{- $linkB := print $packageB $patch.PathB -}}
 
                 {{- if and (eq $patch.PathA "") (ne $patch.PathB "") -}}

@@ -58,7 +58,7 @@ type Context struct {
         {{- $latest := .Latest -}}
         {{- $disabled := .Disabled -}}
         {{- range $version := .Versions -}}
-            <div class="line {{- if eq $disabled $version}} disabled{{- end -}}">
+            <div class="line {{- if eq $disabled $version  }} disabled{{- end -}}">
                 <img class="decoration" src="/assets/icon-package.svg">
                 <a class="data" href="./{{- $version -}}/">
                     {{- $version -}}
