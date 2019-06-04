@@ -21,7 +21,7 @@ func File(w http.ResponseWriter, r *http.Request) {
 	path := vars["path"]
 
 	// Fetch package contents.
-	pkg, err := registry.PackageContents("registry.npmjs.com", name, version)
+	pkg, err := registry.NPM.PackageContents(name, version)
 	if err == registry.ErrNotFound {
 		http.NotFound(w, r)
 		return

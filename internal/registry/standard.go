@@ -2,20 +2,21 @@ package registry
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"time"
 )
 
-var ErrNotFound = errors.New(http.StatusText(http.StatusNotFound))
+type standardRegistry struct {
+	host string
+}
 
 // PackageContents fetches the data for a package's contents.
-func PackageContents(registry, name, version string) (io.ReadCloser, error) {
+func (s *standardRegistry) PackageContents(name, version string) (io.ReadCloser, error) {
 	client := &http.Client{Timeout: 10 * time.Second}
 
-	url := fmt.Sprintf("https://%s/%s/-/%[2]s-%s.tgz", registry, name, version)
+	url := fmt.Sprintf("https://%s/%s/-/%[2]s-%s.tgz", s.host, name, version)
 	response, err := client.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("request contents: %v", err)
@@ -34,10 +35,10 @@ func PackageContents(registry, name, version string) (io.ReadCloser, error) {
 // PackageVersions fetches all package versions from the registry.
 // Returned list of versions is sorted in descending order.
 // Latest version is also returned in the second position.
-func PackageVersions(registry, name string) ([]string, string, error) {
+func (s *standardRegistry) PackageVersions(name string) ([]string, string, error) {
 	client := &http.Client{Timeout: 10 * time.Second}
 
-	url := fmt.Sprintf("https://%s/%s", registry, name)
+	url := fmt.Sprintf("https://%s/%s", s.host, name)
 	response, err := client.Get(url)
 	if err != nil {
 		return nil, "", fmt.Errorf("request contents: %v", err)

@@ -16,7 +16,7 @@ func Versions(w http.ResponseWriter, r *http.Request) {
 	name := vars["name"]
 	disabled := vars["disabled"]
 
-	versions, latest, err := registry.PackageVersions("registry.npmjs.com", name)
+	versions, latest, err := registry.NPM.PackageVersions(name)
 	if err == registry.ErrNotFound {
 		http.NotFound(w, r)
 		return

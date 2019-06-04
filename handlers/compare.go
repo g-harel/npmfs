@@ -38,7 +38,7 @@ func Compare(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// Fetch package contents for given version.
-			pkg, err := registry.PackageContents("registry.npmjs.com", name, v)
+			pkg, err := registry.NPM.PackageContents(name, v)
 			if err != nil {
 				// Error not wrapped so it can be checked against "registry.ErrNotFound".
 				dirChan <- downloadedDir{v, "", err}

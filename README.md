@@ -26,7 +26,11 @@ reference
         https://github.com/tdewolff/minify#templates
         https://github.com/gobuffalo/packr
     todo
-        track popularity
         license
+        homepage
+        documentation
+        tests
+        track popularity
+        caching
 
  -->
