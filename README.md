@@ -1,7 +1,6 @@
 <!--
 
 todo
-    develop homepage
     code documentation
     write more tests
     put behind cdn
@@ -20,7 +19,7 @@ JavaScript Package Inspector
 
 - [**Package Diff** – Compare packages across versions.](https://npmfs.com/compare/express/4.17.0/4.17.1/)
 
-- [**Deep Links** – Link to specific lines in files and diffs.](https://npmfs.com/package/express/4.17.1/package.json#L82)
+- [**Deep Links** – Link to specific lines in files and diffs.](https://npmfs.com/package/express/4.17.1/Readme.md#L16)
 
 ## Motivations
 
@@ -37,7 +36,7 @@ https://npmfs.com/<name>
 https://npmfs.com/package/<name>
 ```
 
-When viewing a package on npm, it is conveniently accessible with a one-char edit to the page url.
+_When viewing a package on npm, it is conveniently accessible with a one-char edit to the page url._
 
 ```diff
 - https://www.npmjs.com/package/<name>

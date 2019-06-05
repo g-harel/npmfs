@@ -4,6 +4,17 @@ import (
 	"github.com/g-harel/npmfs/internal/diff"
 )
 
+func PageHome() *Renderer {
+	return &Renderer{
+		filenames: []string{
+			"templates/layout.html",
+			"templates/logo.html",
+			"templates/pages/home.html",
+		},
+		context: nil,
+	}
+}
+
 func PageCompare(name, versionA, versionB string, patches []*diff.Patch) *Renderer {
 	return &Renderer{
 		filenames: []string{

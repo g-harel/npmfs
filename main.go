@@ -7,8 +7,19 @@ import (
 	"os"
 
 	"github.com/g-harel/npmfs/handlers"
+	"github.com/g-harel/npmfs/templates"
 	"github.com/gorilla/mux"
 )
+
+// Name pattern matches with simple and org-scoped names.
+// (ex. "lodash", "react", "@types/express")
+const namePattern = "{name:(?:@[^/]+\\/)?[^/]+}"
+
+// Directory path pattern matches everything that ends with a path separator.
+const dirPattern = "{path:(?:.+/)?$}"
+
+// File path pattern matches everything that does not end in a path separator.
+const filePattern = "{path:.*[^/]$}"
 
 func redirect(pre, post string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -19,32 +30,27 @@ func redirect(pre, post string) http.HandlerFunc {
 func main() {
 	r := mux.NewRouter()
 
-	// Name pattern matches with simple and org-scoped names.
-	// (ex. "lodash", "react", "@types/express")
-	name := "{name:(?:@[^/]+\\/)?[^/]+}"
-
-	// Directory path pattern matches everything that ends with a path separator.
-	dirpath := "{path:(?:.+/)?$}"
-
-	// File path pattern matches everything that does not end in a path separator.
-	filepath := "{path:.*[^/]$}"
+	// Show homepage.
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		templates.PageHome().Render(w)
+	})
 
 	// Show package versions.
-	r.HandleFunc("/package/"+name+"", redirect("", "/"))
-	r.HandleFunc("/package/"+name+"/", handlers.Versions)
+	r.HandleFunc("/package/"+namePattern+"", redirect("", "/"))
+	r.HandleFunc("/package/"+namePattern+"/", handlers.Versions)
 
 	// Show package contents.
-	r.HandleFunc("/package/"+name+"/{version}", redirect("", "/"))
-	r.PathPrefix("/package/" + name + "/{version}/" + dirpath).HandlerFunc(handlers.Directory)
-	r.PathPrefix("/package/" + name + "/{version}/" + filepath).HandlerFunc(handlers.File)
+	r.HandleFunc("/package/"+namePattern+"/{version}", redirect("", "/"))
+	r.PathPrefix("/package/" + namePattern + "/{version}/" + dirPattern).HandlerFunc(handlers.Directory)
+	r.PathPrefix("/package/" + namePattern + "/{version}/" + filePattern).HandlerFunc(handlers.File)
 
 	// Pick second version to compare to.
-	r.HandleFunc("/compare/"+name+"/{disabled}", redirect("", "/"))
-	r.HandleFunc("/compare/"+name+"/{disabled}/", handlers.Versions)
+	r.HandleFunc("/compare/"+namePattern+"/{disabled}", redirect("", "/"))
+	r.HandleFunc("/compare/"+namePattern+"/{disabled}/", handlers.Versions)
 
 	// Compare package versions.
-	r.HandleFunc("/compare/"+name+"/{a}/{b}", redirect("", "/"))
-	r.HandleFunc("/compare/"+name+"/{a}/{b}/", handlers.Compare)
+	r.HandleFunc("/compare/"+namePattern+"/{a}/{b}", redirect("", "/"))
+	r.HandleFunc("/compare/"+namePattern+"/{a}/{b}/", handlers.Compare)
 
 	// Static assets.
 	assets := http.FileServer(http.Dir("assets"))
@@ -53,8 +59,8 @@ func main() {
 
 	// Attempt to match single path as package name.
 	// Handlers registered before this point have a higher matching priority.
-	r.HandleFunc("/"+name, redirect("/package", "/"))
-	r.HandleFunc("/"+name+"/", redirect("/package", ""))
+	r.HandleFunc("/"+namePattern, redirect("/package", "/"))
+	r.HandleFunc("/"+namePattern+"/", redirect("/package", ""))
 
 	// Take port number from environment if provided.
 	port := os.Getenv("PORT")

@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"path"
 	"strings"
 
@@ -75,6 +76,10 @@ func Compare(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		log.Printf("ERROR compare package contents: %v", err)
 		return
+	}
+
+	for _, path := range dirs {
+		_ = os.RemoveAll(path)
 	}
 
 	templates.PageCompare(name, versionA, versionB, patches).Render(w)

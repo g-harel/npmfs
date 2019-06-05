@@ -1,0 +1,121 @@
+{{- define "title" -}}
+    home
+{{- end -}}
+
+{{- define "style" -}}
+    <style>
+        .wrapper {
+            margin: 0 auto;
+            max-width: 600px;
+        }
+
+        .wrapper ul li {
+            line-height: 2;
+        }
+
+        .wrapper code {
+            background-color: #eee;
+            border-radius: 3px;
+            font-style: italic;
+        }
+
+        .wrapper pre {
+            background-color: #f6f6f6;
+            border-radius: 3px;
+            border: 1px solid #d7d7d7;
+            padding: 1rem;
+            white-space: pre-line;
+        }
+
+        .wrapper pre .red {
+            color: #b31d28;
+            background-color: #ffeef0;
+        }
+
+        .wrapper pre .green {
+            color: #22863a;
+            background-color: #f0fff4;
+        }
+
+        .wrapper hr {
+            border: 0;
+            border-top: 1px solid #eee;
+        }
+
+        .wrapper h2, .wrapper hr {
+            margin: 2rem 0;
+        }
+    </style>
+{{- end -}}
+
+{{- define "body" -}}
+    <div class="wrapper">
+
+        <h3><i>JavaScript Package Inspector</i></h3>
+        <ul class="features">
+            <li>
+                <b>Package Viewer</b>
+                &mdash;
+                <a href="/package/express/4.17.1/">Browse package files at any version.</a>
+            </li>
+            <li>
+                <b>Package Diff</b>
+                &mdash;
+                <a href="/compare/express/4.17.0/4.17.1/">Compare packages across versions.</a>
+            </li>
+            <li>
+                <b>Deep Links</b>
+                &mdash;
+                <a href="/package/express/4.17.1/Readme.md#L16">Link to specific lines in files and diffs.</a>
+            </li>
+        </ul>
+
+        <h2>Motivations</h2>
+        <p>Published packages don't always include a link to their source on GitHub.</p>
+        <p>The linked repository is not necessarily representative of published package.</p>
+
+        <h2>Usage</h2>
+        <p>Package root provides links to all available versions, and highlights the one tagged as <code>latest</code>.</p>
+        <pre>
+            https://npmfs.com/&lt;name&gt;
+            https://npmfs.com/package/&lt;name&gt;
+        </pre>
+        <p><i>When viewing a package on npm, it is conveniently accessible with a one-char edit to the page url.</i></p>
+        <pre>
+            <span class="red">&nbsp;https://www.npm<i>j</i>s.com/package/&lt;name&gt;</span>
+            <span class="green">&nbsp;https://www.npm<i>f</i>s.com/package/&lt;name&gt;</span>
+        </pre>
+        <hr>
+
+        <p>Specific package versions can be accessed directly.</p>
+        <pre>
+            https://npmfs.com/package/&lt;name&gt;/&lt;version&gt;
+        </pre>
+        <hr>
+
+        <p>Directories and files inside the package are viewed by appending the path.</p>
+        <pre>
+            https://npmfs.com/package/&lt;name&gt;/&lt;version&gt;/&lt;path&gt;
+            https://npmfs.com/package/&lt;name&gt;/&lt;version&gt;/example/
+            https://npmfs.com/package/&lt;name&gt;/&lt;version&gt;/example/index.js
+        </pre>
+        <hr>
+
+        <p>Package versions are compared (<code>version-0 .. version-1</code>) by navigating to the root directory of <code>version-0</code>, clicking on the <code>diff</code> link in the top right, and selecting <code>version-1</code> in the version list.</p>
+        <pre>
+            https://npmfs.com/compare/&lt;name&gt;/&lt;version-0&gt;/&lt;version-1&gt;
+        </pre>
+        <p>In this compare view, line numbers are a shortcut to their respective file's source.</p>
+        <hr>
+
+        <p>Deep links are found on the right side of lines in both the file and diff views. These links will add a hash to the url which scrolls the browser to the selected line, and highlights it.</p>
+        <pre>
+            https://npmfs.com/package/&lt;name&gt;/&lt;version&gt;/index.js#&lt;line&gt;
+            https://npmfs.com/compare/&lt;name&gt;/&lt;version-0&gt;/&lt;version-1&gt;#&lt;line&gt;
+        </pre>
+        <hr>
+
+        <p>The sticky header sections often contain useful links to navigate between pages.</p>
+
+    </div>
+{{- end -}}
