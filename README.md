@@ -11,6 +11,8 @@ The linked repository can have entirely different contents (This discrepancy is 
 
 -->
 
+<!-- REMEMBER TO MIRROR CONTENT CHANGES ON HOMEPAGE -->
+
 # [npmfs](https://npmfs.com)
 
 JavaScript Package Inspector

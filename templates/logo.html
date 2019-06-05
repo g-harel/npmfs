@@ -10,9 +10,10 @@
     </svg>
 
     <script>
-        // Seeded random number generator.
+        // Seeded random number generator (using page's pathname).
         // https://stackoverflow.com/a/19303725/3053361
-        function rand(str) {
+        var rand = (function() {
+            var str = window.location.pathname;
             var seed = 0;
             for (var i = 0; i < str.length; i++) {
                 seed += str[i].charCodeAt(0);
@@ -21,14 +22,14 @@
                 var x = Math.sin(seed++) * 10000;
                 return x - Math.floor(x);
             }
-        }
+        })()
 
-        // Randomly give letters 60% opacity.
-        // Randomness is seeded using the page's pathname.
-        var letters = document.querySelectorAll(".logo path");
-        var generator = rand(window.location.pathname);
-        for (var i = 0; i < letters.length; i++) {
-            if (generator() < 0.5) letters[i].style.opacity = 0.6;
+        // Randomly give letters 60% opacity (when not on homepage).
+        if (window.location.pathname !== "/") {
+            var letters = document.querySelectorAll(".logo path");
+            for (var i = 0; i < letters.length; i++) {
+                if (rand() < 0.5) letters[i].style.opacity = 0.6;
+            }
         }
     </script>
 {{- end -}}
