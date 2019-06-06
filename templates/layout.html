@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico"/>
     <title>npmfs - {{  template "title" . -}}</title>
+    <meta name="description" content="{{- template "description" . -}}">
 
     <!-- Global styles. -->
     <style>
@@ -59,12 +60,12 @@
         }
 
         footer {
+            color: #666;
             margin: 2.5rem 0;
             text-align: center;
         }
 
         footer .link {
-            color: #666;
             margin: 0 0.5rem;
             padding: 0.5rem;
             user-select: none;
@@ -72,7 +73,6 @@
         }
 
         footer p {
-            color: #999;
             font-size: 0.9em;
             margin-top: 1.5rem;
         }
@@ -198,7 +198,7 @@
 </head>
 <body style="opacity: 0;" onload="document.body.style.opacity = 1;">
     <header>
-        <a href="/">{{- template "logo" -}}</a>
+        <a href="/" aria-label="home">{{- template "logo" -}}</a>
     </header>
     <main>
         {{- template "body" . -}}

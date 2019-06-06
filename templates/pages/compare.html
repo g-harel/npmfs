@@ -8,8 +8,8 @@ type Context struct {
         PathA string
         PathB string
         Lines []struct {
-            NumberA int
-            NumberB int
+            LineA int
+            LineB int
             Content string
         }
     }
@@ -19,6 +19,10 @@ type Context struct {
 
 {{- define "title" -}}
     {{- .Package -}}
+{{- end -}}
+
+{{- define "description" -}}
+    Diff package contents {{  .Package  }} @ {{  .VersionA  }} .. {{  .VersionB  }}
 {{- end -}}
 
 {{- define "style" -}}
@@ -111,7 +115,7 @@ type Context struct {
                 {{- range $j, $line := $patch.Lines -}}
 
                     <!-- Separation between groups. -->
-                    {{- if and (eq $line.NumberA 0) (eq $line.NumberB 0) -}}
+                    {{- if and (eq $line.LineA 0) (eq $line.LineB 0) -}}
                         <div class="line blue">
                             <div class="decoration"></div>
                             <div class="decoration"></div>
@@ -119,29 +123,29 @@ type Context struct {
                             <div class="target"></div>
                             <div class="_link"></div>
                         </div>
-                    {{- else if and (ne $line.NumberA 0) (ne $line.NumberB 0) -}}
+                    {{- else if and (ne $line.LineA 0) (ne $line.LineB 0) -}}
                         <!-- Unchanged line. -->
                         <div class="line">
-                            <a class="decoration" href="{{- $linkA -}}#L{{- $line.NumberA -}}">{{- $line.NumberA -}}</a>
-                            <a class="decoration" href="{{- $linkB -}}#L{{- $line.NumberB -}}">{{- $line.NumberB -}}</a>
+                            <a class="decoration" href="{{- $linkA -}}#L{{- $line.LineA -}}">{{- $line.LineA -}}</a>
+                            <a class="decoration" href="{{- $linkB -}}#L{{- $line.LineB -}}">{{- $line.LineB -}}</a>
                             <div class="data">{{- $line.Content -}}</div>
                             <div class="target" id="D{{- $i -}}L{{- $j -}}"></div>
                             <a class="link" href="#D{{- $i -}}L{{- $j -}}"></a>
                         </div>
-                    {{- else if and (ne $line.NumberA 0) (eq $line.NumberB 0) -}}
+                    {{- else if and (ne $line.LineA 0) (eq $line.LineB 0) -}}
                         <!-- Removed line. -->
                         <div class="line red">
-                            <a class="decoration" href="{{- $linkA -}}#L{{- $line.NumberA -}}">{{- $line.NumberA -}}</a>
+                            <a class="decoration" href="{{- $linkA -}}#L{{- $line.LineA -}}">{{- $line.LineA -}}</a>
                             <div class="decoration">-</div>
                             <div class="data">{{- $line.Content -}}</div>
                             <div class="target" id="D{{- $i -}}L{{- $j -}}"></div>
                             <a class="link" href="#D{{- $i -}}L{{- $j -}}"></a>
                         </div>
-                    {{- else if and (eq $line.NumberA 0) (ne $line.NumberB 0) -}}
+                    {{- else if and (eq $line.LineA 0) (ne $line.LineB 0) -}}
                         <!-- Created line. -->
                         <div class="line green">
                             <div class="decoration">+</div>
-                            <a class="decoration" href="{{- $linkB -}}#L{{- $line.NumberB -}}">{{- $line.NumberB -}}</a>
+                            <a class="decoration" href="{{- $linkB -}}#L{{- $line.LineB -}}">{{- $line.LineB -}}</a>
                             <div class="data">{{- $line.Content -}}</div>
                             <div class="target" id="D{{- $i -}}L{{- $j -}}"></div>
                             <a class="link" href="#D{{- $i -}}L{{- $j -}}"></a>

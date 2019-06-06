@@ -15,6 +15,15 @@ type Context struct {
     {{- .Package -}}
 {{- end -}}
 
+{{- define "description" -}}
+    View directory contents {{  .Package  }} @ {{  .Version -}}
+    {{- if gt (len .Path) 0  }} - {{  end -}}
+    {{  range $i, $part := .Path -}}
+        {{- if ne $i 0 -}}/{{- end -}}
+        {{- $part -}}
+    {{- end -}}
+{{- end -}}
+
 {{- define "style" -}}
     <style>
         .info .compare {

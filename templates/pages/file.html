@@ -16,6 +16,13 @@ type Context struct {
     {{- .Package -}}
 {{- end -}}
 
+{{- define "description" -}}
+    View file contents {{  .Package  }} @ {{  .Version  }} - {{  range $i, $part := .Path -}}
+        {{- if ne $i 0 -}}/{{- end -}}
+        {{- $part -}}
+    {{- end -}}
+{{- end -}}
+
 {{- define "style" -}}
     <style></style>
 {{- end -}}

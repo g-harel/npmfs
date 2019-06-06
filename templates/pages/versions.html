@@ -13,6 +13,10 @@ type Context struct {
     {{- .Package -}}
 {{- end -}}
 
+{{- define "description" -}}
+    Inspect the published contents of any {{ .Package }} version.
+{{- end -}}
+
 {{- define "style" -}}
     <style>
         .content .line .data {
