@@ -14,6 +14,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// Directory handler displays a directory view of package contents at the provided path.
 func Directory(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	name := vars["name"]
@@ -77,5 +78,6 @@ func Directory(w http.ResponseWriter, r *http.Request) {
 	files = cleanup(files)
 	parts, links := paths.BreakRelative(path)
 
+	// Render page template.
 	templates.PageDirectory(name, version, parts, links, dirs, files).Render(w)
 }

@@ -11,11 +11,13 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// Versions handler displays all available package versions.
 func Versions(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	name := vars["name"]
 	disabled := vars["disabled"]
 
+	// Fetch and sort version list.
 	versions, latest, err := registry.NPM.PackageVersions(name)
 	if err == registry.ErrNotFound {
 		http.NotFound(w, r)
@@ -28,5 +30,6 @@ func Versions(w http.ResponseWriter, r *http.Request) {
 	}
 	sort.Sort(semver.Sort(versions))
 
+	// Render page template.
 	templates.PageVersions(name, latest, disabled, versions).Render(w)
 }

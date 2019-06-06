@@ -6,19 +6,26 @@ import (
 	"strings"
 )
 
+// Patch represents a single file diff.
+// File was created/deleted when one of "PathA" or "PathB" is empty.
+// File was renamed when "PathA" and "PathB" are not equal.
 type Patch struct {
 	PathA string
 	PathB string
 	Lines []PatchLine
 }
 
+// PatchLine represents a single line of diff output.
+// Line was created/deleted when one of "LineA" or "LineB" is zero.
+// Hunks starts when both "LineA" and "LineB" are zero.
 type PatchLine struct {
-	NumberA int
-	NumberB int
+	LineA   int
+	LineB   int
 	Content string
 }
 
-func parse(out string) ([]*Patch, error) {
+// PatchParse parses standard diff output.
+func patchParse(out string) ([]*Patch, error) {
 	hunkPattern := regexp.MustCompile(`@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@.*`)
 
 	patches := []*Patch{}

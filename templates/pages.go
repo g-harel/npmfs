@@ -4,6 +4,7 @@ import (
 	"github.com/g-harel/npmfs/internal/diff"
 )
 
+// PageHome returns a renderer for the home page.
 func PageHome() *Renderer {
 	return &Renderer{
 		filenames: []string{
@@ -15,6 +16,7 @@ func PageHome() *Renderer {
 	}
 }
 
+// PageCompare returns a renderer for the compare page.
 func PageCompare(name, versionA, versionB string, patches []*diff.Patch) *Renderer {
 	return &Renderer{
 		filenames: []string{
@@ -36,6 +38,7 @@ func PageCompare(name, versionA, versionB string, patches []*diff.Patch) *Render
 	}
 }
 
+// PageDirectory returns a renderer for the directory page.
 func PageDirectory(name, version string, path, links, dirs, files []string) *Renderer {
 	return &Renderer{
 		filenames: []string{
@@ -61,6 +64,7 @@ func PageDirectory(name, version string, path, links, dirs, files []string) *Ren
 	}
 }
 
+// PageFile returns a renderer for the file page.
 func PageFile(name, version string, path, links, lines []string) *Renderer {
 	return &Renderer{
 		filenames: []string{
@@ -84,6 +88,7 @@ func PageFile(name, version string, path, links, lines []string) *Renderer {
 	}
 }
 
+// PageVersions returns a renderer for the versions page.
 func PageVersions(name, latest, disabled string, versions []string) *Renderer {
 	return &Renderer{
 		filenames: []string{

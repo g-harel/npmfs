@@ -14,6 +14,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// File handler displays a file view of package contents at the provided path.
 func File(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	name := vars["name"]
@@ -34,6 +35,7 @@ func File(w http.ResponseWriter, r *http.Request) {
 	defer pkg.Close()
 
 	// Find file contents to use in response.
+	// Contents must be written to a buffer to be used in a template.
 	var file *bytes.Buffer
 	err = tarball.Extract(pkg, func(name string, contents io.Reader) error {
 		if strings.TrimPrefix(name, "package/") == path {
@@ -58,5 +60,6 @@ func File(w http.ResponseWriter, r *http.Request) {
 	parts, links := paths.BreakRelative(path)
 	lines := strings.Split(file.String(), "\n")
 
+	// Render page template.
 	templates.PageFile(name, version, parts, links, lines).Render(w)
 }

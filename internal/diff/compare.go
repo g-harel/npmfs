@@ -4,10 +4,27 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path"
+	"strings"
 )
 
+// ExecGit runs a git command in the specified directory and returns its output.
+func execGit(dir string, arg ...string) (string, error) {
+	cmd := exec.Command("git", arg...)
+	cmd.Dir = dir
+
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return "", fmt.Errorf("run command 'git %v': %v\n%v", strings.Join(arg, " "), err, string(out))
+	}
+
+	return string(out), nil
+}
+
 // Compare diffs the contents of two directories.
+// The current implementation uses "git-diff-tree" to detect renames.
+// Whitespace changes are ignored.
 func Compare(a, b string) ([]*Patch, error) {
 	// Create temporary working directory.
 	dir, err := ioutil.TempDir("", "")
@@ -90,7 +107,7 @@ func Compare(a, b string) ([]*Patch, error) {
 	_ = os.RemoveAll(dir)
 
 	// Parse output text.
-	patches, err := parse(out)
+	patches, err := patchParse(out)
 	if err != nil {
 		return nil, fmt.Errorf("parse output: %v", err)
 	}

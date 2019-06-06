@@ -16,18 +16,24 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// Compare handler displays a diff between two package versions.
 func Compare(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	name := vars["name"]
 	versionA := vars["a"]
 	versionB := vars["b"]
 
+	if versionA == versionB {
+		http.NotFound(w, r)
+		return
+	}
+
+	// Download both package version contents to a temporary directory in parallel.
 	type downloadedDir struct {
 		version string
 		dir     string
 		err     error
 	}
-
 	dirChan := make(chan downloadedDir)
 	for _, version := range []string{versionA, versionB} {
 		go func(v string) {
@@ -48,14 +54,19 @@ func Compare(w http.ResponseWriter, r *http.Request) {
 			defer pkg.Close()
 
 			// Write package contents to directory.
-			tarball.Extract(pkg, tarball.Downloader(func(name string) string {
+			err = tarball.Extract(pkg, tarball.Downloader(func(name string) string {
 				return path.Join(dir, strings.TrimPrefix(name, "package"))
 			}))
+			if err != nil {
+				dirChan <- downloadedDir{v, "", fmt.Errorf("download contents: %v", err)}
+				return
+			}
 
 			dirChan <- downloadedDir{v, dir, nil}
 		}(version)
 	}
 
+	// Wait for both version's contents to be downloaded.
 	dirs := map[string]string{}
 	for i := 0; i < 2; i++ {
 		dir := <-dirChan
@@ -71,6 +82,7 @@ func Compare(w http.ResponseWriter, r *http.Request) {
 		dirs[dir.version] = dir.dir
 	}
 
+	// Compare contents.
 	patches, err := diff.Compare(dirs[versionA], dirs[versionB])
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -78,9 +90,11 @@ func Compare(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Cleanup created directories.
 	for _, path := range dirs {
 		_ = os.RemoveAll(path)
 	}
 
+	// Render page template.
 	templates.PageCompare(name, versionA, versionB, patches).Render(w)
 }

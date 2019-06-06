@@ -21,6 +21,7 @@ const dirPattern = "{path:(?:.+/)?$}"
 // File path pattern matches everything that does not end in a path separator.
 const filePattern = "{path:.*[^/]$}"
 
+// Redirect responds with a temporary redirect after adding the pre and postfix.
 func redirect(pre, post string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, pre+r.URL.Path+post, http.StatusFound)

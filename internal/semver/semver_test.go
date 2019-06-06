@@ -10,7 +10,7 @@ import (
 
 func TestSort(t *testing.T) {
 	cases := [][]string{
-		// https://semver.org/
+		// https://semver.org/#semantic-versioning-specification-semver
 		{"1.11.0", "1.10.0", "1.9.0"},
 		{"2.1.1", "2.1.0", "2.0.0", "1.0.0"},
 		{"1.0.0", "1.0.0-alpha"},

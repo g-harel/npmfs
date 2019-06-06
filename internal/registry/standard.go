@@ -13,6 +13,7 @@ type standardRegistry struct {
 }
 
 // PackageContents fetches the data for a package's contents.
+// This data is distributed as a gzipped tarball of the entire package.
 func (s *standardRegistry) PackageContents(name, version string) (io.ReadCloser, error) {
 	client := &http.Client{Timeout: 10 * time.Second}
 

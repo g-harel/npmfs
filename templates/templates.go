@@ -6,11 +6,13 @@ import (
 	"net/http"
 )
 
+// Renderer is used to store state before a template is executed.
 type Renderer struct {
 	filenames []string
 	context   interface{}
 }
 
+// Render is an application-aware helper to execute templates.
 func (r *Renderer) Render(w http.ResponseWriter) {
 	tmpl, err := template.ParseFiles(r.filenames...)
 	if err != nil {

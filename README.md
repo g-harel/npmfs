@@ -1,13 +1,8 @@
 <!--
 
 todo
-    code documentation
     write more tests
-    put behind cdn
-    track popularity
     registry picker
-
-The linked repository can have entirely different contents (This discrepancy is often for good reason, like removing unnecessary files or publishing bundled, transpiled, or minified files).
 
 -->
 
