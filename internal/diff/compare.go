@@ -64,7 +64,7 @@ func Compare(a, b string) ([]*Patch, error) {
 	if err != nil {
 		return nil, err
 	}
-	_, err = execGit(dir, "commit", "-m", a)
+	_, err = execGit(dir, "commit", "--allow-empty", "-m", a)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func Compare(a, b string) ([]*Patch, error) {
 	if err != nil {
 		return nil, err
 	}
-	_, err = execGit(dir, "commit", "-m", b)
+	_, err = execGit(dir, "commit", "--allow-empty", "-m", b)
 	if err != nil {
 		return nil, err
 	}

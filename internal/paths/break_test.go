@@ -6,80 +6,78 @@ import (
 	"github.com/g-harel/npmfs/internal/paths"
 )
 
+func sliceEqual(t *testing.T, expected, received []string) {
+	if len(expected) != len(received) {
+		t.Fatalf("expected/received do not match\n%v\n%v", expected, received)
+	}
+	for i := range expected {
+		if expected[i] != received[i] {
+			t.Fatalf("expected/received do not match\n%v\n%v", expected, received)
+		}
+	}
+}
+
 func TestBreakRelative(t *testing.T) {
-	cases := map[string]struct {
+	tt := map[string]struct {
+		Path  string
 		Parts []string
 		Links []string
 	}{
-		"": {
+		"root": {
+			Path:  "",
 			Parts: []string{},
 			Links: []string{},
 		},
-		"/": {
-			Parts: []string{},
-			Links: []string{},
-		},
-		"img.jpg": {
+		"root file": {
+			Path:  "img.jpg",
 			Parts: []string{"img.jpg"},
 			Links: []string{""},
 		},
-		"/img.jpg": {
-			Parts: []string{"img.jpg"},
-			Links: []string{""},
-		},
-		"test/": {
+		"single dir": {
+			Path:  "test/",
 			Parts: []string{"test"},
 			Links: []string{""},
 		},
-		"/test/": {
-			Parts: []string{"test"},
-			Links: []string{""},
-		},
-		"test/img.jpg": {
+		"nested file": {
+			Path:  "test/img.jpg",
 			Parts: []string{"test", "img.jpg"},
 			Links: []string{"./", ""},
 		},
-		"/test/img.jpg": {
-			Parts: []string{"test", "img.jpg"},
-			Links: []string{"./", ""},
-		},
-		"test/path/": {
+		"nested dir": {
+			Path:  "test/path/",
 			Parts: []string{"test", "path"},
 			Links: []string{"../", ""},
 		},
-		"/test/path/": {
-			Parts: []string{"test", "path"},
-			Links: []string{"../", ""},
-		},
-		"test/path/img.jpg": {
-			Parts: []string{"test", "path", "img.jpg"},
-			Links: []string{"../", "./", ""},
-		},
-		"/test/path/img.jpg": {
+		"deeply nested file": {
+			Path:  "test/path/img.jpg",
 			Parts: []string{"test", "path", "img.jpg"},
 			Links: []string{"../", "./", ""},
 		},
 	}
 
-	for path, result := range cases {
-		parts, links := paths.BreakRelative(path)
+	for name, tc := range tt {
+		t.Run(name, func(t *testing.T) {
+			parts, links := paths.BreakRelative(tc.Path)
 
-		if len(parts) != len(result.Parts) {
-			t.Fatalf("expected/received parts do not match \n%v\n%v\n%v", path, parts, result.Parts)
-		}
-		for i := range parts {
-			if parts[i] != result.Parts[i] {
-				t.Fatalf("expected/received parts do not match \n%v\n%v\n%v", path, parts, result.Parts)
-			}
-		}
+			t.Run("parts", func(t *testing.T) {
+				sliceEqual(t, tc.Parts, parts)
+			})
 
-		if len(links) != len(result.Links) {
-			t.Fatalf("expected/received links do not match \n%v\n%v\n%v", path, links, result.Links)
-		}
-		for i := range links {
-			if links[i] != result.Links[i] {
-				t.Fatalf("expected/received links do not match \n%v\n%v\n%v", path, links, result.Links)
-			}
-		}
+			t.Run("links", func(t *testing.T) {
+				sliceEqual(t, tc.Links, links)
+			})
+
+			t.Run("leading slash ignored", func(t *testing.T) {
+				parts, links := paths.BreakRelative("/" + tc.Path)
+
+				t.Run("parts", func(t *testing.T) {
+					sliceEqual(t, tc.Parts, parts)
+				})
+
+				t.Run("links", func(t *testing.T) {
+					sliceEqual(t, tc.Links, links)
+				})
+			})
+		})
 	}
 }

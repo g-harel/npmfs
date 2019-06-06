@@ -12,8 +12,8 @@ type Renderer struct {
 	context   interface{}
 }
 
-// Render is an application-aware helper to execute templates.
-func (r *Renderer) Render(w http.ResponseWriter) {
+// Handler executes the templates and handles errors.
+func (r *Renderer) Handler(w http.ResponseWriter, _ *http.Request) {
 	tmpl, err := template.ParseFiles(r.filenames...)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
