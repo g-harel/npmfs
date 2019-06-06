@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/NYTimes/gziphandler"
 	"github.com/g-harel/npmfs/handlers"
 	"github.com/g-harel/npmfs/templates"
 	"github.com/gorilla/mux"
@@ -30,6 +31,9 @@ func redirect(pre, post string) http.HandlerFunc {
 
 func main() {
 	r := mux.NewRouter()
+
+	// Add gzip middleware to all handlers.
+	r.Use(gziphandler.GzipHandler)
 
 	// Show homepage.
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -57,6 +61,7 @@ func main() {
 	assets := http.FileServer(http.Dir("assets"))
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", assets))
 	r.HandleFunc("/favicon.ico", redirect("/assets", ""))
+	r.HandleFunc("/robots.txt", redirect("/assets", ""))
 
 	// Attempt to match single path as package name.
 	// Handlers registered before this point have a higher matching priority.
