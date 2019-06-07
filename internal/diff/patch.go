@@ -46,8 +46,6 @@ func patchParse(out string) ([]*Patch, error) {
 		if strings.HasPrefix(line, "---") {
 			if strings.HasPrefix(line, "--- a/content/") {
 				patch.PathA = strings.TrimPrefix(line, "--- a/content/")
-			} else {
-				patch.PathA = ""
 			}
 			continue
 		}
@@ -56,8 +54,6 @@ func patchParse(out string) ([]*Patch, error) {
 		if strings.HasPrefix(line, "+++") {
 			if strings.HasPrefix(line, "+++ b/content/") {
 				patch.PathB = strings.TrimPrefix(line, "+++ b/content/")
-			} else {
-				patch.PathB = ""
 			}
 			continue
 		}

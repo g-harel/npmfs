@@ -27,9 +27,11 @@ func Extract(source io.Reader, handler ExtractHandler) error {
 			return fmt.Errorf("advance to next file: %v", err)
 		}
 
-		err = handler(header.Name, tarball)
-		if err != nil {
-			return fmt.Errorf("handler error: %v", err)
+		if !header.FileInfo().IsDir() {
+			err = handler(header.Name, tarball)
+			if err != nil {
+				return fmt.Errorf("handler error: %v", err)
+			}
 		}
 	}
 
