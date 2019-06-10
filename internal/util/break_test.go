@@ -19,63 +19,63 @@ func sliceEqual(t *testing.T, expected, received []string) {
 
 func TestBreakPathRelative(t *testing.T) {
 	tt := map[string]struct {
-		Path  string
-		Parts []string
-		Links []string
+		Input         string
+		ExpectedParts []string
+		ExpectedLinks []string
 	}{
 		"root": {
-			Path:  "",
-			Parts: []string{},
-			Links: []string{},
+			Input:         "",
+			ExpectedParts: []string{},
+			ExpectedLinks: []string{},
 		},
 		"root file": {
-			Path:  "img.jpg",
-			Parts: []string{"img.jpg"},
-			Links: []string{""},
+			Input:         "img.jpg",
+			ExpectedParts: []string{"img.jpg"},
+			ExpectedLinks: []string{""},
 		},
 		"single dir": {
-			Path:  "test/",
-			Parts: []string{"test"},
-			Links: []string{""},
+			Input:         "test/",
+			ExpectedParts: []string{"test"},
+			ExpectedLinks: []string{""},
 		},
 		"nested file": {
-			Path:  "test/img.jpg",
-			Parts: []string{"test", "img.jpg"},
-			Links: []string{"./", ""},
+			Input:         "test/img.jpg",
+			ExpectedParts: []string{"test", "img.jpg"},
+			ExpectedLinks: []string{"./", ""},
 		},
 		"nested dir": {
-			Path:  "test/path/",
-			Parts: []string{"test", "path"},
-			Links: []string{"../", ""},
+			Input:         "test/path/",
+			ExpectedParts: []string{"test", "path"},
+			ExpectedLinks: []string{"../", ""},
 		},
 		"deeply nested file": {
-			Path:  "test/path/img.jpg",
-			Parts: []string{"test", "path", "img.jpg"},
-			Links: []string{"../", "./", ""},
+			Input:         "test/path/img.jpg",
+			ExpectedParts: []string{"test", "path", "img.jpg"},
+			ExpectedLinks: []string{"../", "./", ""},
 		},
 	}
 
 	for name, tc := range tt {
 		t.Run(name, func(t *testing.T) {
-			parts, links := util.BreakPathRelative(tc.Path)
+			parts, links := util.BreakPathRelative(tc.Input)
 
 			t.Run("parts", func(t *testing.T) {
-				sliceEqual(t, tc.Parts, parts)
+				sliceEqual(t, tc.ExpectedParts, parts)
 			})
 
 			t.Run("links", func(t *testing.T) {
-				sliceEqual(t, tc.Links, links)
+				sliceEqual(t, tc.ExpectedLinks, links)
 			})
 
 			t.Run("leading slash ignored", func(t *testing.T) {
-				parts, links := util.BreakPathRelative("/" + tc.Path)
+				parts, links := util.BreakPathRelative("/" + tc.Input)
 
 				t.Run("parts", func(t *testing.T) {
-					sliceEqual(t, tc.Parts, parts)
+					sliceEqual(t, tc.ExpectedParts, parts)
 				})
 
 				t.Run("links", func(t *testing.T) {
-					sliceEqual(t, tc.Links, links)
+					sliceEqual(t, tc.ExpectedLinks, links)
 				})
 			})
 		})
