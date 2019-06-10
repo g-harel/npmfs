@@ -6,11 +6,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/g-harel/npmfs/internal/mock"
+	mockRegistry "github.com/g-harel/npmfs/internal/registry/mock"
 )
 
 func TestRoutes(t *testing.T) {
-	registry := &mock.Registry{
+	client := &mockRegistry.Client{
 		Latest: "1.1.1",
 		Contents: map[string]map[string]string{
 			"0.0.0": {
@@ -92,7 +92,7 @@ func TestRoutes(t *testing.T) {
 		},
 	}
 
-	srv := httptest.NewServer(routes(registry))
+	srv := httptest.NewServer(routes(client))
 	defer srv.Close()
 
 	for name, tc := range tt {

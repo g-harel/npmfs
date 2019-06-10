@@ -1,9 +1,9 @@
-package paths_test
+package util_test
 
 import (
 	"testing"
 
-	"github.com/g-harel/npmfs/internal/paths"
+	"github.com/g-harel/npmfs/internal/util"
 )
 
 func sliceEqual(t *testing.T, expected, received []string) {
@@ -17,7 +17,7 @@ func sliceEqual(t *testing.T, expected, received []string) {
 	}
 }
 
-func TestBreakRelative(t *testing.T) {
+func TestBreakPathRelative(t *testing.T) {
 	tt := map[string]struct {
 		Path  string
 		Parts []string
@@ -57,7 +57,7 @@ func TestBreakRelative(t *testing.T) {
 
 	for name, tc := range tt {
 		t.Run(name, func(t *testing.T) {
-			parts, links := paths.BreakRelative(tc.Path)
+			parts, links := util.BreakPathRelative(tc.Path)
 
 			t.Run("parts", func(t *testing.T) {
 				sliceEqual(t, tc.Parts, parts)
@@ -68,7 +68,7 @@ func TestBreakRelative(t *testing.T) {
 			})
 
 			t.Run("leading slash ignored", func(t *testing.T) {
-				parts, links := paths.BreakRelative("/" + tc.Path)
+				parts, links := util.BreakPathRelative("/" + tc.Path)
 
 				t.Run("parts", func(t *testing.T) {
 					sliceEqual(t, tc.Parts, parts)

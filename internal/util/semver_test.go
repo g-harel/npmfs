@@ -1,13 +1,13 @@
-package semver_test
+package util_test
 
 import (
 	"sort"
 	"testing"
 
-	"github.com/g-harel/npmfs/internal/semver"
+	"github.com/g-harel/npmfs/internal/util"
 )
 
-func TestSort(t *testing.T) {
+func TestSemverSort(t *testing.T) {
 	cases := map[string][]string{
 		// https://semver.org/#semantic-versioning-specification-semver
 		"single element":          {"1.11.0", "1.10.0", "1.9.0"},
@@ -19,7 +19,7 @@ func TestSort(t *testing.T) {
 	for name, input := range cases {
 		t.Run(name, func(t *testing.T) {
 			output := append([]string{}, input...)
-			sort.Sort(semver.Sort(output))
+			sort.Sort(util.SemverSort(output))
 
 			for i := range input {
 				if input[i] != output[i] {

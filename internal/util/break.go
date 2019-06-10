@@ -1,11 +1,11 @@
-package paths
+package util
 
 import (
 	"strings"
 )
 
-// BreakRelative splits up the given path and calculates a relative link for each part.
-func BreakRelative(path string) (parts []string, links []string) {
+// BreakPathRelative splits up the given path and calculates a relative link for each part.
+func BreakPathRelative(path string) (parts []string, links []string) {
 	// Remove leading slash.
 	if len(path) > 0 && path[0] == '/' {
 		path = path[1:]

@@ -9,8 +9,16 @@ import (
 	"github.com/NYTimes/gziphandler"
 	"github.com/g-harel/npmfs/handlers"
 	"github.com/g-harel/npmfs/internal/registry"
+	"github.com/g-harel/npmfs/internal/registry/standard"
 	"github.com/g-harel/npmfs/templates"
 	"github.com/gorilla/mux"
+)
+
+// Known public registries.
+var (
+	NPM  registry.Client = &standard.Client{Host: "registry.npmjs.com"}
+	Yarn registry.Client = &standard.Client{Host: "registry.yarnpkg.com"}
+	Open registry.Client = &standard.Client{Host: "npm.open-registry.dev"}
 )
 
 // Redirect responds with a temporary redirect after adding the pre and postfix.
@@ -21,7 +29,7 @@ func redirect(pre, post string) http.HandlerFunc {
 }
 
 // Routes returns an http handler with all the routes/handlers attached.
-func routes(ry registry.Registry) http.Handler {
+func routes(client registry.Client) http.Handler {
 	r := mux.NewRouter()
 
 	// Add gzip middleware to all handlers.
@@ -42,20 +50,20 @@ func routes(ry registry.Registry) http.Handler {
 
 	// Show package versions.
 	r.HandleFunc("/package/"+namePattern+"", redirect("", "/"))
-	r.HandleFunc("/package/"+namePattern+"/", handlers.Versions(ry))
+	r.HandleFunc("/package/"+namePattern+"/", handlers.Versions(client))
 
 	// Show package contents.
 	r.HandleFunc("/package/"+namePattern+"/{version}", redirect("", "/"))
-	r.PathPrefix("/package/" + namePattern + "/{version}/" + dirPattern).HandlerFunc(handlers.Directory(ry))
-	r.PathPrefix("/package/" + namePattern + "/{version}/" + filePattern).HandlerFunc(handlers.File(ry))
+	r.PathPrefix("/package/" + namePattern + "/{version}/" + dirPattern).HandlerFunc(handlers.Directory(client))
+	r.PathPrefix("/package/" + namePattern + "/{version}/" + filePattern).HandlerFunc(handlers.File(client))
 
 	// Pick second version to compare to.
 	r.HandleFunc("/compare/"+namePattern+"/{disabled}", redirect("", "/"))
-	r.HandleFunc("/compare/"+namePattern+"/{disabled}/", handlers.Versions(ry))
+	r.HandleFunc("/compare/"+namePattern+"/{disabled}/", handlers.Versions(client))
 
 	// Compare package versions.
 	r.HandleFunc("/compare/"+namePattern+"/{a}/{b}", redirect("", "/"))
-	r.HandleFunc("/compare/"+namePattern+"/{a}/{b}/", handlers.Compare(ry))
+	r.HandleFunc("/compare/"+namePattern+"/{a}/{b}/", handlers.Compare(client))
 
 	// Static assets.
 	assets := http.FileServer(http.Dir("assets"))
@@ -80,5 +88,5 @@ func main() {
 	}
 
 	log.Printf("accepting connections at :%v", port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), routes(registry.NPM)))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), routes(NPM)))
 }
