@@ -43,6 +43,9 @@ func (c *Client) Directory(name, version, path string) ([]string, []string, erro
 	if err == registry.ErrNotFound {
 		return nil, nil, registry.ErrNotFound
 	}
+	if err == registry.ErrTimeout {
+		return nil, nil, registry.ErrTimeout
+	}
 	if err != nil {
 		return nil, nil, fmt.Errorf("read package contents: %v", err)
 	}
@@ -90,6 +93,9 @@ func (c *Client) Download(name, version string) (string, error) {
 	if err == registry.ErrNotFound {
 		return "", registry.ErrNotFound
 	}
+	if err == registry.ErrTimeout {
+		return "", registry.ErrTimeout
+	}
 	if err != nil {
 		return "", fmt.Errorf("read package contents: %v", err)
 	}
@@ -106,7 +112,7 @@ func (c *Client) File(name, version, path string) (string, error) {
 			buf := new(bytes.Buffer)
 			_, err := buf.ReadFrom(contents)
 			if err != nil {
-				return fmt.Errorf("ERROR copy contents: %v", err)
+				return fmt.Errorf("copy contents: %v", err)
 			}
 			file = buf.String()
 			found = true
@@ -115,6 +121,9 @@ func (c *Client) File(name, version, path string) (string, error) {
 	})
 	if err == registry.ErrNotFound {
 		return "", registry.ErrNotFound
+	}
+	if err == registry.ErrTimeout {
+		return "", registry.ErrTimeout
 	}
 	if err != nil {
 		return "", fmt.Errorf("read package contents: %v", err)
@@ -128,10 +137,13 @@ func (c *Client) File(name, version, path string) (string, error) {
 
 // Versions fetches all package versions from the registry.
 func (c *Client) Versions(name string) ([]string, string, error) {
-	client := &http.Client{Timeout: 10 * time.Second}
+	client := &http.Client{Timeout: 4 * time.Second}
 
 	url := fmt.Sprintf("https://%s/%s", c.Host, name)
 	response, err := client.Get(url)
+	if os.IsTimeout(err) {
+		return nil, "", registry.ErrTimeout
+	}
 	if err != nil {
 		return nil, "", fmt.Errorf("request contents: %v", err)
 	}

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"sort"
@@ -22,6 +23,10 @@ func Versions(client registry.Client) http.HandlerFunc {
 		versions, latest, err := client.Versions(name)
 		if err == registry.ErrNotFound {
 			http.NotFound(w, r)
+			return
+		}
+		if err == registry.ErrTimeout {
+			http.Error(w, fmt.Sprintf("%v timeout", http.StatusGatewayTimeout), http.StatusGatewayTimeout)
 			return
 		}
 		if err != nil {

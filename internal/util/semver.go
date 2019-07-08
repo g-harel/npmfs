@@ -76,3 +76,21 @@ func semverIdentifierCompare(a, b string) int {
 
 	return aNum - bNum
 }
+
+// SemverLike is a helper to determine if version is likely to be a well-formatted version.
+// It validates that the version starts with three numeric identifiers.
+func SemverLike(version string) bool {
+	split := semverSplit(version)
+	if len(split) < 3 {
+		return false
+	}
+
+	for i := 0; i < 3; i++ {
+		_, err := strconv.Atoi(split[i])
+		if err != nil {
+			return false
+		}
+	}
+
+	return true
+}

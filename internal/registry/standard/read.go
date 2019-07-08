@@ -6,20 +6,29 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/g-harel/npmfs/internal/registry"
+	"github.com/g-harel/npmfs/internal/util"
 )
 
 type stdReadHandler func(name string, contents io.Reader) error
 
 // Helper to fetch the contents of a package and call the handler with each file.
 func (c *Client) read(name, version string, handler stdReadHandler) error {
-	client := &http.Client{Timeout: 7 * time.Second}
+	if !util.SemverLike(version) {
+		return registry.ErrNotFound
+	}
+
+	client := &http.Client{Timeout: 4 * time.Second}
 
 	// Fetch .tgz archive of package contents.
 	url := fmt.Sprintf("https://%s/%s/-/%[2]s-%s.tgz", c.Host, name, version)
 	response, err := client.Get(url)
+	if os.IsTimeout(err) {
+		return registry.ErrTimeout
+	}
 	if err != nil {
 		return fmt.Errorf("request contents: %v", err)
 	}

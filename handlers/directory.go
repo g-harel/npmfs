@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -19,13 +20,17 @@ func Directory(client registry.Client) http.HandlerFunc {
 		path := vars["path"]
 
 		dirs, files, err := client.Directory(name, version, path)
+		if err == registry.ErrNotFound {
+			http.NotFound(w, r)
+			return
+		}
+		if err == registry.ErrTimeout {
+			http.Error(w, fmt.Sprintf("%v timeout", http.StatusGatewayTimeout), http.StatusGatewayTimeout)
+			return
+		}
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			log.Printf("ERROR fetch directory: %v", err)
-			return
-		}
-		if err == registry.ErrNotFound {
-			http.NotFound(w, r)
 			return
 		}
 

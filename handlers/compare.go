@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -45,6 +46,10 @@ func Compare(client registry.Client) http.HandlerFunc {
 			dir := <-dirChan
 			if dir.err == registry.ErrNotFound {
 				http.NotFound(w, r)
+				return
+			}
+			if dir.err == registry.ErrTimeout {
+				http.Error(w, fmt.Sprintf("%v timeout", http.StatusGatewayTimeout), http.StatusGatewayTimeout)
 				return
 			}
 			if dir.err != nil {
