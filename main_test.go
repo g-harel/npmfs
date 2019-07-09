@@ -62,8 +62,16 @@ func TestRoutes(t *testing.T) {
 			Path:   "/package/test/0.0.0",
 			Status: http.StatusOK,
 		},
+		"package contents v redirect": {
+			Path:   "/package/test/v/0.0.0",
+			Status: http.StatusOK,
+		},
 		"namespaced package contents": {
 			Path:   "/package/@test/test/0.0.0",
+			Status: http.StatusOK,
+		},
+		"namespaced package contents v redirect": {
+			Path:   "/package/@test/test/v/0.0.0",
 			Status: http.StatusOK,
 		},
 		"package file": {

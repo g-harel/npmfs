@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 
 	"github.com/NYTimes/gziphandler"
 	"github.com/g-harel/npmfs/handlers"
@@ -22,8 +23,17 @@ var (
 )
 
 // Redirect responds with a temporary redirect after adding the pre and postfix.
+// Path params (ex. "{name}") in pre/post are looked up in "mux.Vars()".
 func redirect(pre, post string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		param := regexp.MustCompile("\\{.+\\}")
+		pre = param.ReplaceAllStringFunc(pre, func(match string) string {
+			return vars[match[1:len(match)-1]]
+		})
+		post = param.ReplaceAllStringFunc(post, func(match string) string {
+			return vars[match[1:len(match)-1]]
+		})
 		http.Redirect(w, r, pre+r.URL.Path+post, http.StatusFound)
 	}
 }
@@ -41,29 +51,31 @@ func routes(client registry.Client) http.Handler {
 	var (
 		// Name pattern matches with simple and org-scoped names.
 		// (ex. "lodash", "react", "@types/express")
-		namePattern = "{name:(?:@[^/]+\\/)?[^/]+}"
+		nameP = "{name:(?:@[^/]+\\/)?[^/]+}"
 		// Directory path pattern matches everything that ends with a path separator.
-		dirPattern = "{path:(?:.+/)?$}"
+		dirP = "{path:(?:.+/)?$}"
 		// File path pattern matches everything that does not end in a path separator.
-		filePattern = "{path:.*[^/]$}"
+		fileP = "{path:.*[^/]$}"
 	)
 
 	// Show package versions.
-	r.HandleFunc("/package/"+namePattern+"", redirect("", "/"))
-	r.HandleFunc("/package/"+namePattern+"/", handlers.Versions(client))
+	r.HandleFunc("/package/"+nameP+"", redirect("", "/"))
+	r.HandleFunc("/package/"+nameP+"/", handlers.Versions(client))
 
 	// Show package contents.
-	r.HandleFunc("/package/"+namePattern+"/{version}", redirect("", "/"))
-	r.PathPrefix("/package/" + namePattern + "/{version}/" + dirPattern).HandlerFunc(handlers.Directory(client))
-	r.PathPrefix("/package/" + namePattern + "/{version}/" + filePattern).HandlerFunc(handlers.File(client))
+	r.HandleFunc("/package/"+nameP+"/{version}", redirect("", "/"))
+	r.HandleFunc("/package/"+nameP+"/v/{version}", redirect("", "/../../{version}/"))
+	r.HandleFunc("/package/"+nameP+"/v/{version}/", redirect("", "/../../{version}/"))
+	r.PathPrefix("/package/" + nameP + "/{version}/" + dirP).HandlerFunc(handlers.Directory(client))
+	r.PathPrefix("/package/" + nameP + "/{version}/" + fileP).HandlerFunc(handlers.File(client))
 
 	// Pick second version to compare to.
-	r.HandleFunc("/compare/"+namePattern+"/{disabled}", redirect("", "/"))
-	r.HandleFunc("/compare/"+namePattern+"/{disabled}/", handlers.Versions(client))
+	r.HandleFunc("/compare/"+nameP+"/{disabled}", redirect("", "/"))
+	r.HandleFunc("/compare/"+nameP+"/{disabled}/", handlers.Versions(client))
 
 	// Compare package versions.
-	r.HandleFunc("/compare/"+namePattern+"/{a}/{b}", redirect("", "/"))
-	r.HandleFunc("/compare/"+namePattern+"/{a}/{b}/", handlers.Compare(client))
+	r.HandleFunc("/compare/"+nameP+"/{a}/{b}", redirect("", "/"))
+	r.HandleFunc("/compare/"+nameP+"/{a}/{b}/", handlers.Compare(client))
 
 	// Static assets.
 	assets := http.FileServer(http.Dir("assets"))
@@ -73,8 +85,8 @@ func routes(client registry.Client) http.Handler {
 
 	// Attempt to match single path as package name.
 	// Handlers registered before this point have a higher matching priority.
-	r.HandleFunc("/"+namePattern, redirect("/package", "/"))
-	r.HandleFunc("/"+namePattern+"/", redirect("/package", ""))
+	r.HandleFunc("/"+nameP, redirect("/package", "/"))
+	r.HandleFunc("/"+nameP+"/", redirect("/package", ""))
 
 	return r
 }
