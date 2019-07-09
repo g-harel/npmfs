@@ -28,10 +28,10 @@ func redirect(pre, post string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		param := regexp.MustCompile("\\{.+\\}")
-		pre = param.ReplaceAllStringFunc(pre, func(match string) string {
+		pre := param.ReplaceAllStringFunc(pre, func(match string) string {
 			return vars[match[1:len(match)-1]]
 		})
-		post = param.ReplaceAllStringFunc(post, func(match string) string {
+		post := param.ReplaceAllStringFunc(post, func(match string) string {
 			return vars[match[1:len(match)-1]]
 		})
 		http.Redirect(w, r, pre+r.URL.Path+post, http.StatusFound)
