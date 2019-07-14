@@ -1,10 +1,8 @@
 <!--
 
 todo
-    better error handling
-        upstream 500 -> respond 502
     write more tests
-        util.SemverLike
+        registry.Err(or)
     registry picker
 
 -->

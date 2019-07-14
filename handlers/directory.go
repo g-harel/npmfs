@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -9,6 +8,7 @@ import (
 	"github.com/g-harel/npmfs/internal/util"
 	"github.com/g-harel/npmfs/templates"
 	"github.com/gorilla/mux"
+	"golang.org/x/xerrors"
 )
 
 // Directory handler displays a directory view of package contents at the provided path.
@@ -20,15 +20,12 @@ func Directory(client registry.Client) http.HandlerFunc {
 		path := vars["path"]
 
 		dirs, files, err := client.Directory(name, version, path)
-		if err == registry.ErrNotFound {
-			http.NotFound(w, r)
-			return
-		}
-		if err == registry.ErrTimeout {
-			http.Error(w, fmt.Sprintf("%v timeout", http.StatusGatewayTimeout), http.StatusGatewayTimeout)
-			return
-		}
 		if err != nil {
+			var registryErr *registry.Err
+			if xerrors.As(err, &registryErr) {
+				http.Error(w, registryErr.Error(), registryErr.StatusCode)
+				return
+			}
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			log.Printf("ERROR fetch directory: %v", err)
 			return

@@ -1,7 +1,6 @@
 package mock
 
 import (
-	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -10,6 +9,7 @@ import (
 
 	"github.com/g-harel/npmfs/internal/registry"
 	"github.com/g-harel/npmfs/internal/util"
+	"golang.org/x/xerrors"
 )
 
 // Client is a mock implementation of the registry.Client interface.
@@ -57,7 +57,7 @@ func (c *Client) Directory(name, version, path string) ([]string, []string, erro
 func (c *Client) Download(name, version string) (string, error) {
 	dir, err := ioutil.TempDir("", "")
 	if err != nil {
-		return "", fmt.Errorf("create temp dir: %v", err)
+		return "", xerrors.Errorf("create temp dir: %w", err)
 	}
 
 	versionContents, ok := c.Contents[version]
@@ -70,22 +70,22 @@ func (c *Client) Download(name, version string) (string, error) {
 
 		err := os.MkdirAll(path.Dir(outPath), os.ModePerm)
 		if err != nil {
-			return "", fmt.Errorf("create file output path: %v", err)
+			return "", xerrors.Errorf("create file output path: %w", err)
 		}
 
 		outFile, err := os.Create(outPath)
 		if err != nil {
-			return "", fmt.Errorf("create output file: %v", err)
+			return "", xerrors.Errorf("create output file: %w", err)
 		}
 
 		_, err = io.Copy(outFile, strings.NewReader(contents))
 		if err != nil {
-			return "", fmt.Errorf("write file contents: %v", err)
+			return "", xerrors.Errorf("write file contents: %w", err)
 		}
 
 		err = outFile.Close()
 		if err != nil {
-			return "", fmt.Errorf("close file: %v", err)
+			return "", xerrors.Errorf("close file: %w", err)
 		}
 	}
 

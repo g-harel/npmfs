@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path"
@@ -14,6 +15,7 @@ import (
 
 	"github.com/g-harel/npmfs/internal/registry"
 	"github.com/g-harel/npmfs/internal/util"
+	"golang.org/x/xerrors"
 )
 
 // Client implements the registry.Client interface for standard registries.
@@ -40,16 +42,11 @@ func (c *Client) Directory(name, version, path string) ([]string, []string, erro
 		}
 		return nil
 	})
-	if err == registry.ErrNotFound {
-		return nil, nil, registry.ErrNotFound
-	}
-	if err == registry.ErrTimeout {
-		return nil, nil, registry.ErrTimeout
-	}
 	if err != nil {
-		return nil, nil, fmt.Errorf("read package contents: %v", err)
+		return nil, nil, xerrors.Errorf("read package contents: %w", err)
 	}
 	if len(dirs) == 0 && len(files) == 0 {
+		log.Printf("ERROR standard registry: directory: empty: %v:%v@%v/%v", c.Host, name, version, path)
 		return nil, nil, registry.ErrNotFound
 	}
 
@@ -61,7 +58,7 @@ func (c *Client) Download(name, version string) (string, error) {
 	// Create temporary directory.
 	dir, err := ioutil.TempDir("", "")
 	if err != nil {
-		return "", fmt.Errorf("create temp dir: %v", err)
+		return "", xerrors.Errorf("create temp dir: %w", err)
 	}
 
 	// Write package contents to the target directory.
@@ -70,34 +67,28 @@ func (c *Client) Download(name, version string) (string, error) {
 
 		err := os.MkdirAll(path.Dir(outPath), os.ModePerm)
 		if err != nil {
-			return fmt.Errorf("create file output path: %v", err)
+			return xerrors.Errorf("create file output path: %w", err)
 		}
 
 		outFile, err := os.Create(outPath)
 		if err != nil {
-			return fmt.Errorf("create output file: %v", err)
+			return xerrors.Errorf("create output file: %w", err)
 		}
 
 		_, err = io.Copy(outFile, contents)
 		if err != nil {
-			return fmt.Errorf("write file contents: %v", err)
+			return xerrors.Errorf("write file contents: %w", err)
 		}
 
 		err = outFile.Close()
 		if err != nil {
-			return fmt.Errorf("close file: %v", err)
+			return xerrors.Errorf("close file: %w", err)
 		}
 
 		return nil
 	})
-	if err == registry.ErrNotFound {
-		return "", registry.ErrNotFound
-	}
-	if err == registry.ErrTimeout {
-		return "", registry.ErrTimeout
-	}
 	if err != nil {
-		return "", fmt.Errorf("read package contents: %v", err)
+		return "", xerrors.Errorf("read package contents: %w", err)
 	}
 
 	return dir, nil
@@ -112,23 +103,18 @@ func (c *Client) File(name, version, path string) (string, error) {
 			buf := new(bytes.Buffer)
 			_, err := buf.ReadFrom(contents)
 			if err != nil {
-				return fmt.Errorf("copy contents: %v", err)
+				return xerrors.Errorf("copy contents: %w", err)
 			}
 			file = buf.String()
 			found = true
 		}
 		return nil
 	})
-	if err == registry.ErrNotFound {
-		return "", registry.ErrNotFound
-	}
-	if err == registry.ErrTimeout {
-		return "", registry.ErrTimeout
-	}
 	if err != nil {
-		return "", fmt.Errorf("read package contents: %v", err)
+		return "", xerrors.Errorf("read package contents: %w", err)
 	}
 	if !found {
+		log.Printf("ERROR standard registry: file: not found: %v:%v@%v/%v", c.Host, name, version, path)
 		return "", registry.ErrNotFound
 	}
 
@@ -142,18 +128,21 @@ func (c *Client) Versions(name string) ([]string, string, error) {
 	url := fmt.Sprintf("https://%s/%s", c.Host, name)
 	response, err := client.Get(url)
 	if os.IsTimeout(err) {
-		return nil, "", registry.ErrTimeout
+		log.Printf("ERROR standard registry: versions: timeout: %v:%v", c.Host, name)
+		return nil, "", registry.ErrGatewayTimeout
 	}
 	if err != nil {
-		return nil, "", fmt.Errorf("request contents: %v", err)
+		return nil, "", xerrors.Errorf("request contents: %w", err)
 	}
 	defer response.Body.Close()
 
 	if response.StatusCode == http.StatusNotFound {
+		log.Printf("ERROR standard registry: versions: not found (%v)", url)
 		return nil, "", registry.ErrNotFound
 	}
 	if response.StatusCode != http.StatusOK {
-		return nil, "", fmt.Errorf(http.StatusText(response.StatusCode))
+		log.Printf("ERROR standard registry: versions: unexpected status code (%v): %v", url, response.StatusCode)
+		return nil, "", registry.ErrBadGateway
 	}
 
 	data := &struct {
@@ -165,7 +154,7 @@ func (c *Client) Versions(name string) ([]string, string, error) {
 
 	err = json.NewDecoder(response.Body).Decode(data)
 	if err != nil {
-		return nil, "", fmt.Errorf("decode response body: %v", err)
+		return nil, "", xerrors.Errorf("decode response body: %w", err)
 	}
 
 	versions := make([]string, len(data.Versions))

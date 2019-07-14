@@ -1,12 +1,13 @@
 package diff
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
 	"strings"
+
+	"golang.org/x/xerrors"
 )
 
 // ExecGit runs a git command in the specified directory and returns its output.
@@ -16,7 +17,7 @@ func execGit(dir string, arg ...string) (string, error) {
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		return "", fmt.Errorf("run command 'git %v': %v\n%v", strings.Join(arg, " "), err, string(out))
+		return "", xerrors.Errorf("run command 'git %v': %v\n%w", strings.Join(arg, " "), err, string(out))
 	}
 
 	return string(out), nil
@@ -29,7 +30,7 @@ func Compare(a, b string) ([]*Patch, error) {
 	// Create temporary working directory.
 	dir, err := ioutil.TempDir("", "")
 	if err != nil {
-		return nil, fmt.Errorf("create temp dir: %v", err)
+		return nil, xerrors.Errorf("create temp dir: %w", err)
 	}
 	contentPath := path.Join(dir, "content")
 
@@ -56,7 +57,7 @@ func Compare(a, b string) ([]*Patch, error) {
 	// Move contents from "a" into repository.
 	err = os.Rename(a, contentPath)
 	if err != nil {
-		return nil, fmt.Errorf("copy contents: %v", err)
+		return nil, xerrors.Errorf("copy contents: %w", err)
 	}
 
 	// Commit version "a" to the repository.
@@ -72,13 +73,13 @@ func Compare(a, b string) ([]*Patch, error) {
 	// Return contents from "a" to original path.
 	err = os.Rename(contentPath, a)
 	if err != nil {
-		return nil, fmt.Errorf("copy contents: %v", err)
+		return nil, xerrors.Errorf("copy contents: %w", err)
 	}
 
 	// Move contents from "b" into repository.
 	err = os.Rename(b, contentPath)
 	if err != nil {
-		return nil, fmt.Errorf("copy contents: %v", err)
+		return nil, xerrors.Errorf("copy contents: %w", err)
 	}
 
 	// Commit version "b" to the repository.
@@ -94,13 +95,13 @@ func Compare(a, b string) ([]*Patch, error) {
 	// Compute diff between contents.
 	out, err := execGit(dir, "diff-tree", "--patch", "-r", "--find-renames", "--ignore-all-space", "HEAD~", "HEAD")
 	if err != nil {
-		return nil, fmt.Errorf("compute diff: %v", err)
+		return nil, xerrors.Errorf("compute diff: %w", err)
 	}
 
 	// Return contents from "b" to original path.
 	err = os.Rename(contentPath, b)
 	if err != nil {
-		return nil, fmt.Errorf("copy contents: %v", err)
+		return nil, xerrors.Errorf("copy contents: %w", err)
 	}
 
 	// Clean up temporary directory.
@@ -109,7 +110,7 @@ func Compare(a, b string) ([]*Patch, error) {
 	// Parse output text.
 	patches, err := patchParse(out)
 	if err != nil {
-		return nil, fmt.Errorf("parse output: %v", err)
+		return nil, xerrors.Errorf("parse output: %w", err)
 	}
 
 	return patches, nil

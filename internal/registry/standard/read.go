@@ -5,46 +5,46 @@ import (
 	"compress/gzip"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/g-harel/npmfs/internal/registry"
-	"github.com/g-harel/npmfs/internal/util"
+	"golang.org/x/xerrors"
 )
 
 type stdReadHandler func(name string, contents io.Reader) error
 
 // Helper to fetch the contents of a package and call the handler with each file.
 func (c *Client) read(name, version string, handler stdReadHandler) error {
-	if !util.SemverLike(version) {
-		return registry.ErrNotFound
-	}
-
 	client := &http.Client{Timeout: 4 * time.Second}
 
 	// Fetch .tgz archive of package contents.
 	url := fmt.Sprintf("https://%s/%s/-/%[2]s-%s.tgz", c.Host, name, version)
 	response, err := client.Get(url)
 	if os.IsTimeout(err) {
-		return registry.ErrTimeout
+		log.Printf("ERROR standard registry: read: timeout (%v)", url)
+		return registry.ErrGatewayTimeout
 	}
 	if err != nil {
-		return fmt.Errorf("request contents: %v", err)
+		return xerrors.Errorf("request contents: %w", err)
 	}
 	defer response.Body.Close()
 
 	if response.StatusCode == http.StatusNotFound {
+		log.Printf("ERROR standard registry: read: not found (%v)", url)
 		return registry.ErrNotFound
 	}
 	if response.StatusCode != http.StatusOK {
-		return fmt.Errorf(http.StatusText(response.StatusCode))
+		log.Printf("ERROR standard registry: read: unexpected status code (%v): %v", url, response.StatusCode)
+		return registry.ErrBadGateway
 	}
 
 	// Extract tarball from body.
 	extractedBody, err := gzip.NewReader(response.Body)
 	if err != nil {
-		return fmt.Errorf("extract gzip data: %v", err)
+		return xerrors.Errorf("extract gzip data: %w", err)
 	}
 
 	// Extract package contents from tarball.
@@ -55,7 +55,7 @@ func (c *Client) read(name, version string, handler stdReadHandler) error {
 			break
 		}
 		if err != nil {
-			return fmt.Errorf("advance to next file: %v", err)
+			return xerrors.Errorf("advance to next file: %w", err)
 		}
 
 		if header.FileInfo().IsDir() {
@@ -64,7 +64,7 @@ func (c *Client) read(name, version string, handler stdReadHandler) error {
 
 		err = handler(header.Name, tarball)
 		if err != nil {
-			return fmt.Errorf("handler error: %v", err)
+			return xerrors.Errorf("handler error: %w", err)
 		}
 	}
 

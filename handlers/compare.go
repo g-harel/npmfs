@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -10,6 +9,7 @@ import (
 	"github.com/g-harel/npmfs/internal/registry"
 	"github.com/g-harel/npmfs/templates"
 	"github.com/gorilla/mux"
+	"golang.org/x/xerrors"
 )
 
 // Compare handler displays a diff between two package versions.
@@ -44,15 +44,12 @@ func Compare(client registry.Client) http.HandlerFunc {
 		dirs := map[string]string{}
 		for _ = range versions {
 			dir := <-dirChan
-			if dir.err == registry.ErrNotFound {
-				http.NotFound(w, r)
-				return
-			}
-			if dir.err == registry.ErrTimeout {
-				http.Error(w, fmt.Sprintf("%v timeout", http.StatusGatewayTimeout), http.StatusGatewayTimeout)
-				return
-			}
 			if dir.err != nil {
+				var registryErr *registry.Err
+				if xerrors.As(dir.err, &registryErr) {
+					http.Error(w, registryErr.Error(), registryErr.StatusCode)
+					return
+				}
 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 				log.Printf("ERROR download package '%v': %v", dir.version, dir.err)
 				return

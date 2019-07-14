@@ -1,16 +1,5 @@
 package registry
 
-import (
-	"errors"
-	"net/http"
-)
-
-// ErrNotFound is returned when a package and version combination is not found.
-var ErrNotFound = errors.New(http.StatusText(http.StatusNotFound))
-
-// ErrTimeout is returned when the remote registry did not respond fast enough.
-var ErrTimeout = errors.New(http.StatusText(http.StatusGatewayTimeout))
-
 // Client defines the required interface for a registry.
 type Client interface {
 	Directory(name, version, path string) (dirs, files []string, err error)
