@@ -58,6 +58,14 @@ func TestRoutes(t *testing.T) {
 			Path:   "/package/@test/test",
 			Status: http.StatusOK,
 		},
+		"package versions from compare": {
+			Path:   "/compare/test",
+			Status: http.StatusOK,
+		},
+		"namespaced package versions from compare": {
+			Path:   "/compare/@test/test",
+			Status: http.StatusOK,
+		},
 		"package contents": {
 			Path:   "/package/test/0.0.0",
 			Status: http.StatusOK,
