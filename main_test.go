@@ -10,77 +10,78 @@ import (
 )
 
 func TestRoutes(t *testing.T) {
-	client := &mockRegistry.Client{
-		Latest: "1.1.1",
-		Contents: map[string]map[string]string{
-			"0.0.0": {
-				"README.md": "",
-			},
-			"1.1.1": {
-				"README.md": "",
-			},
-		},
-	}
-
 	tt := map[string]struct {
-		Path   string
-		Status int
+		Path     string
+		Status   int
+		Redirect string
 	}{
 		"home": {
 			Path:   "/",
 			Status: http.StatusOK,
 		},
 		"static favicon": {
-			Path:   "/favicon.ico",
-			Status: http.StatusOK,
+			Path:     "/favicon.ico",
+			Status:   http.StatusOK,
+			Redirect: "/assets/favicon.ico",
 		},
 		"static robots.txt": {
-			Path:   "/robots.txt",
-			Status: http.StatusOK,
+			Path:     "/robots.txt",
+			Status:   http.StatusOK,
+			Redirect: "/assets/robots.txt",
 		},
 		"static icon": {
 			Path:   "/assets/icon-package.svg",
 			Status: http.StatusOK,
 		},
 		"package versions shortcut": {
-			Path:   "/test",
-			Status: http.StatusOK,
+			Path:     "/test",
+			Status:   http.StatusOK,
+			Redirect: "/package/test/",
 		},
 		"namespaced package versions shortcut": {
-			Path:   "/@test/test",
-			Status: http.StatusOK,
+			Path:     "/@test/test",
+			Status:   http.StatusOK,
+			Redirect: "/package/@test/test/",
 		},
 		"package versions": {
-			Path:   "/package/test",
-			Status: http.StatusOK,
+			Path:     "/package/test",
+			Status:   http.StatusOK,
+			Redirect: "/package/test/",
 		},
 		"namespaced package versions": {
-			Path:   "/package/@test/test",
-			Status: http.StatusOK,
+			Path:     "/package/@test/test",
+			Status:   http.StatusOK,
+			Redirect: "/package/@test/test/",
 		},
 		"package versions from compare": {
-			Path:   "/compare/test",
-			Status: http.StatusOK,
+			Path:     "/compare/test",
+			Status:   http.StatusOK,
+			Redirect: "/package/test/",
 		},
 		"namespaced package versions from compare": {
-			Path:   "/compare/@test/test",
-			Status: http.StatusOK,
+			Path:     "/compare/@test/test",
+			Status:   http.StatusOK,
+			Redirect: "/package/@test/test/",
 		},
 		"package contents": {
-			Path:   "/package/test/0.0.0",
-			Status: http.StatusOK,
+			Path:     "/package/test/0.0.0",
+			Status:   http.StatusOK,
+			Redirect: "/package/test/0.0.0/",
 		},
 		"package contents v redirect": {
-			Path:   "/package/test/v/0.0.0",
-			Status: http.StatusOK,
+			Path:     "/package/test/v/0.0.0",
+			Status:   http.StatusOK,
+			Redirect: "/package/test/0.0.0/",
 		},
 		"namespaced package contents": {
-			Path:   "/package/@test/test/0.0.0",
-			Status: http.StatusOK,
+			Path:     "/package/@test/test/0.0.0",
+			Status:   http.StatusOK,
+			Redirect: "/package/@test/test/0.0.0/",
 		},
 		"namespaced package contents v redirect": {
-			Path:   "/package/@test/test/v/0.0.0",
-			Status: http.StatusOK,
+			Path:     "/package/@test/test/v/0.0.0",
+			Status:   http.StatusOK,
+			Redirect: "/package/@test/test/v/0.0.0/",
 		},
 		"package file": {
 			Path:   "/package/test/0.0.0/README.md",
@@ -91,20 +92,36 @@ func TestRoutes(t *testing.T) {
 			Status: http.StatusOK,
 		},
 		"package compare picker": {
-			Path:   "/compare/test/0.0.0",
-			Status: http.StatusOK,
+			Path:     "/compare/test/0.0.0",
+			Status:   http.StatusOK,
+			Redirect: "/compare/test/0.0.0/",
 		},
 		"namespaced package compare picker": {
-			Path:   "/compare/@test/test/0.0.0",
-			Status: http.StatusOK,
+			Path:     "/compare/@test/test/0.0.0",
+			Status:   http.StatusOK,
+			Redirect: "/compare/@test/test/0.0.0/",
 		},
 		"package compare": {
-			Path:   "/compare/test/0.0.0/1.1.1",
-			Status: http.StatusOK,
+			Path:     "/compare/test/0.0.0/1.1.1",
+			Status:   http.StatusOK,
+			Redirect: "/compare/test/0.0.0/1.1.1/",
 		},
 		"namespaced package compare": {
-			Path:   "/compare/@test/test/0.0.0/1.1.1",
-			Status: http.StatusOK,
+			Path:     "/compare/@test/test/0.0.0/1.1.1",
+			Status:   http.StatusOK,
+			Redirect: "/compare/@test/test/0.0.0/1.1.1/",
+		},
+	}
+
+	client := &mockRegistry.Client{
+		Latest: "1.1.1",
+		Contents: map[string]map[string]string{
+			"0.0.0": {
+				"README.md": "",
+			},
+			"1.1.1": {
+				"README.md": "",
+			},
 		},
 	}
 
@@ -119,7 +136,18 @@ func TestRoutes(t *testing.T) {
 			}
 
 			if res.StatusCode != tc.Status {
-				t.Fatalf("expected/received do not match\n%v\n%v", tc.Status, res.StatusCode)
+				t.Fatalf("expected/received status codes do not match\n%v\n%v", tc.Status, res.StatusCode)
+			}
+
+			path := res.Request.URL.EscapedPath()
+			if tc.Path != path {
+				if tc.Redirect == "" {
+					t.Fatalf("unexpected redirection\n%v\n%v", tc.Path, path)
+				} else {
+					if tc.Redirect != path {
+						t.Fatalf("expected/received redirected paths do not match\n%v\n%v", tc.Redirect, path)
+					}
+				}
 			}
 		})
 	}
