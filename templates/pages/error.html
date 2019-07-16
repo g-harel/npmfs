@@ -1,0 +1,44 @@
+<!--
+
+type Context struct {
+    Status int
+    Info   string
+}
+
+-->
+
+{{- define "title" -}}
+    {{- .Status  }} {{  .Info -}}
+{{- end -}}
+
+{{- define "description" -}}
+   {{- .Status  }} {{  .Info -}}
+{{- end -}}
+
+{{- define "style" -}}
+    <style>
+        header {
+            display: none;
+        }
+
+        .center {
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: center;
+        }
+
+        .center a {
+            padding: 0.5rem;
+        }
+    </style>
+{{- end -}}
+
+{{- define "body" -}}
+    <div class="center">
+        <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/{{- .Status -}}" target="_blank">
+            {{- .Status  }} {{  .Info -}}
+        </a>
+    </div>
+{{- end -}}

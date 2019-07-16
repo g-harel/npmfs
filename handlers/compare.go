@@ -21,7 +21,7 @@ func Compare(client registry.Client) http.HandlerFunc {
 		versionB := vars["b"]
 
 		if versionA == versionB {
-			http.NotFound(w, r)
+			templates.PageError(http.StatusBadRequest, http.StatusText(http.StatusBadRequest)).Handler(w, r)
 			return
 		}
 		versions := []string{versionA, versionB}
@@ -47,10 +47,10 @@ func Compare(client registry.Client) http.HandlerFunc {
 			if dir.err != nil {
 				var registryErr *registry.Err
 				if xerrors.As(dir.err, &registryErr) {
-					http.Error(w, registryErr.Error(), registryErr.StatusCode)
+					templates.PageError(registryErr.StatusCode, registryErr.Error()).Handler(w, r)
 					return
 				}
-				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				templates.PageError(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError)).Handler(w, r)
 				log.Printf("ERROR download package '%v': %v", dir.version, dir.err)
 				return
 			}
@@ -60,7 +60,7 @@ func Compare(client registry.Client) http.HandlerFunc {
 		// Compare contents.
 		patches, err := diff.Compare(dirs[versionA], dirs[versionB])
 		if err != nil {
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			templates.PageError(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError)).Handler(w, r)
 			log.Printf("ERROR compare package contents: %v", err)
 			return
 		}

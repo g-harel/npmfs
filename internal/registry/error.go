@@ -1,9 +1,7 @@
 package registry
 
 import (
-	"fmt"
 	"net/http"
-	"strings"
 
 	"golang.org/x/xerrors"
 )
@@ -35,9 +33,9 @@ func (e *Err) As(err error, target interface{}) bool {
 	return false
 }
 
-// Error implements the error interface and formats the
+// Error implements the error interface and provides a short description of the error.
 func (e *Err) Error() string {
-	return fmt.Sprintf("%v %v", e.StatusCode, strings.ToLower(http.StatusText(e.StatusCode)))
+	return http.StatusText(e.StatusCode)
 }
 
 // ErrNotFound signals a package and version combination is not found.

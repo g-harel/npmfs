@@ -13,6 +13,7 @@ type Renderer struct {
 }
 
 // Handler executes the templates and handles errors.
+// Does not attempt to render the error page template to avoid possible infinite recursion.
 func (r *Renderer) Handler(w http.ResponseWriter, _ *http.Request) {
 	tmpl, err := template.ParseFiles(r.filenames...)
 	if err != nil {

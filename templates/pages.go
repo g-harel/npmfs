@@ -109,3 +109,21 @@ func PageVersions(name, latest, disabled string, versions []string) *Renderer {
 		},
 	}
 }
+
+// PageError returns a renderer for a generic error page.
+func PageError(status int, info string) *Renderer {
+	return &Renderer{
+		filenames: []string{
+			"templates/layout.html",
+			"templates/logo.html",
+			"templates/pages/error.html",
+		},
+		context: struct {
+			Status int
+			Info   string
+		}{
+			Status: status,
+			Info:   info,
+		},
+	}
+}

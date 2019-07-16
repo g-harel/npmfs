@@ -23,10 +23,10 @@ func Directory(client registry.Client) http.HandlerFunc {
 		if err != nil {
 			var registryErr *registry.Err
 			if xerrors.As(err, &registryErr) {
-				http.Error(w, registryErr.Error(), registryErr.StatusCode)
+				templates.PageError(registryErr.StatusCode, registryErr.Error()).Handler(w, r)
 				return
 			}
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			templates.PageError(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError)).Handler(w, r)
 			log.Printf("ERROR fetch directory: %v", err)
 			return
 		}
