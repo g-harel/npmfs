@@ -45,7 +45,7 @@ func Compare(client registry.Client) http.HandlerFunc {
 		for _ = range versions {
 			dir := <-dirChan
 			if dir.err != nil {
-				var registryErr *registry.Err
+				var registryErr *registry.Error
 				if xerrors.As(dir.err, &registryErr) {
 					templates.PageError(registryErr.StatusCode, registryErr.Error()).Handler(w, r)
 					return

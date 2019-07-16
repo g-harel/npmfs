@@ -9,7 +9,6 @@ import (
 )
 
 func TestSemverSort(t *testing.T) {
-	//
 	// https://semver.org/#semantic-versioning-specification-semver
 	tt := map[string]struct {
 		Expected []string

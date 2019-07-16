@@ -2,47 +2,23 @@ package registry
 
 import (
 	"net/http"
-
-	"golang.org/x/xerrors"
 )
 
-// Error represents a generic registry error.
-// It is used to determine if an error xerrors.Is() a registry error.
-var Error = xerrors.New("registry error")
-
-// Err indicates the appropriate status code return to the user.
-type Err struct {
+// Error indicates the appropriate status code return to the user.
+type Error struct {
 	StatusCode int
 }
 
-var _ error = &Err{}
-
-// Is returns true if the given err is the generic registry.Error.
-// It implements the interface described in xerrors.
-func (e *Err) Is(err error) bool {
-	return err == Error
-}
-
-// As returns true if the given err is the generic registry.Error.
-// It implements the interface described in xerrors.
-func (e *Err) As(err error, target interface{}) bool {
-	if err == Error {
-		target = e
-		return true
-	}
-	return false
-}
-
 // Error implements the error interface and provides a short description of the error.
-func (e *Err) Error() string {
+func (e *Error) Error() string {
 	return http.StatusText(e.StatusCode)
 }
 
 // ErrNotFound signals a package and version combination is not found.
-var ErrNotFound = &Err{http.StatusNotFound}
+var ErrNotFound = &Error{http.StatusNotFound}
 
 // ErrGatewayTimeout signals the remote registry did not respond before the timeout duration.
-var ErrGatewayTimeout = &Err{http.StatusGatewayTimeout}
+var ErrGatewayTimeout = &Error{http.StatusGatewayTimeout}
 
 // ErrBadGateway signals an unexpected upstream error.
-var ErrBadGateway = &Err{http.StatusBadGateway}
+var ErrBadGateway = &Error{http.StatusBadGateway}

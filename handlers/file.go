@@ -23,7 +23,7 @@ func File(client registry.Client) http.HandlerFunc {
 		// Fetch file contents.
 		file, err := client.File(name, version, path)
 		if err != nil {
-			var registryErr *registry.Err
+			var registryErr *registry.Error
 			if xerrors.As(err, &registryErr) {
 				templates.PageError(registryErr.StatusCode, registryErr.Error()).Handler(w, r)
 				return

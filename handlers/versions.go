@@ -22,7 +22,7 @@ func Versions(client registry.Client) http.HandlerFunc {
 		// Fetch and sort version list.
 		versions, latest, err := client.Versions(name)
 		if err != nil {
-			var registryErr *registry.Err
+			var registryErr *registry.Error
 			if xerrors.As(err, &registryErr) {
 				templates.PageError(registryErr.StatusCode, registryErr.Error()).Handler(w, r)
 				return

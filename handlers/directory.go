@@ -21,7 +21,7 @@ func Directory(client registry.Client) http.HandlerFunc {
 
 		dirs, files, err := client.Directory(name, version, path)
 		if err != nil {
-			var registryErr *registry.Err
+			var registryErr *registry.Error
 			if xerrors.As(err, &registryErr) {
 				templates.PageError(registryErr.StatusCode, registryErr.Error()).Handler(w, r)
 				return
