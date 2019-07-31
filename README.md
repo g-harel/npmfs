@@ -1,9 +1,8 @@
 <!--
 
 todo
-    write more tests
-        registry.Err(or)
-    registry picker
+    github badge?
+    registry picker?
 
 -->
 

@@ -35,12 +35,28 @@ func redirect(path string) http.HandlerFunc {
 	}
 }
 
+// HTTPSHandler is middleware to redirect HTTP requests to the HTTPS equivalent.
+// The middleware assumes it is receiving a forwarded request.
+// Local development is not impacted unless requests specify the checked header.
+func httpsHandler(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("X-Forwarded-Proto") == "http" {
+			newURL := fmt.Sprintf("https://%v%v", r.Host, r.RequestURI)
+			http.Redirect(w, r, newURL, http.StatusMovedPermanently)
+		}
+		h.ServeHTTP(w, r)
+	})
+}
+
 // Routes returns an http handler with all the routes/handlers attached.
 func routes(client registry.Client) http.Handler {
 	r := mux.NewRouter()
 
 	// Add gzip middleware to all handlers.
 	r.Use(gziphandler.GzipHandler)
+
+	// Redirect all HTTP requests.
+	r.Use(httpsHandler)
 
 	// Show homepage.
 	r.HandleFunc("/", templates.PageHome().Handler)
