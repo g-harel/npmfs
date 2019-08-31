@@ -24,7 +24,7 @@ jobs:
         args: builds submit --tag gcr.io/npmfs-242515/website
 
     - name: cloud run deploy
-      uses: g-harel/gcloud/cli@248
+      uses: actions/gcloud/cli@master
       env:
         CLOUDSDK_CORE_PROJECT: npmfs-242515
       with:
