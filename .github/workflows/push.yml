@@ -17,7 +17,7 @@ jobs:
         GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
 
     - name: build container image
-      uses: actions/gcloud/auth@master
+      uses: actions/gcloud/cli@master
       env:
         CLOUDSDK_CORE_PROJECT: npmfs-242515
       with:
