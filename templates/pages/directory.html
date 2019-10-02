@@ -26,15 +26,19 @@ type Context struct {
 
 {{- define "style" -}}
     <style>
-        .info .compare {
+        .info .right {
             float: right;
             transform: translateY(-2px);
         }
 
-        .info .compare img {
+        .info .right img {
             height: 1em;
             opacity: 0.6;
             transform: translateY(2px);
+        }
+
+        .info .right .action {
+            margin-left: 1em;
         }
 
         .content .line .data {
@@ -71,11 +75,19 @@ type Context struct {
             -&nbsp;
         {{- else -}}
             {{- .Version -}}
-            <div class="compare">
-                <img src="/assets/icon-diff.svg">
-                <a href="/compare/{{- .Package -}}/{{- .Version -}}/">
-                    diff
-                </a>
+            <div class="right">
+                <span class="action">
+                    <img src="/assets/icon-download.svg">
+                    <a href="/download/{{- .Package -}}/{{- .Version -}}/">
+                        download<!--
+                 --></a>
+                </span>
+                <span class="action">
+                    <img src="/assets/icon-diff.svg">
+                    <a href="/compare/{{- .Package -}}/{{- .Version -}}/">
+                        diff
+                    </a>
+                </span>
             </div>
         {{- end -}}
 
