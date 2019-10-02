@@ -92,6 +92,10 @@ func routes(client registry.Client) http.Handler {
 	r.HandleFunc("/compare/"+nameP+"/{a}/{b}/", handlers.Compare(client))
 	r.HandleFunc("/compare/"+nameP+"/{a}/{b}", redirect("/compare/{name}/{a}/{b}/"))
 
+	// Download package contents.
+	r.HandleFunc("/download/"+nameP+"/{version}/", handlers.Download(client))
+	r.HandleFunc("/download/"+nameP+"/{version}", redirect("/download/{name}/{version}/"))
+
 	// Static assets.
 	assets := http.FileServer(http.Dir("assets"))
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", assets))

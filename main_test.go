@@ -111,6 +111,16 @@ func TestRoutes(t *testing.T) {
 			Status:   http.StatusOK,
 			Redirect: "/compare/@test/test/0.0.0/1.1.1/",
 		},
+		"package download": {
+			Path:     "/download/test/0.0.0",
+			Status:   http.StatusOK,
+			Redirect: "/download/test/0.0.0/",
+		},
+		"namespaced package download": {
+			Path:     "/download/@test/test/0.0.0",
+			Status:   http.StatusOK,
+			Redirect: "/download/@test/test/0.0.0/",
+		},
 	}
 
 	client := &mockRegistry.Client{

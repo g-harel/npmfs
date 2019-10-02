@@ -1,6 +1,7 @@
 package standard
 
 import (
+	"archive/zip"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -24,6 +25,28 @@ type Client struct {
 }
 
 var _ registry.Client = &Client{}
+
+// Archive writes a zip archive of the package contents to out.
+func (c *Client) Archive(name, version string, out io.Writer) error {
+	w := zip.NewWriter(out)
+	defer w.Close()
+	err := c.read(name, version, func(name string, contents io.Reader) error {
+		filepath := strings.TrimPrefix(name, "package/")
+		f, err := w.Create(filepath)
+		if err != nil {
+			return xerrors.Errorf("create file: %w", err)
+		}
+		_, err = io.Copy(f, contents)
+		if err != nil {
+			return xerrors.Errorf("copy file contents: %w", err)
+		}
+		return nil
+	})
+	if err != nil {
+		return xerrors.Errorf("read package contents: %w", err)
+	}
+	return nil
+}
 
 // Directory reads files and sub-directories at the given path.
 func (c *Client) Directory(name, version, path string) ([]string, []string, error) {

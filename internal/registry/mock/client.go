@@ -24,6 +24,12 @@ type Client struct {
 
 var _ registry.Client = &Client{}
 
+// Archive writes a zip archive of all mocked contents to out.
+func (c *Client) Archive(name, version string, out io.Writer) error {
+	// TODO
+	return nil
+}
+
 // Directory lists all the sub-directories and files at the given path in the mocked contents.
 // Package name is ignored.
 func (c *Client) Directory(name, version, path string) ([]string, []string, error) {
