@@ -26,8 +26,16 @@ type Context struct {
 
 {{- define "style" -}}
     <style>
+        .info {
+            display: flex;
+        }
+
+        .info .left {
+            flex-grow: 1;
+        }
+
         .info .right {
-            float: right;
+            flex-shrink: 0;
             transform: translateY(-2px);
         }
 
@@ -66,15 +74,34 @@ type Context struct {
 
 {{- define "body" -}}
     <div class="info">
-        <a href="/package/{{- .Package -}}/">{{- .Package -}}</a>
-        @
+        <div class="left">
+            <a href="/package/{{- .Package -}}/">{{- .Package -}}</a>
+            @
 
-        <!-- Version is only clickable when not in the package root. -->
-        {{- if gt (len .Path) 0 -}}
-            <a href="/package/{{- .Package -}}/{{- .Version -}}/">{{- .Version -}}</a>
-            -&nbsp;
-        {{- else -}}
-            {{- .Version -}}
+            <!-- Version is only clickable when not in the package root. -->
+            {{- if gt (len .Path) 0 -}}
+                <a href="/package/{{- .Package -}}/{{- .Version -}}/">{{- .Version -}}</a>
+                -&nbsp;
+            {{- else -}}
+                {{- .Version -}}
+            {{- end -}}
+
+            {{- $links := .PathLinks -}}
+            {{- range $i, $part := .Path -}}
+                {{- if ne $part "" -}}
+                    <!-- Only make part clickable if a link is provided. -->
+                    {{- $link := (index $links $i) -}}
+                    {{- if ne $link "" -}}
+                        {{- if ne $i 0 -}}/{{- end -}}<a href="{{- $link -}}">{{- $part -}}</a>
+                    {{- else -}}
+                        {{- if ne $i 0 -}}/{{- end -}}{{- $part -}}
+                    {{- end -}}
+                {{- end -}}
+            {{- end -}}
+        </div>
+
+        <!-- Links only available in package root. -->
+        {{- if eq (len .Path) 0 -}}
             <div class="right">
                 <span class="action">
                     <img src="/assets/icon-download.svg">
@@ -89,19 +116,6 @@ type Context struct {
                     </a>
                 </span>
             </div>
-        {{- end -}}
-
-        {{- $links := .PathLinks -}}
-        {{- range $i, $part := .Path -}}
-            {{- if ne $part "" -}}
-                <!-- Only make part clickable if a link is provided. -->
-                {{- $link := (index $links $i) -}}
-                {{- if ne $link "" -}}
-                    {{- if ne $i 0 -}}/{{- end -}}<a href="{{- $link -}}">{{- $part -}}</a>
-                {{- else -}}
-                    {{- if ne $i 0 -}}/{{- end -}}{{- $part -}}
-                {{- end -}}
-            {{- end -}}
         {{- end -}}
     </div>
     {{- if ne (len .Directories) 0 -}}
