@@ -25,7 +25,7 @@ type Client struct {
 var _ registry.Client = &Client{}
 
 // Archive writes a zip archive of all mocked contents to out.
-func (c *Client) Archive(name, version string, out io.Writer) error {
+func (c *Client) Archive(name, version, path string, out io.Writer) error {
 	// TODO
 	return nil
 }

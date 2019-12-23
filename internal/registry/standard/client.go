@@ -26,12 +26,16 @@ type Client struct {
 
 var _ registry.Client = &Client{}
 
-// Archive writes a zip archive of the package contents to out.
-func (c *Client) Archive(name, version string, out io.Writer) error {
+// Archive writes a zip archive of the package contents at path to out.
+func (c *Client) Archive(name, version, path string, out io.Writer) error {
 	w := zip.NewWriter(out)
 	defer w.Close()
 	err := c.read(name, version, func(name string, contents io.Reader) error {
 		filepath := strings.TrimPrefix(name, "package/")
+		if !strings.HasPrefix(filepath, path) {
+			return nil
+		}
+		filepath = strings.TrimPrefix(filepath, path)
 		f, err := w.Create(filepath)
 		if err != nil {
 			return xerrors.Errorf("create file: %w", err)

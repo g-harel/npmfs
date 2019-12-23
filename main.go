@@ -95,6 +95,7 @@ func routes(client registry.Client) http.Handler {
 	// Download package contents.
 	r.HandleFunc("/download/"+nameP+"/{version}/", handlers.Download(client))
 	r.HandleFunc("/download/"+nameP+"/{version}", redirect("/download/{name}/{version}/"))
+	r.HandleFunc("/download/"+nameP+"/{version}/"+dirP, handlers.Download(client))
 
 	// Static assets.
 	assets := http.FileServer(http.Dir("assets"))

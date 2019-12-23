@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/g-harel/npmfs/internal/registry"
 	"github.com/g-harel/npmfs/templates"
@@ -17,11 +18,16 @@ func Download(client registry.Client) http.HandlerFunc {
 		vars := mux.Vars(r)
 		name := vars["name"]
 		version := vars["version"]
+		path := vars["path"]
+
+		filename := fmt.Sprintf("%v-%v-%v", name, version, strings.ReplaceAll(path, "/", "-"))
+		filename = strings.TrimSuffix(filename, "-")
+		filename += ".zip"
 
 		w.Header().Set("Content-Type", "application/zip")
-		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%v-%v.zip", name, version))
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%v", filename))
 
-		err := client.Archive(name, version, w)
+		err := client.Archive(name, version, path, w)
 		if err != nil {
 			var registryErr *registry.Error
 			if xerrors.As(err, &registryErr) {

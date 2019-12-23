@@ -1,8 +1,7 @@
 <!--
 
 todo
-    simplify client api
-    avoid the filesystem when possible
+    add download link to all dirs/files
     github badge?
     registry picker?
 
@@ -145,6 +144,8 @@ $ go run main.go
 ```
 
 _Requires a least `go1.11` (for go modules support) and `git` to be installed._
+
+_Replace `go` with [`gin`](https://github.com/codegangsta/gin) for auto-restarts._
 
 ##
 
