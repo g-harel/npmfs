@@ -1,6 +1,8 @@
 <!--
 
 todo
+    simplify client api
+    avoid the filesystem when possible
     github badge?
     registry picker?
 
