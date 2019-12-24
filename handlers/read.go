@@ -1,33 +1,26 @@
 package handlers
 
 import (
-	"fmt"
-	"io"
 	"log"
-	"mime"
 	"net/http"
-	"path/filepath"
 	"strings"
 
 	"github.com/g-harel/npmfs/internal/registry"
+	"github.com/g-harel/npmfs/internal/util"
 	"github.com/g-harel/npmfs/templates"
 	"github.com/gorilla/mux"
 	"golang.org/x/xerrors"
 )
 
-// DownloadFile handler serves a file from the package contents.
-func DownloadFile(client registry.Client) http.HandlerFunc {
+// ReadFile handler displays a file view of package contents at the provided path.
+func ReadFile(client registry.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		name := vars["name"]
 		version := vars["version"]
 		path := vars["path"]
 
-		filename := filepath.Base(path)
-
-		w.Header().Set("Content-Type", mime.TypeByExtension(filepath.Ext(filename)))
-		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%v", filename))
-
+		// Fetch file contents.
 		file, err := client.File(name, version, path)
 		if err != nil {
 			var registryErr *registry.Error
@@ -39,26 +32,24 @@ func DownloadFile(client registry.Client) http.HandlerFunc {
 			log.Printf("ERROR fetch file: %v", err)
 			return
 		}
-		io.WriteString(w, file)
+
+		parts, links := util.BreakPathRelative(path)
+		lines := strings.Split(file, "\n")
+
+		// Render page template.
+		templates.PageFile(name, version, parts, links, lines).Handler(w, r)
 	}
 }
 
-// DownloadDir handler serves a zip archive of the package contents.
-func DownloadDir(client registry.Client) http.HandlerFunc {
+// ReadDir handler displays a directory view of package contents at the provided path.
+func ReadDir(client registry.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		name := vars["name"]
 		version := vars["version"]
 		path := vars["path"]
 
-		filename := fmt.Sprintf("%v-%v-%v", name, version, strings.ReplaceAll(path, "/", "-"))
-		filename = strings.TrimSuffix(filename, "-")
-		filename += ".zip"
-
-		w.Header().Set("Content-Type", "application/zip")
-		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%v", filename))
-
-		err := client.Archive(name, version, path, w)
+		dirs, files, err := client.Directory(name, version, path)
 		if err != nil {
 			var registryErr *registry.Error
 			if xerrors.As(err, &registryErr) {
@@ -66,8 +57,13 @@ func DownloadDir(client registry.Client) http.HandlerFunc {
 				return
 			}
 			templates.PageError(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError)).Handler(w, r)
-			log.Printf("ERROR fetch package archive: %v", err)
+			log.Printf("ERROR fetch directory: %v", err)
 			return
 		}
+
+		parts, links := util.BreakPathRelative(path)
+
+		// Render page template.
+		templates.PageDirectory(name, version, parts, links, dirs, files).Handler(w, r)
 	}
 }

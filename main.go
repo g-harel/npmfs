@@ -78,8 +78,8 @@ func routes(client registry.Client) http.Handler {
 	r.HandleFunc("/compare/"+nameP, redirect("/package/{name}/"))
 
 	// Show package contents.
-	r.PathPrefix("/package/" + nameP + "/{version}/" + dirP).HandlerFunc(handlers.Directory(client))
-	r.PathPrefix("/package/" + nameP + "/{version}/" + fileP).HandlerFunc(handlers.File(client))
+	r.PathPrefix("/package/" + nameP + "/{version}/" + dirP).HandlerFunc(handlers.ReadDir(client))
+	r.PathPrefix("/package/" + nameP + "/{version}/" + fileP).HandlerFunc(handlers.ReadFile(client))
 	r.HandleFunc("/package/"+nameP+"/{version}", redirect("/package/{name}/{version}/"))
 	r.HandleFunc("/package/"+nameP+"/v/{version}", redirect("/package/{name}/{version}/"))
 	r.HandleFunc("/package/"+nameP+"/v/{version}/", redirect("/package/{name}/{version}/"))
@@ -93,9 +93,9 @@ func routes(client registry.Client) http.Handler {
 	r.HandleFunc("/compare/"+nameP+"/{a}/{b}", redirect("/compare/{name}/{a}/{b}/"))
 
 	// Download package contents.
-	r.HandleFunc("/download/"+nameP+"/{version}/", handlers.Download(client))
+	r.HandleFunc("/download/"+nameP+"/{version}/"+dirP, handlers.DownloadDir(client))
+	r.HandleFunc("/download/"+nameP+"/{version}/"+fileP, handlers.DownloadFile(client))
 	r.HandleFunc("/download/"+nameP+"/{version}", redirect("/download/{name}/{version}/"))
-	r.HandleFunc("/download/"+nameP+"/{version}/"+dirP, handlers.Download(client))
 
 	// Static assets.
 	assets := http.FileServer(http.Dir("assets"))

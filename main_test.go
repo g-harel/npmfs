@@ -121,6 +121,14 @@ func TestRoutes(t *testing.T) {
 			Status:   http.StatusOK,
 			Redirect: "/download/@test/test/0.0.0/",
 		},
+		"file download": {
+			Path:   "/download/test/0.0.0/test.js",
+			Status: http.StatusOK,
+		},
+		"namespaced file download": {
+			Path:   "/download/@test/test/0.0.0/test.js",
+			Status: http.StatusOK,
+		},
 	}
 
 	client := &mockRegistry.Client{
