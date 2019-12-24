@@ -80,8 +80,17 @@
 
     <!-- Styles to display info/content windows. -->
     <!--
-        div class="info">
-            ...
+        <div class="info">
+            <div class="left">
+                ...
+            </div>
+            <div class="right">
+                <div class="action">
+                    <img />
+                    ...
+                </div>
+                ...
+            </div>
         </div>
         <div class="content">
             <div class="line">
@@ -100,10 +109,30 @@
             border-radius: 3px 3px 0 0;
             border: 1px solid #ddd;
             color: #666;
+            display: flex;
             padding: 0.8rem 1.5rem 0.6rem;
             position: sticky;
             top: -2px;
             z-index: 1;
+        }
+
+        .info .left {
+            flex-grow: 1;
+        }
+
+        .info .right {
+            flex-shrink: 0;
+            transform: translateY(-2px);
+        }
+
+        .info .right .action {
+            margin-left: 1em;
+        }
+
+        .info .right .action img {
+            height: 1em;
+            opacity: 0.6;
+            transform: translateY(2px);
         }
 
         .content {

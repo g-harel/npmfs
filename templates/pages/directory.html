@@ -26,29 +26,6 @@ type Context struct {
 
 {{- define "style" -}}
     <style>
-        .info {
-            display: flex;
-        }
-
-        .info .left {
-            flex-grow: 1;
-        }
-
-        .info .right {
-            flex-shrink: 0;
-            transform: translateY(-2px);
-        }
-
-        .info .right img {
-            height: 1em;
-            opacity: 0.6;
-            transform: translateY(2px);
-        }
-
-        .info .right .action {
-            margin-left: 1em;
-        }
-
         .content .line .data {
             padding-left: 0;
         }
@@ -100,23 +77,23 @@ type Context struct {
             {{- end -}}
         </div>
 
-        <!-- Links only available in package root. -->
-        {{- if eq (len .Path) 0 -}}
-            <div class="right">
-                <span class="action">
-                    <img src="/assets/icon-download.svg">
-                    <a href="/download/{{- .Package -}}/{{- .Version -}}/">
-                        download<!--
-                 --></a>
-                </span>
+        <div class="right">
+            <!-- Link only available in package root. -->
+            {{- if eq (len .Path) 0 -}}
                 <span class="action">
                     <img src="/assets/icon-diff.svg">
                     <a href="/compare/{{- .Package -}}/{{- .Version -}}/">
                         diff
                     </a>
                 </span>
-            </div>
-        {{- end -}}
+            {{- end -}}
+            <span class="action">
+                <img src="/assets/icon-download.svg">
+                <a href="/download/{{- .Package -}}/{{- .Version -}}/{{- range $i, $part := .Path -}}{{- $part -}}/{{- end -}}">
+                    download
+                </a>
+            </span>
+        </div>
     </div>
     {{- if ne (len .Directories) 0 -}}
         <div class="content dirs">

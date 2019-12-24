@@ -49,14 +49,16 @@ type Context struct {
 
 {{- define "body" -}}
     <div class="info">
-        {{- if eq .Disabled "" -}}
-            {{- .Package -}}
-        {{- else -}}
-            <a href="/package/{{- .Package -}}/">{{- .Package -}}</a>
-            @
-            <a href="/package/{{- .Package -}}/{{- .Disabled -}}/">{{- .Disabled -}}</a>
-            ..
-        {{- end -}}
+        <div class="left">
+            {{- if eq .Disabled "" -}}
+                {{- .Package -}}
+            {{- else -}}
+                <a href="/package/{{- .Package -}}/">{{- .Package -}}</a>
+                @
+                <a href="/package/{{- .Package -}}/{{- .Disabled -}}/">{{- .Disabled -}}</a>
+                ..
+            {{- end -}}
+        </div>
     </div>
     <div class="content">
         {{- $latest := .Latest -}}

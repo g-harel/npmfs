@@ -29,21 +29,32 @@ type Context struct {
 
 {{- define "body" -}}
     <div class="info">
-        <a href="/package/{{- .Package -}}">{{- .Package -}}</a>
-        @
-        <a href="/package/{{- .Package -}}/{{- .Version -}}">{{- .Version -}}</a>
-        -&nbsp;
+        <div class="left">
+            <a href="/package/{{- .Package -}}">{{- .Package -}}</a>
+            @
+            <a href="/package/{{- .Package -}}/{{- .Version -}}">{{- .Version -}}</a>
+            -&nbsp;
 
-        {{- $links := .PathLinks -}}
-        {{- range $i, $part := .Path -}}
-            <!-- Only make part clickable if a link is provided. -->
-            {{- $link := (index $links $i) -}}
-            {{- if ne $link "" -}}
-                {{- if ne $i 0 -}}/{{- end -}}<a href="{{- $link -}}">{{- $part -}}</a>
-            {{- else -}}
-                {{- if ne $i 0 -}}/{{- end -}}{{- $part -}}
+            {{- $links := .PathLinks -}}
+            {{- range $i, $part := .Path -}}
+                <!-- Only make part clickable if a link is provided. -->
+                {{- $link := (index $links $i) -}}
+                {{- if ne $link "" -}}
+                    {{- if ne $i 0 -}}/{{- end -}}<a href="{{- $link -}}">{{- $part -}}</a>
+                {{- else -}}
+                    {{- if ne $i 0 -}}/{{- end -}}{{- $part -}}
+                {{- end -}}
             {{- end -}}
-        {{- end -}}
+        </div>
+
+        <div class="right">
+            <span class="action">
+                <img src="/assets/icon-download.svg">
+                <a href="/download/{{- .Package -}}/{{- .Version -}}/{{- range $i, $part := .Path -}}{{- if $i -}}/{{- end -}}{{- $part -}}{{- end -}}">
+                    download
+                </a>
+            </span>
+        </div>
     </div>
     <div class="content">
         {{- range $i, $line := .Lines -}}

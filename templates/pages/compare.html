@@ -84,33 +84,35 @@ type Context struct {
             <!-- Wrapper div to hide sticky info bar after scrolling past content. -->
             <div class="wrapper">
                 <div class="info">
-                    {{- $packageA := print "/package/" $package "/" $versionA "/" -}}
-                    {{- $packageB := print "/package/" $package "/" $versionB "/" -}}
+                    <div class="left">
+                        {{- $packageA := print "/package/" $package "/" $versionA "/" -}}
+                        {{- $packageB := print "/package/" $package "/" $versionB "/" -}}
 
-                    <a href="/package/{{- $package -}}/">{{- $package -}}</a>
-                    @
-                    <a href="{{- $packageA -}}">{{- $versionA -}}</a>
-                    ..
-                    <a href="{{- $packageB -}}">{{- $versionB -}}</a>
-                    -
+                        <a href="/package/{{- $package -}}/">{{- $package -}}</a>
+                        @
+                        <a href="{{- $packageA -}}">{{- $versionA -}}</a>
+                        ..
+                        <a href="{{- $packageB -}}">{{- $versionB -}}</a>
+                        -
 
-                    {{  $linkA := print $packageA $patch.PathA -}}
-                    {{- $linkB := print $packageB $patch.PathB -}}
+                        {{  $linkA := print $packageA $patch.PathA -}}
+                        {{- $linkB := print $packageB $patch.PathB -}}
 
-                    {{- if and (eq $patch.PathA "") (ne $patch.PathB "") -}}
-                        <b>create</b>
-                        <a href="{{- $linkB -}}">{{- $patch.PathB -}}</a>
-                    {{- else if and (ne $patch.PathA "") (eq $patch.PathB "") -}}
-                        <b>delete</b>
-                        <a href="{{- $linkA -}}">{{- $patch.PathA -}}</a>
-                    {{- else if eq $patch.PathA $patch.PathB -}}
-                        <a href="{{- $linkB -}}">{{- $patch.PathB -}}</a>
-                    {{- else -}}
-                        <b>rename</b>
-                        <a href="{{- $linkB -}}">{{- $patch.PathB -}}</a>
-                        🡒
-                        <a href="{{- $linkA -}}">{{- $patch.PathA -}}</a>
-                    {{- end -}}
+                        {{- if and (eq $patch.PathA "") (ne $patch.PathB "") -}}
+                            <b>create</b>
+                            <a href="{{- $linkB -}}">{{- $patch.PathB -}}</a>
+                        {{- else if and (ne $patch.PathA "") (eq $patch.PathB "") -}}
+                            <b>delete</b>
+                            <a href="{{- $linkA -}}">{{- $patch.PathA -}}</a>
+                        {{- else if eq $patch.PathA $patch.PathB -}}
+                            <a href="{{- $linkB -}}">{{- $patch.PathB -}}</a>
+                        {{- else -}}
+                            <b>rename</b>
+                            <a href="{{- $linkB -}}">{{- $patch.PathB -}}</a>
+                            🡒
+                            <a href="{{- $linkA -}}">{{- $patch.PathA -}}</a>
+                        {{- end -}}
+                    </div>
                 </div>
                 <div class="content">
                     {{- range $j, $line := $patch.Lines -}}
