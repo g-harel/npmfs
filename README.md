@@ -19,6 +19,8 @@ JavaScript Package Inspector
 
 - [**Deep Links** – Link to specific lines in files and diffs.](https://npmfs.com/package/express/4.17.1/Readme.md#L16)
 
+- [**Download Contents** – Download any directory or file.](https://npmfs.com/download/express/4.17.1/index.js)
+
 ## Motivations
 
 Published packages don't always include a link to their source on GitHub.
