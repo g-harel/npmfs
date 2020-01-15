@@ -108,6 +108,13 @@ func routes(client registry.Client) http.Handler {
 	r.HandleFunc("/"+nameP, redirect("/package/{name}/"))
 	r.HandleFunc("/"+nameP+"/", redirect("/package/{name}/"))
 
+	// Catch all requests that don't match any other handler as 404.
+	r.PathPrefix("/").HandlerFunc(func (w http.ResponseWriter, r *http.Request) {
+		status := http.StatusNotFound
+		w.WriteHeader(status)
+		templates.PageError(status, http.StatusText(status)).Handler(w, r)
+	})
+
 	return r
 }
 

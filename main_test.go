@@ -129,6 +129,10 @@ func TestRoutes(t *testing.T) {
 			Path:   "/download/@test/test/0.0.0/test.js",
 			Status: http.StatusOK,
 		},
+		"invalid": {
+			Path:   "/@a",
+			Status: http.StatusNotFound,
+		},
 	}
 
 	client := &mockRegistry.Client{
