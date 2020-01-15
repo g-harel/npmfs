@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/g-harel/npmfs/internal/registry"
@@ -20,8 +21,15 @@ type stdReadHandler func(name string, contents io.Reader) error
 func (c *Client) read(name, version string, handler stdReadHandler) error {
 	client := &http.Client{Timeout: 4 * time.Second}
 
+	// Extract the package name without its scope (@abc/def -> def).
+	// Non-scoped package names do not need to be changed.
+	scopedName := name
+	if strings.Contains(name, "/") {
+		scopedName = strings.Split(name, "/")[1]
+	}
+
 	// Fetch .tgz archive of package contents.
-	url := fmt.Sprintf("https://%s/%s/-/%[2]s-%s.tgz", c.Host, name, version)
+	url := fmt.Sprintf("https://%s/%s/-/%s-%s.tgz", c.Host, name, scopedName, version)
 	response, err := client.Get(url)
 	if os.IsTimeout(err) {
 		log.Printf("ERROR standard registry: read: timeout (%v)", url)

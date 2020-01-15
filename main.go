@@ -64,7 +64,7 @@ func routes(client registry.Client) http.Handler {
 	var (
 		// Name pattern matches with simple and org-scoped names.
 		// (ex. "lodash", "react", "@types/express")
-		nameP = "{name:(?:@[^/]+\\/)?[^/]+}"
+		nameP = "{name:(?:@[^/]+\\/)?[^/@]+}"
 		// Directory path pattern matches everything that ends with a path separator.
 		dirP = "{path:(?:.+/)?$}"
 		// File path pattern matches everything that does not end in a path separator.
