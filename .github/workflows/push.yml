@@ -25,6 +25,6 @@ jobs:
         CLOUDSDK_CORE_PROJECT: npmfs-242515
 
       # Deploy new image.
-    - run: gcloud --quiet run deploy --image gcr.io/npmfs-242515/website --allow-unauthenticated --region=us-central1 --timeout=8s website
+    - run: gcloud --quiet run deploy --image gcr.io/npmfs-242515/website --allow-unauthenticated --region=us-central1 --timeout=8s website --platform=managed
       env:
         CLOUDSDK_CORE_PROJECT: npmfs-242515
