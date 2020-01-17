@@ -81,7 +81,7 @@ func TestRoutes(t *testing.T) {
 		"namespaced package contents v redirect": {
 			Path:     "/package/@test/test/v/0.0.0",
 			Status:   http.StatusOK,
-			Redirect: "/package/@test/test/v/0.0.0/",
+			Redirect: "/package/@test/test/0.0.0/",
 		},
 		"package file": {
 			Path:   "/package/test/0.0.0/README.md",
@@ -122,11 +122,11 @@ func TestRoutes(t *testing.T) {
 			Redirect: "/download/@test/test/0.0.0/",
 		},
 		"file download": {
-			Path:   "/download/test/0.0.0/test.js",
+			Path:   "/download/test/0.0.0/README.md",
 			Status: http.StatusOK,
 		},
 		"namespaced file download": {
-			Path:   "/download/@test/test/0.0.0/test.js",
+			Path:   "/download/@test/test/0.0.0/README.md",
 			Status: http.StatusOK,
 		},
 		"invalid": {
@@ -152,6 +152,7 @@ func TestRoutes(t *testing.T) {
 
 	for name, tc := range tt {
 		t.Run(name, func(t *testing.T) {
+			println("xxx - ",tc.Path)
 			res, err := http.Get(fmt.Sprintf("%v%v", srv.URL, tc.Path))
 			if err != nil {
 				t.Fatalf("send GET request: %v", err)

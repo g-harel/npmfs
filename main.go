@@ -78,11 +78,11 @@ func routes(client registry.Client) http.Handler {
 	r.HandleFunc("/compare/"+nameP, redirect("/package/{name}/"))
 
 	// Show package contents.
+	r.HandleFunc("/package/"+nameP+"/v/{version}", redirect("/package/{name}/{version}/"))
+	r.HandleFunc("/package/"+nameP+"/v/{version}/", redirect("/package/{name}/{version}/"))
 	r.PathPrefix("/package/" + nameP + "/{version}/" + dirP).HandlerFunc(handlers.ReadDir(client))
 	r.PathPrefix("/package/" + nameP + "/{version}/" + fileP).HandlerFunc(handlers.ReadFile(client))
 	r.HandleFunc("/package/"+nameP+"/{version}", redirect("/package/{name}/{version}/"))
-	r.HandleFunc("/package/"+nameP+"/v/{version}", redirect("/package/{name}/{version}/"))
-	r.HandleFunc("/package/"+nameP+"/v/{version}/", redirect("/package/{name}/{version}/"))
 
 	// Pick second version to compare to.
 	r.HandleFunc("/compare/"+nameP+"/{disabled}/", handlers.Versions(client))
@@ -110,9 +110,7 @@ func routes(client registry.Client) http.Handler {
 
 	// Catch all requests that don't match any other handler as 404.
 	r.PathPrefix("/").HandlerFunc(func (w http.ResponseWriter, r *http.Request) {
-		status := http.StatusNotFound
-		w.WriteHeader(status)
-		templates.PageError(status, http.StatusText(status)).Handler(w, r)
+		templates.PageError(http.StatusNotFound, http.StatusText(http.StatusNotFound)).Handler(w, r)
 	})
 
 	return r
