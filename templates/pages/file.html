@@ -60,7 +60,7 @@ type Context struct {
         {{- range $i, $line := .Lines -}}
             {{- if ne $i 0 -}}
                 <div class="line">
-                    <div class="decoration">{{- $i -}}</div>
+                    <a class="decoration" href="#L{{- $i -}}">{{- $i -}}</a>
                     <div class="data">{{- $line -}}</div>
                     <div class="target" id="L{{- $i -}}"></div>
                     <a class="link" href="#L{{- $i -}}"></a>
