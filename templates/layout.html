@@ -213,7 +213,7 @@
         }
 
         .content .line.yellow .decoration {
-            background-color: #fff5b1;
+            background-color: #fff5b1 !important;
         }
 
         .content .line .link:hover {
@@ -252,20 +252,63 @@
     </footer>
 
     <script>
-        // Add the "yellow" class to the targeted line.
+        function genHashFromLineNumber(diff, number) {
+            if (diff === null) {
+                return "#L" + number;
+            }
+            return "#D" + diff + "L" + number;
+        }
+
+        // TODO return column numbers.
+        // TODO document syntax/behavior.
+        function parseHash(hash) {
+            var match = hash.match((/^#(?:D(\d+))?L(\d+)(?::(\d+))?(?:-L(\d+)(?::(\d+))?)?$/));
+            if (!match) {
+                // Only log error if it looks like there was an attempt to link to a line.
+                // TODO include link to docs.
+                if (hash.match(/\d/g)) {
+                    console.error("Invalid hash target syntax.");
+                }
+                return null;
+            }
+
+            var diff = match[1] || null;
+            var startLine = match[2];
+            var endLine = match[4] || startLine;
+            if (endLine < startLine) {
+                console.error("Hash target range invalid.");
+                return null;
+            }
+
+            return {diff, startLine, endLine};
+        }
+
+        // TODO scroll to the line's column position, not line start.
         function highlightLine() {
-            var hash = document.location.hash;
-            if (hash === "") return;
-
-            var target = document.querySelector(hash);
-            if (target === null || !target.parentElement.classList.contains("line")) return;
-
+            // Remove previously highlighted lines.
             var prev = document.querySelectorAll(".line.yellow");
             for (var i = 0; i < prev.length; i ++) {
                 prev[i].classList.remove("yellow");
             }
 
-            target.parentElement.classList.add("yellow");
+            var hash = document.location.hash;
+            var target = parseHash(hash);
+            if (target === null) return;
+
+            // Find target line and scroll to it.
+            var scrollElem = document.querySelector(genHashFromLineNumber(target.diff, target.startLine));
+            if (scrollElem === null || !scrollElem.parentElement.classList.contains("line")) return;
+            scrollElem.scrollIntoView();
+
+            // Highligh lines in the range.
+            // TODO validate range.
+            //   - line numbers exist in file.
+            //   - diff ranges don't overlap skipped blocks.
+            for (var i = target.startLine; i <= target.endLine; i++) {
+                var lineElem = document.querySelector(genHashFromLineNumber(target.diff, i));
+                if (lineElem === null) continue;
+                lineElem.parentElement.classList.add("yellow");
+            }
         }
 
         highlightLine();
