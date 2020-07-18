@@ -259,7 +259,17 @@
             return "#D" + diff + "L" + number;
         }
 
-        // TODO return column numbers.
+        function toNum(match, fallback) {
+            if (match === undefined) {
+                return fallback;
+            }
+            var parsed = Number(match);
+            if (isNaN(parsed)) {
+                return fallback;
+            }
+            return parsed;
+        }
+
         // TODO document syntax/behavior.
         function parseHash(hash) {
             var match = hash.match((/^#(?:D(\d+))?L(\d+)(?::(\d+))?(?:-L(\d+)(?::(\d+))?)?$/));
@@ -272,24 +282,30 @@
                 return null;
             }
 
-            var diff = match[1] || null;
-            var startLine = match[2];
-            var endLine = match[4] || startLine;
+            var diff = toNum(match[1], null);
+            var startLine = toNum(match[2], null);
+            var startCol = toNum(match[3], null);
+            var endLine = toNum(match[4], startLine);
+            var endCol = toNum(match[5], null);
             if (endLine < startLine) {
                 console.error("Hash target range invalid.");
                 return null;
             }
 
-            return {diff, startLine, endLine};
+            return {diff, startLine, startCol, endLine, endCol};
         }
 
-        // TODO scroll to the line's column position, not line start.
-        function highlightLine() {
+        function reset() {
             // Remove previously highlighted lines.
             var prev = document.querySelectorAll(".line.yellow");
             for (var i = 0; i < prev.length; i ++) {
                 prev[i].classList.remove("yellow");
             }
+        }
+
+        // TODO scroll to the line's column position, not line start.
+        function highlightTarget() {
+            reset();
 
             var hash = document.location.hash;
             var target = parseHash(hash);
@@ -302,17 +318,20 @@
 
             // Highligh lines in the range.
             // TODO validate range.
-            //   - line numbers exist in file.
             //   - diff ranges don't overlap skipped blocks.
             for (var i = target.startLine; i <= target.endLine; i++) {
                 var lineElem = document.querySelector(genHashFromLineNumber(target.diff, i));
-                if (lineElem === null) continue;
+                if (lineElem === null) {
+                    reset();
+                    console.error("Hash target range not found.");
+                    return;
+                };
                 lineElem.parentElement.classList.add("yellow");
             }
         }
 
-        highlightLine();
-        window.onhashchange = highlightLine;
+        highlightTarget();
+        window.onhashchange = highlightTarget;
     </script>
 </body>
 </html>
