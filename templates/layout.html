@@ -301,6 +301,41 @@
             for (var i = 0; i < prev.length; i ++) {
                 prev[i].classList.remove("yellow");
             }
+            // TODO reset split elements.
+        }
+
+        // TODO handle same line splits.
+        function muteStart(elem, column) {
+            var lineElem = elem.parentElement;
+            var dataElem = lineElem.querySelector(".data");
+            var text = dataElem.innerHTML;
+            if (column > text.length) {
+                return "Target start column out of range.";
+            }
+            // TODO split line contents so they can be styled differently.
+            // TODO http://localhost:8080/compare/bluebird/3.5.4/3.5.5/#D0L47:3-L48:76
+            // console.log(dataElem.innerHTML);
+            // var firstMutedElem = document.createElement("span");
+            // firstMutedElem.classList.add("split", "muted");
+            // firstMutedElem.appendChild(document.createTextNode(text.substring(0, column)));
+            // var secondMutedElem = document.createElement("span");
+            // secondMutedElem.classList.add("split");
+            // secondMutedElem.appendChild(document.createTextNode(text.substring(column)));
+            // dataElem.innerHTML = "";
+            // dataElem.appendChild(firstMutedElem);
+            // dataElem.appendChild(secondMutedElem);
+            return null;
+        }
+
+        // TODO reuse `muteStart` logic.
+        function muteEnd(elem, column) {
+            var lineElem = elem.parentElement;
+            var dataElem = lineElem.querySelector(".data");
+            var text = dataElem.innerHTML;
+            if (column > text.length) {
+                return "Target end column out of range.";
+            }
+            return null;
         }
 
         // TODO scroll to the line's column position, not line start.
@@ -317,8 +352,6 @@
             scrollElem.scrollIntoView();
 
             // Highligh lines in the range.
-            // TODO validate range.
-            //   - diff ranges don't overlap skipped blocks.
             for (var i = target.startLine; i <= target.endLine; i++) {
                 var lineElem = document.querySelector(genHashFromLineNumber(target.diff, i));
                 if (lineElem === null) {
@@ -327,6 +360,22 @@
                     return;
                 };
                 lineElem.parentElement.classList.add("yellow");
+                if (i === target.startLine && target.startCol !== null) {
+                    var err = muteStart(lineElem, target.startCol);
+                    if (err !== null) {
+                        reset();
+                        console.error(err);
+                        return;
+                    }
+                }
+                if (i === target.endLine && target.endCol !== null) {
+                    var err = muteEnd(lineElem, target.endCol);
+                    if (err !== null) {
+                        reset();
+                        console.error(err);
+                        return;
+                    }
+                }
             }
         }
 

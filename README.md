@@ -1,7 +1,6 @@
 <!--
 
 todo
-    add download link to all dirs/files
     github badge?
     registry picker?
 
