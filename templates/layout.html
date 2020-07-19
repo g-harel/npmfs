@@ -204,6 +204,14 @@
             word-break: break-word;
         }
 
+        .content .line .data .split {
+            display: inline-block;
+        }
+
+        .content .line .data .split.muted {
+            color: rgba(34, 34, 34, 0.3);
+        }
+
         .content .line.yellow {
             background-color: #fff6dd !important;
         }
@@ -297,48 +305,88 @@
 
         function reset() {
             // Remove previously highlighted lines.
-            var prev = document.querySelectorAll(".line.yellow");
-            for (var i = 0; i < prev.length; i ++) {
-                prev[i].classList.remove("yellow");
+            var highlightedLines = document.querySelectorAll(".line.yellow");
+            for (var i = 0; i < highlightedLines.length; i ++) {
+                highlightedLines[i].classList.remove("yellow");
             }
-            // TODO reset split elements.
+
+            // Unwrap split elements.
+            var splits = document.querySelectorAll("span.split");
+            for (var i = 0; i < splits.length; i++) {
+                var splitElem = splits[i];
+                var newNode = document.createTextNode(splitElem.innerHTML);
+                splitElem.parentElement.replaceChild(newNode, splitElem);
+            }
         }
 
-        // TODO handle same line splits.
-        function muteStart(elem, column) {
-            var lineElem = elem.parentElement;
-            var dataElem = lineElem.querySelector(".data");
-            var text = dataElem.innerHTML;
-            if (column > text.length) {
-                return "Target start column out of range.";
+        function splitContentsAt(elem, columns) {
+            if (columns.length < 1) {
+                return;
             }
-            // TODO split line contents so they can be styled differently.
-            // TODO http://localhost:8080/compare/bluebird/3.5.4/3.5.5/#D0L47:3-L48:76
-            // console.log(dataElem.innerHTML);
-            // var firstMutedElem = document.createElement("span");
-            // firstMutedElem.classList.add("split", "muted");
-            // firstMutedElem.appendChild(document.createTextNode(text.substring(0, column)));
-            // var secondMutedElem = document.createElement("span");
-            // secondMutedElem.classList.add("split");
-            // secondMutedElem.appendChild(document.createTextNode(text.substring(column)));
-            // dataElem.innerHTML = "";
-            // dataElem.appendChild(firstMutedElem);
-            // dataElem.appendChild(secondMutedElem);
-            return null;
+
+            // Validate all column indexes are in range.
+            var text = elem.innerHTML;
+            for (var i = 0; i < columns.length; i++) {
+                if (columns[i] > text.length) {
+                    throw "Column out of range."
+                }
+            }
+
+            // Split text contents into substrings as defined by the provided columns.
+            var splits = [];
+            var remainingText = text;
+            for (var i = columns.length - 1; i >= 0; i--) {
+                var index = columns[i];
+                splits.unshift(remainingText.substring(index));
+                remainingText = remainingText.substring(0, index);
+            }
+            splits.unshift(remainingText);
+
+            // Subdivide target elem's contents into separate elements.
+            elem.innerHTML = "";
+            for (var i = 0; i < splits.length; i++) {
+                var splitElem = document.createElement("span");
+                splitElem.classList.add("split");
+                splitElem.appendChild(document.createTextNode(splits[i]));
+                elem.appendChild(splitElem);
+            }
         }
 
-        // TODO reuse `muteStart` logic.
-        function muteEnd(elem, column) {
-            var lineElem = elem.parentElement;
-            var dataElem = lineElem.querySelector(".data");
-            var text = dataElem.innerHTML;
-            if (column > text.length) {
-                return "Target end column out of range.";
+        function muteCols(target) {
+            var startTargetElem = document.querySelector(genHashFromLineNumber(target.diff, target.startLine));
+            if (startTargetElem === null) {
+                throw "Target start out of range.";
             }
+            var startLineElem = startTargetElem.parentElement;
+            var startDataElem = startLineElem.querySelector(".data");
+
+            var endTargetElem = document.querySelector(genHashFromLineNumber(target.diff, target.endLine));
+            if (endTargetElem === null) {
+                throw "Target end out of range.";
+            }
+            var endLineElem = endTargetElem.parentElement;
+            var endDataElem = endLineElem.querySelector(".data");
+
+            if (target.startLine !== target.endLine || target.startCol === null || target.endCol === null) {
+                if (target.startCol !== null) {
+                    splitContentsAt(startDataElem, [target.startCol]);
+                    startDataElem.firstChild.classList.add("muted");
+                }
+                if (target.endCol !== null) {
+                    splitContentsAt(endDataElem, [target.endCol]);
+                    endDataElem.lastChild.classList.add("muted");
+                }
+            } else {
+                splitContentsAt(startDataElem, [target.startCol, target.endCol]);
+                startDataElem.firstChild.classList.add("muted");
+                endDataElem.lastChild.classList.add("muted");
+            }
+
             return null;
         }
 
         // TODO scroll to the line's column position, not line start.
+        // TODO http://localhost:8080/compare/bluebird/3.5.4/3.5.5/#D0L47:3-L48:32
         function highlightTarget() {
             reset();
 
@@ -360,22 +408,15 @@
                     return;
                 };
                 lineElem.parentElement.classList.add("yellow");
-                if (i === target.startLine && target.startCol !== null) {
-                    var err = muteStart(lineElem, target.startCol);
-                    if (err !== null) {
-                        reset();
-                        console.error(err);
-                        return;
-                    }
-                }
-                if (i === target.endLine && target.endCol !== null) {
-                    var err = muteEnd(lineElem, target.endCol);
-                    if (err !== null) {
-                        reset();
-                        console.error(err);
-                        return;
-                    }
-                }
+            }
+
+            // Mute parts of highlighted lines that are not included in the selection.
+            try {
+                muteCols(target);
+            } catch (e) {
+                reset();
+                console.error(e);
+                return;
             }
         }
 
