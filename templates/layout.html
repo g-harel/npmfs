@@ -204,10 +204,6 @@
             word-break: break-word;
         }
 
-        .content .line .data .split {
-            display: inline-block;
-        }
-
         .content .line .data .split.muted {
             color: rgba(34, 34, 34, 0.3);
         }
@@ -279,6 +275,8 @@
         }
 
         // TODO document syntax/behavior.
+        // http://localhost:8080/compare/bluebird/3.5.4/3.5.5/#D0L47:3-L48:32
+        // http://localhost:8080/compare/bluebird/3.5.4/3.5.5/#D1L8:14285-L8:14310
         function parseHash(hash) {
             var match = hash.match((/^#(?:D(\d+))?L(\d+)(?::(\d+))?(?:-L(\d+)(?::(\d+))?)?$/));
             if (!match) {
@@ -314,7 +312,7 @@
             var splits = document.querySelectorAll("span.split");
             for (var i = 0; i < splits.length; i++) {
                 var splitElem = splits[i];
-                var newNode = document.createTextNode(splitElem.innerHTML);
+                var newNode = document.createTextNode(splitElem.textContent);
                 splitElem.parentElement.replaceChild(newNode, splitElem);
             }
         }
@@ -325,7 +323,8 @@
             }
 
             // Validate all column indexes are in range.
-            var text = elem.innerHTML;
+            // Use `textContent` to avoid printing HTML entities.
+            var text = elem.textContent;
             for (var i = 0; i < columns.length; i++) {
                 if (columns[i] > text.length) {
                     throw "Column out of range."
@@ -385,19 +384,29 @@
             return null;
         }
 
-        // TODO scroll to the line's column position, not line start.
-        // TODO http://localhost:8080/compare/bluebird/3.5.4/3.5.5/#D0L47:3-L48:32
+        function scrollToTarget(target) {
+            var startTargetElem = document.querySelector(genHashFromLineNumber(target.diff, target.startLine));
+            if (startTargetElem === null || !startTargetElem.parentElement.classList.contains("line")) {
+                throw "Target start out of range.";
+            }
+
+            // Scroll to first non-muted split if found.
+            var splits = startTargetElem.parentElement.querySelectorAll(".split:not(.muted)");
+            if (splits.length === 0) {
+                startTargetElem.scrollIntoView();
+            } else {
+                splits[0].scrollIntoView();
+                window.scrollBy(0, -70);
+            }
+        }
+
         function highlightTarget() {
             reset();
 
             var hash = document.location.hash;
             var target = parseHash(hash);
+            // TODO handle errs with thro
             if (target === null) return;
-
-            // Find target line and scroll to it.
-            var scrollElem = document.querySelector(genHashFromLineNumber(target.diff, target.startLine));
-            if (scrollElem === null || !scrollElem.parentElement.classList.contains("line")) return;
-            scrollElem.scrollIntoView();
 
             // Highligh lines in the range.
             for (var i = target.startLine; i <= target.endLine; i++) {
@@ -418,6 +427,9 @@
                 console.error(e);
                 return;
             }
+
+            // Must be called after columns are muted to correctly scroll to the selection start.
+            scrollToTarget(target);
         }
 
         highlightTarget();
