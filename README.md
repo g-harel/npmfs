@@ -4,6 +4,8 @@ todo
     github badge?
     registry picker?
 
+TODO keep single source of content on homepage.
+
 -->
 
 <!-- REMEMBER TO MIRROR CONTENT CHANGES ON HOMEPAGE -->
@@ -55,7 +57,7 @@ _When viewing a package on npm, it is conveniently accessible with a one-char ed
 
 ##
 
-Specific package versions can be accessed directly.
+<b>Specific package versions</b> can be accessed directly.
 
 ```
 https://npmfs.com/package/<name>/<version>
@@ -74,7 +76,7 @@ https://npmfs.com/package/<name>/<version>
 
 ##
 
-Directories and files inside the package are viewed by appending the path.
+<b>Directories and files</b> inside the package are viewed by appending the path.
 
 ```
 https://npmfs.com/package/<name>/<version>/<path>
@@ -95,7 +97,7 @@ https://npmfs.com/package/<name>/<version>/example/index.js
 
 ##
 
-Package versions are compared (`version-0 .. version-1`) by navigating to the root directory of `version-0`, clicking on the `diff` link in the top right, and selecting `version-1` in the version list.
+<b>Package diffs</b> (`version-0 .. version-1`) are viewed by navigating to the root directory of `version-0`, clicking on the `diff` link in the top right, and selecting `version-1` in the version list.
 
 ```
 https://npmfs.com/compare/<name>/<version-0>/<version-1>
@@ -116,7 +118,7 @@ In this compare view, line numbers are a shortcut to their respective file's sou
 
 ##
 
-Deep links are found on the right side of lines in both the file and diff views. These links will add a hash to the url which scrolls the browser to the selected line, and highlights it.
+<b>Deep links</b> are found on the right side of lines in both the file and diff views. These links will add a hash to the url which scrolls the browser to the selected line, and highlights it.
 
 ```
 https://npmfs.com/package/<name>/<version>/index.js#<line>
@@ -132,6 +134,19 @@ https://npmfs.com/compare/<name>/<version-0>/<version-1>#<line>
     <a href="https://npmfs.com/package/moment/2.24.0/locale/ca.js#L81">https://npmfs.com/package/moment/2.24.0/locale/ca.js#L81</a>
     <br>
     <a href="https://npmfs.com/compare/moment/2.23.0/2.24.0#D19L0">https://npmfs.com/compare/moment/2.23.0/2.24.0#D19L0</a>
+</details>
+
+More precise selections can be created by editing the URL's hash. These can link to line ranges and highlight specific substrings within a line.
+
+<details>
+    <summary>Examples</summary>
+    <a href="https://npmfs.com/package/bluebird/3.5.5/js/release/race.js#L15-L21">https://npmfs.com/package/bluebird/3.5.5/js/release/race.js#L15-L21</a>
+    <br>
+    <a href="https://npmfs.com/compare/bluebird/3.5.4/3.5.5/#D0L24:12-L24:36">https://npmfs.com/compare/bluebird/3.5.4/3.5.5/#D0L24:12-L24:36</a>
+    <br>
+    <a href="https://npmfs.com/package/moment/2.24.0/locale/ca.js#L53-L66">https://npmfs.com/package/moment/2.24.0/locale/ca.js#L53-L66</a>
+    <br>
+    <a href="https://npmfs.com/compare/moment/2.23.0/2.24.0/#D15L0:1337-L0:1440">https://npmfs.com/compare/moment/2.23.0/2.24.0/#D15L0:1337-L0:1440</a>
 </details>
 
 ##

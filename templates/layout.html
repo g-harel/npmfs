@@ -263,20 +263,26 @@
             return "#D" + diff + "L" + number;
         }
 
-        function toNum(match, fallback) {
-            if (match === undefined) {
+        function toNum(numString, fallback) {
+            if (numString === undefined) {
                 return fallback;
             }
-            var parsed = Number(match);
+            var parsed = Number(numString);
             if (isNaN(parsed)) {
                 return fallback;
             }
             return parsed;
         }
 
-        // TODO document syntax/behavior.
-        // http://localhost:8080/compare/bluebird/3.5.4/3.5.5/#D0L47:3-L48:32
-        // http://localhost:8080/compare/bluebird/3.5.4/3.5.5/#D1L8:14285-L8:14310
+        // Parse given hash string into diff index and selection range. Most parts are optional.
+        // Examples:
+        // - #L98           -> Line 98.
+        // - #L23-L28       -> Lines 23 through 28 inclusive.
+        // - #D3L46         -> Line 46 in the 4th diff.
+        // - #L23:4         -> Line 23 from column 4 onwards.
+        // - #L78:12-L83:32 -> Line 78 starting at column 12 till column 32 on line 83.
+        // DEBUG http://localhost:8080/compare/bluebird/3.5.4/3.5.5/#D0L47:3-L48:32
+        // DEBUG http://localhost:8080/compare/bluebird/3.5.4/3.5.5/#D1L8:14285-L8:14310
         function parseHash(hash) {
             var match = hash.match((/^#(?:D(\d+))?L(\d+)(?::(\d+))?(?:-L(\d+)(?::(\d+))?)?$/));
             if (!match) {
@@ -301,7 +307,8 @@
             return {diff, startLine, startCol, endLine, endCol};
         }
 
-        function reset() {
+        // Removes all visual highlighting from the page.
+        function resetHighlight() {
             // Remove previously highlighted lines.
             var highlightedLines = document.querySelectorAll(".line.yellow");
             for (var i = 0; i < highlightedLines.length; i ++) {
@@ -317,6 +324,9 @@
             }
         }
 
+        // Split an element's text contents into multiple sections at the specified columns.
+        // Each generated section is wrapped in a span with the "split class".
+        // Element should have no non-text child nodes.
         function splitContentsAt(elem, columns) {
             if (columns.length < 1) {
                 return;
@@ -351,6 +361,8 @@
             }
         }
 
+        // Split the line(s) at the edge of the selection to wrapped the non-targeted text
+        // in an element with the "muted" class.
         function muteCols(target) {
             var startTargetElem = document.querySelector(genHashFromLineNumber(target.diff, target.startLine));
             if (startTargetElem === null) {
@@ -384,6 +396,7 @@
             return null;
         }
 
+        // Scroll to the first targeted line, or its first non-muted child if found.
         function scrollToTarget(target) {
             var startTargetElem = document.querySelector(genHashFromLineNumber(target.diff, target.startLine));
             if (startTargetElem === null || !startTargetElem.parentElement.classList.contains("line")) {
@@ -400,19 +413,20 @@
             }
         }
 
+        // Use the page's hash to highlight the specified target and scroll to its start.
         function highlightTarget() {
-            reset();
+            resetHighlight();
 
             var hash = document.location.hash;
             var target = parseHash(hash);
-            // TODO handle errs with thro
+            // TODO handle errs with throw.
             if (target === null) return;
 
             // Highligh lines in the range.
             for (var i = target.startLine; i <= target.endLine; i++) {
                 var lineElem = document.querySelector(genHashFromLineNumber(target.diff, i));
                 if (lineElem === null) {
-                    reset();
+                    resetHighlight();
                     console.error("Hash target range not found.");
                     return;
                 };
@@ -423,7 +437,7 @@
             try {
                 muteCols(target);
             } catch (e) {
-                reset();
+                resetHighlight();
                 console.error(e);
                 return;
             }
