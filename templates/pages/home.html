@@ -79,7 +79,6 @@
 
 {{- define "body" -}}
     <div class="wrapper">
-        <!-- TODO copy new docs from readme -->
         <h3><i>JavaScript Package Inspector</i></h3>
         <ul class="features">
             <li>
@@ -121,13 +120,13 @@
         </pre>
         <details>
             <summary>Examples</summary>
-            <a href="https://npmfs.com/lodash">https://npmfs.com/lodash</a>
+            <a href="/lodash">https://npmfs.com/lodash</a>
             <br>
-            <a href="https://npmfs.com/package/lodash">https://npmfs.com/package/lodash</a>
+            <a href="/package/lodash">https://npmfs.com/package/lodash</a>
             <br>
-            <a href="https://npmfs.com/request">https://npmfs.com/request</a>
+            <a href="/request">https://npmfs.com/request</a>
             <br>
-            <a href="https://npmfs.com/package/request">https://npmfs.com/package/request</a>
+            <a href="/package/request">https://npmfs.com/package/request</a>
         </details>
         <hr>
 
@@ -137,17 +136,17 @@
         </pre>
         <details>
             <summary>Examples</summary>
-            <a href="https://npmfs.com/package/chalk/2.4.2">https://npmfs.com/package/chalk/2.4.2</a>
+            <a href="/package/chalk/2.4.2">https://npmfs.com/package/chalk/2.4.2</a>
             <br>
-            <a href="https://npmfs.com/package/chalk/1.0.0">https://npmfs.com/package/chalk/1.0.0</a>
+            <a href="/package/chalk/1.0.0">https://npmfs.com/package/chalk/1.0.0</a>
             <br>
-            <a href="https://npmfs.com/package/commander/2.20.0">https://npmfs.com/package/commander/2.20.0</a>
+            <a href="/package/commander/2.20.0">https://npmfs.com/package/commander/2.20.0</a>
             <br>
-            <a href="https://npmfs.com/package/commander/1.0.0">https://npmfs.com/package/commander/1.0.0</a>
+            <a href="/package/commander/1.0.0">https://npmfs.com/package/commander/1.0.0</a>
         </details>
         <hr>
 
-        <p>Directories and files inside the package are viewed by appending the path.</p>
+        <p><b>Directories and files</b> inside the package are viewed by appending the path.</p>
         <pre>
             https://npmfs.com/package/&lt;name&gt;/&lt;version&gt;/&lt;path&gt;
             https://npmfs.com/package/&lt;name&gt;/&lt;version&gt;/example/
@@ -155,51 +154,63 @@
         </pre>
         <details>
             <summary>Examples</summary>
-            <a href="https://npmfs.com/package/async/3.0.1/internal/">https://npmfs.com/package/async/3.0.1/internal/</a>
+            <a href="/package/async/3.0.1/internal/">https://npmfs.com/package/async/3.0.1/internal/</a>
             <br>
-            <a href="https://npmfs.com/package/async/3.0.1/internal/once.js">https://npmfs.com/package/async/3.0.1/internal/once.js</a>
+            <a href="/package/async/3.0.1/internal/once.js">https://npmfs.com/package/async/3.0.1/internal/once.js</a>
             <br>
-            <a href="https://npmfs.com/package/react/16.8.6/umd/">https://npmfs.com/package/react/16.8.6/umd/</a>
+            <a href="/package/react/16.8.6/umd/">https://npmfs.com/package/react/16.8.6/umd/</a>
             <br>
-            <a href="https://npmfs.com/package/react/16.8.6/package.json">https://npmfs.com/package/react/16.8.6/package.json</a>
+            <a href="/package/react/16.8.6/package.json">https://npmfs.com/package/react/16.8.6/package.json</a>
         </details>
         <hr>
 
-        <p>Package versions are compared (<code>version-0 .. version-1</code>) by navigating to the root directory of <code>version-0</code>, clicking on the <code>diff</code> link in the top right, and selecting <code>version-1</code> in the version list.</p>
+        <p><b>Package diffs</b> (<code>version-0 .. version-1</code>) are viewed by navigating to the root directory of <code>version-0</code>, clicking on the <code>diff</code> link in the top right, and selecting <code>version-1</code> in the version list.</p>
         <pre>
             https://npmfs.com/compare/&lt;name&gt;/&lt;version-0&gt;/&lt;version-1&gt;
         </pre>
         <p>In this compare view, line numbers are a shortcut to their respective file's source.</p>
         <details>
             <summary>Examples</summary>
-            <a href="https://npmfs.com/compare/debug/4.1.0/4.1.1">https://npmfs.com/compare/debug/4.1.0/4.1.1</a>
+            <a href="/compare/debug/4.1.0/4.1.1">https://npmfs.com/compare/debug/4.1.0/4.1.1</a>
             <br>
-            <a href="https://npmfs.com/compare/debug/3.0.0/4.0.0">https://npmfs.com/compare/debug/3.0.0/4.0.0</a>
+            <a href="/compare/debug/3.0.0/4.0.0">https://npmfs.com/compare/debug/3.0.0/4.0.0</a>
             <br>
-            <a href="https://npmfs.com/compare/underscore/1.9.0/1.9.1">https://npmfs.com/compare/underscore/1.9.0/1.9.1</a>
+            <a href="/compare/underscore/1.9.0/1.9.1">https://npmfs.com/compare/underscore/1.9.0/1.9.1</a>
             <br>
-            <a href="https://npmfs.com/compare/underscore/1.6.0/1.7.0">https://npmfs.com/compare/underscore/1.6.0/1.7.0</a>
+            <a href="/compare/underscore/1.6.0/1.7.0">https://npmfs.com/compare/underscore/1.6.0/1.7.0</a>
         </details>
         <hr>
 
-        <p>Deep links are found on the right side of lines in both the file and diff views. These links will add a hash to the url which scrolls the browser to the selected line, and highlights it.</p>
+        <p><b>Deep links</b> are found on the right side of lines in both the file and diff views. These links will add a hash to the url which scrolls the browser to the selected line, and highlights it.</p>
         <pre>
             https://npmfs.com/package/&lt;name&gt;/&lt;version&gt;/index.js#&lt;line&gt;
             https://npmfs.com/compare/&lt;name&gt;/&lt;version-0&gt;/&lt;version-1&gt;#&lt;line&gt;
         </pre>
         <details>
             <summary>Examples</summary>
-            <a href="https://npmfs.com/package/bluebird/3.5.5/js/release/race.js#L32">https://npmfs.com/package/bluebird/3.5.5/js/release/race.js#L32</a>
+            <a href="/package/bluebird/3.5.5/js/release/race.js#L32">https://npmfs.com/package/bluebird/3.5.5/js/release/race.js#L32</a>
             <br>
-            <a href="https://npmfs.com/compare/bluebird/3.5.4/3.5.5#D0L35">https://npmfs.com/compare/bluebird/3.5.4/3.5.5#D0L35</a>
+            <a href="/compare/bluebird/3.5.4/3.5.5#D0L35">https://npmfs.com/compare/bluebird/3.5.4/3.5.5#D0L35</a>
             <br>
-            <a href="https://npmfs.com/package/moment/2.24.0/locale/ca.js#L81">https://npmfs.com/package/moment/2.24.0/locale/ca.js#L81</a>
+            <a href="/package/moment/2.24.0/locale/ca.js#L81">https://npmfs.com/package/moment/2.24.0/locale/ca.js#L81</a>
             <br>
-            <a href="https://npmfs.com/compare/moment/2.23.0/2.24.0#D19L0">https://npmfs.com/compare/moment/2.23.0/2.24.0#D19L0</a>
+            <a href="/compare/moment/2.23.0/2.24.0#D19L0">https://npmfs.com/compare/moment/2.23.0/2.24.0#D19L0</a>
+        </details>
+
+        <p>More precise selections can be created by editing the URL's hash. These can link to line ranges and highlight specific substrings within a line.</p>
+        <details>
+            <summary>Examples</summary>
+            <a href="/package/bluebird/3.5.5/js/release/race.js#L15-L21">https://npmfs.com/package/bluebird/3.5.5/js/release/race.js#L15-L21</a>
+            <br>
+            <a href="/compare/bluebird/3.5.4/3.5.5/#D0L24:12-L24:36">https://npmfs.com/compare/bluebird/3.5.4/3.5.5/#D0L24:12-L24:36</a>
+            <br>
+            <a href="/package/moment/2.24.0/locale/ca.js#L53-L66">https://npmfs.com/package/moment/2.24.0/locale/ca.js#L53-L66</a>
+            <br>
+            <a href="/compare/moment/2.23.0/2.24.0/#D15L0:1337-L0:1440">https://npmfs.com/compare/moment/2.23.0/2.24.0/#D15L0:1337-L0:1440</a>
         </details>
         <hr>
 
-        <p>The sticky header sections often contain useful links to navigate between pages.</p>
+        <p><i>The sticky header sections contain useful links to navigate between pages.</i></p>
 
     </div>
 {{- end -}}
