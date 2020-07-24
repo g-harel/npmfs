@@ -287,11 +287,9 @@
             var match = hash.match((/^#(?:D(\d+))?L(\d+)(?::(\d+))?(?:-L(\d+)(?::(\d+))?)?$/));
             if (!match) {
                 // Only log error if it looks like there was an attempt to link to a line.
-                // TODO include link to docs.
                 if (hash.match(/\d/g)) {
-                    console.error("Invalid hash target syntax.");
+                    throw "Invalid hash target syntax.\nhttps://npmfs.com#deep-links";
                 }
-                return null;
             }
 
             var diff = toNum(match[1], null);
@@ -300,8 +298,7 @@
             var endLine = toNum(match[4], startLine);
             var endCol = toNum(match[5], null);
             if (endLine < startLine) {
-                console.error("Hash target range invalid.");
-                return null;
+                throw "Hash target range invalid.";
             }
 
             return {diff, startLine, startCol, endLine, endCol};
@@ -417,33 +414,26 @@
         function highlightTarget() {
             resetHighlight();
 
-            var hash = document.location.hash;
-            var target = parseHash(hash);
-            // TODO handle errs with throw.
-            if (target === null) return;
-
-            // Highligh lines in the range.
-            for (var i = target.startLine; i <= target.endLine; i++) {
-                var lineElem = document.querySelector(genHashFromLineNumber(target.diff, i));
-                if (lineElem === null) {
-                    resetHighlight();
-                    console.error("Hash target range not found.");
-                    return;
-                };
-                lineElem.parentElement.classList.add("yellow");
-            }
-
-            // Mute parts of highlighted lines that are not included in the selection.
             try {
+                var hash = document.location.hash;
+                var target = parseHash(hash);
+
+                // Highligh lines in the range.
+                for (var i = target.startLine; i <= target.endLine; i++) {
+                    var lineElem = document.querySelector(genHashFromLineNumber(target.diff, i));
+                    if (lineElem === null) throw "Hash target range not found.";
+                    lineElem.parentElement.classList.add("yellow");
+                }
+
+                // Mute parts of highlighted lines that are not included in the selection.
                 muteCols(target);
+
+                // Must be called after columns are muted to correctly scroll to the selection start.
+                scrollToTarget(target);
             } catch (e) {
                 resetHighlight();
                 console.error(e);
-                return;
             }
-
-            // Must be called after columns are muted to correctly scroll to the selection start.
-            scrollToTarget(target);
         }
 
         highlightTarget();
