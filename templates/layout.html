@@ -290,6 +290,7 @@
                 if (hash.match(/\d/g)) {
                     throw "Invalid hash target syntax.\nhttps://npmfs.com#deep-links";
                 }
+                return null;
             }
 
             var diff = toNum(match[1], null);
@@ -417,6 +418,7 @@
             try {
                 var hash = document.location.hash;
                 var target = parseHash(hash);
+                if (target === null) return;
 
                 // Highligh lines in the range.
                 for (var i = target.startLine; i <= target.endLine; i++) {
