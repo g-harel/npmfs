@@ -1,2 +1,5 @@
-User-agent: *
+User-agent: googlebot
 Disallow: /compare/
+
+User-agent: *
+Disallow: /
