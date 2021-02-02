@@ -48,12 +48,6 @@ func Compare(a, b string) ([]*Patch, error) {
 		return nil, err
 	}
 
-	// Initialize git repository.
-	_, err = execGit(dir, "init")
-	if err != nil {
-		return nil, err
-	}
-
 	// Move contents from "a" into repository.
 	err = os.Rename(a, contentPath)
 	if err != nil {
