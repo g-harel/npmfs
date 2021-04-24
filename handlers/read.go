@@ -37,7 +37,7 @@ func ReadFile(client registry.Client) http.HandlerFunc {
 		lines := strings.Split(file, "\n")
 
 		// Render page template.
-		templates.PageFile(name, version, parts, links, lines).Handler(w, r)
+		templates.PageFile(name, version, util.ByteCount(int64(len(file))), parts, links, lines).Handler(w, r)
 	}
 }
 

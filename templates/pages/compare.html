@@ -5,9 +5,10 @@ type Context struct {
     VersionA string
     VersionB string
     Patches  []struct {
-        PathA string
-        PathB string
-        Lines []struct {
+        PathA      string
+        PathB      string
+        SizeChange string
+        Lines      []struct {
             LineA int
             LineB int
             Content string
@@ -112,6 +113,7 @@ type Context struct {
                             🡒
                             <a href="{{- $linkA -}}">{{- $patch.PathA -}}</a>
                         {{- end -}}
+                        &nbsp;({{- $patch.SizeChange -}})
                     </div>
                 </div>
                 <div class="content">

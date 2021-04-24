@@ -7,6 +7,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/g-harel/npmfs/internal/util"
 	"golang.org/x/xerrors"
 )
 
@@ -105,6 +106,21 @@ func Compare(a, b string) ([]*Patch, error) {
 	patches, err := patchParse(out)
 	if err != nil {
 		return nil, xerrors.Errorf("parse output: %w", err)
+	}
+
+	// Attach size delta to patches.
+	for _, patch := range patches {
+		statA, err := os.Stat(path.Join(a, patch.PathA))
+		if err != nil {
+			return nil, xerrors.Errorf("stat file a: %v", err)
+		}
+
+		statB, err := os.Stat(path.Join(b, patch.PathB))
+		if err != nil {
+			return nil, xerrors.Errorf("stat file b: %v", err)
+		}
+
+		patch.SizeChange = util.SignedByteCount(statB.Size() - statA.Size())
 	}
 
 	return patches, nil

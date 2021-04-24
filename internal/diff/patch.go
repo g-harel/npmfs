@@ -10,9 +10,10 @@ import (
 // File was created/deleted when one of "PathA" or "PathB" is empty.
 // File was renamed when "PathA" and "PathB" are not equal.
 type Patch struct {
-	PathA string
-	PathB string
-	Lines []PatchLine
+	PathA      string
+	PathB      string
+	SizeChange string
+	Lines      []PatchLine
 }
 
 // PatchLine represents a single line of diff output.

@@ -5,6 +5,7 @@
 type Context struct {
     Package   string
     Version   string
+    Size      string
     Path      []string
     PathLinks []string
     Lines     []string
@@ -45,6 +46,7 @@ type Context struct {
                     {{- if ne $i 0 -}}/{{- end -}}{{- $part -}}
                 {{- end -}}
             {{- end -}}
+            &nbsp;({{- .Size -}})
         </div>
 
         <div class="right">

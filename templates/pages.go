@@ -65,7 +65,7 @@ func PageDirectory(name, version string, path, links, dirs, files []string) *Ren
 }
 
 // PageFile returns a renderer for the file page.
-func PageFile(name, version string, path, links, lines []string) *Renderer {
+func PageFile(name, version, size string, path, links, lines []string) *Renderer {
 	return &Renderer{
 		filenames: []string{
 			"templates/layout.html",
@@ -75,12 +75,14 @@ func PageFile(name, version string, path, links, lines []string) *Renderer {
 		context: struct {
 			Package   string
 			Version   string
+			Size      string
 			Path      []string
 			PathLinks []string
 			Lines     []string
 		}{
 			Package:   name,
 			Version:   version,
+			Size:      size,
 			Path:      path,
 			PathLinks: links,
 			Lines:     append([]string{""}, lines...),
