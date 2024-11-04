@@ -1,5 +1,6 @@
-User-agent: googlebot
-Disallow: /compare/
+User-agent: Googlebot
+Allow: /*/README.md
 
 User-agent: *
+Allow: /$
 Disallow: /
